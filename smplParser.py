@@ -17,6 +17,7 @@ def smplParser(smpl):
 
 
 smplParser(f1.readline())
+# No 0% day!
 
 
 
