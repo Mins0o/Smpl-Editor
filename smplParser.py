@@ -1,7 +1,8 @@
-f1=open(r"C:\Users\steng\Desktop\Master.txt",'r',encoding='UTF-8')
-f2=open(r"C:\Users\steng\Desktop\Master2.smpl",'r',encoding='UTF-8')
-f3=open(r"C:\Users\steng\Desktop\Master3.smpl",'r',encoding='UTF-8')
-f4=open(r"C:\Users\steng\Desktop\Master4.smpl",'r',encoding='UTF-8')
+import json
+f1=open("D:/Dropbox/Workspace/03 Python/03 Smpl-Editor/Master.txt",'r',encoding='UTF-8')
+f2=open("D:/Dropbox/Workspace/03 Python/03 Smpl-Editor/Master2.smpl",'r',encoding='UTF-8')
+f3=open("D:/Dropbox/Workspace/03 Python/03 Smpl-Editor/Master3.smpl",'r',encoding='UTF-8')
+f4=open("D:/Dropbox/Workspace/03 Python/03 Smpl-Editor/Master4.smpl",'r',encoding='UTF-8')
 
 def smplParser(smpl):
     smpl=smpl[13:]
@@ -16,8 +17,13 @@ def smplParser(smpl):
         print(i)
 
 
-smplParser(f1.readline())
-# No 0% day!
+#smplParser(f1.readline())
+x=json.loads(f1.readline())["members"]
+for i in range(len(x)):
+    try:
+        print(str(i)+" "+str(x[i]))
+    except:
+        print(i)
 
 
 
