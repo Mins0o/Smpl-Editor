@@ -1,0 +1,11 @@
+Playlist Editing features
+
+1. Create new playlist(save)
+2. Add songs(songs are selectable)
+  2-1. Cluster by tag
+    2-1-1. sort by title/artist/directory
+  2-2. Bulk selection
+3. Delete songs
+  3-1,2. same as 2's
+4. View(display) songs/playlists
+5. Delete playlist
