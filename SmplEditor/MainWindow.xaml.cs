@@ -94,5 +94,10 @@ namespace SmplEditor
         {
             Playlists.Remove(name);
         }
+
+        private void ChangeList(object sender, SelectionChangedEventArgs e)
+        {
+            SongsListBox.ItemsSource = Playlists[SongsListBox.Items[SongsListBox.SelectedIndex].ToString()];
+        }
     }
 }
