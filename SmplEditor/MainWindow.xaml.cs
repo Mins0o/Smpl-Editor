@@ -97,7 +97,7 @@ namespace SmplEditor
 
         private void ChangeList(object sender, SelectionChangedEventArgs e)
         {
-            SongsListBox.ItemsSource = Playlists[SongsListBox.Items[SongsListBox.SelectedIndex].ToString()];
+            SongsListBox.ItemsSource = Playlists[PlaylistsBox.SelectedItem.ToString()].members;
         }
     }
 }

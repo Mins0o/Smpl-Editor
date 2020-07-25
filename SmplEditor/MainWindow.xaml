@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <ListBox x:Name="PlaylistsBox" HorizontalAlignment="Left" Height="399" Margin="10,10,0,0" VerticalAlignment="Top" Width="179"/>
+        <ListBox x:Name="PlaylistsBox" HorizontalAlignment="Left" Height="399" Margin="10,10,0,0" VerticalAlignment="Top" Width="179" SelectionChanged="ChangeList"/>
         <ListBox x:Name="SongsListBox" HorizontalAlignment="Left" Height="399" Margin="194,10,0,0" VerticalAlignment="Top" Width="588"/>
 
     </Grid>
