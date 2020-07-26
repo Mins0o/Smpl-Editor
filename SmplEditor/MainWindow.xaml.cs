@@ -26,7 +26,8 @@ namespace SmplEditor
         private Dictionary<string,Smpl> Playlists;
         public MainWindow()
         {
-            while (Playlists == null){
+            while (Playlists == null)
+            {
                 try
                 {
                     Playlists = this.LoadSmpls();
@@ -40,7 +41,13 @@ namespace SmplEditor
                     }
                 }
             }
+            if (Playlists.Count == 0)
+            {
+                MessageBox.Show("No Samsung Music Playlist detected");
+                System.Windows.Application.Current.Shutdown();
+            }
             InitializeComponent();
+            TextBlock tb = new TextBlock() { Text = "hey there" };
             PlaylistsBox.ItemsSource = Playlists.Keys;
             SongsListBox.ItemsSource = AllSongs();
         }
@@ -97,7 +104,34 @@ namespace SmplEditor
 
         private void ChangeList(object sender, SelectionChangedEventArgs e)
         {
-            SongsListBox.ItemsSource = Playlists[PlaylistsBox.SelectedItem.ToString()].members;
+            if (PlaylistsBox.SelectedItem != null)
+            {
+                SongsListBox.ItemsSource = Playlists[PlaylistsBox.SelectedItem.ToString()].members;
+                AllSongsListBox.UnselectAll();
+            }
+        }
+
+        private void DeleteSong(object sender, RoutedEventArgs e)
+        {
+            if (AllSongsListBox.SelectedItem != null)
+            {
+                var selectionListInterface = SongsListBox.SelectedItems;
+                Song[] selection = new Song[selectionListInterface.Count];
+                selectionListInterface.CopyTo(selection, 0);
+            }
+            else if (PlaylistsBox.SelectedItem != null)
+            {
+
+            }
+        }
+
+        private void SelectedAllSongs(object sender, SelectionChangedEventArgs e)
+        {
+            if (AllSongsListBox.SelectedItem != null)
+            {
+                PlaylistsBox.UnselectAll();
+                SongsListBox.ItemsSource = AllSongs();
+            }
         }
     }
 }

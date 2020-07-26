@@ -25,6 +25,43 @@ namespace SmplEditor
         {
             this.members.AddRange(additions);
         }
+        public void RemoveSongs(List<Song> removingSongs)
+        {
+            foreach (Song removingSong in removingSongs)
+            {
+                try
+                {
+                    this.members.Remove(removingSong);
+                }
+                catch(KeyNotFoundException e)
+                {
+                    System.Diagnostics.Debug.Print(removingSong.ToString() + " not in " + this.name);
+                }catch(Exception e)
+                {
+                    System.Diagnostics.Debug.Print(e.Message);
+                }
+            }
+            
+        }
+        public Smpl RemoveSongs(Song[] removingSongs)
+        {
+            foreach (Song removingSong in removingSongs)
+            {
+                try
+                {
+                    this.members.Remove(removingSong);
+                }
+                catch (KeyNotFoundException e)
+                {
+                    System.Diagnostics.Debug.Print(removingSong.ToString() + " not in " + this.name);
+                }
+                catch (Exception e)
+                {
+                    System.Diagnostics.Debug.Print(e.Message);
+                }
+            }
+            return this;
+        }
         public override string ToString()
         {
             return this.name;

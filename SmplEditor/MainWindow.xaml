@@ -5,10 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SmplEditor"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        <ListBox x:Name="PlaylistsBox" HorizontalAlignment="Left" Height="399" Margin="10,10,0,0" VerticalAlignment="Top" Width="179" SelectionChanged="ChangeList"/>
-        <ListBox x:Name="SongsListBox" HorizontalAlignment="Left" Height="399" Margin="194,10,0,0" VerticalAlignment="Top" Width="588"/>
+        Title="SMPL Editor" Height="450" Width="800">
+    <Grid Margin="0,0,-20,0">
+        <ListBox x:Name="PlaylistsBox" HorizontalAlignment="Left" Height="365" Margin="10,44,0,0" VerticalAlignment="Top" Width="179" SelectionChanged="ChangeList"/>
+        <ListBox x:Name="SongsListBox" HorizontalAlignment="Left" Height="399" Margin="200,10,0,0" VerticalAlignment="Top" Width="502" SelectionMode="Extended"/>
+        <Button x:Name="AddToPlaylistButton" HorizontalAlignment="Left" Margin="707,10,10,0" VerticalAlignment="Top" Width="75" Height="59">
+            <TextBlock Text="Add to playlists" TextWrapping="WrapWithOverflow" TextAlignment="Center" HorizontalAlignment="Stretch"/>
+        </Button>
+        <Button x:Name="DeleteFromPlaylistButton" HorizontalAlignment="Left" Margin="707,74,0,0" VerticalAlignment="Top" Width="75" Height="59" Click="DeleteSong">
+            <TextBlock Text="Delet from this playlist" TextWrapping="WrapWithOverflow" TextAlignment="Center" HorizontalAlignment="Stretch"/>
+        </Button>
+        <ListBox x:Name="AllSongsListBox" Margin="10,10,0,0" Padding="0" Width="179" Height="23" HorizontalAlignment="Left" VerticalAlignment="Top" SelectionChanged="SelectedAllSongs" SelectedIndex="0">
+            <TextBlock HorizontalAlignment="Left" Height="16" TextWrapping="Wrap" Text="All Songs" VerticalAlignment="Top" Margin="0" Width="102"/>
+        </ListBox>
+
 
     </Grid>
 </Window>
