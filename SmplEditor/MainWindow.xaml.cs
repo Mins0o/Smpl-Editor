@@ -55,7 +55,9 @@ namespace SmplEditor
 
             // Link the listbox contents with playlists and songs
             PlaylistsBox.ItemsSource = Playlists;
-            SongsListBox.ItemsSource = AllSongs;
+            DisplayAllSongs();
+            AddingListSelector.ItemsSource = Playlists;
+            AddingListSelector.SelectedIndex = 0;
         }
 
         // This function prompts OpenFileDialog and loads file with SMPL information.
@@ -136,54 +138,102 @@ namespace SmplEditor
             return deleted;
         }
 
-        private void ChangeList(object sender, SelectionChangedEventArgs e)
+        // UI events
+        private void OnPlaylistSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            // If not de-selection
             if (PlaylistsBox.SelectedItem != null)
             {
-                SongsListBox.ItemsSource = Playlists[PlaylistsBox.SelectedIndex].members;
-                AllSongsListBox.UnselectAll();
+                DisplaySelectedPlaylist();
             }
-            SongsListBox.ScrollIntoView(SongsListBox.Items[0]);
         }
 
-        private void DeleteSong(object sender, RoutedEventArgs e)
+        private void OnAllSongsListSelectionChanged(object sendor, RoutedEventArgs e)
+        {
+            if (AllSongsListBox.SelectedItem != null)
+            {
+                DisplayAllSongs();
+            }
+
+        }
+
+        private void OnAddSongsClicked(object sender, RoutedEventArgs e)
+        {
+            Smpl targetList = Playlists[AddingListSelector.SelectedIndex];
+            Song[] selectedSongs = GetSelection();
+            AddSongs(targetList, selectedSongs);
+        }
+
+        private void OnDeleteSongsClicked(object sendor, RoutedEventArgs e)
+        {
+            Song[] selection = GetSelection();
+
+            // When deleting from 'All Songs' list
+            if (AllSongsListBox.SelectedItem != null)
+            {
+                DeleteSongsFromAll(selection);
+                // Update the WPF
+                SongsListBox.ItemsSource = null;
+                SongsListBox.ItemsSource = this.AllSongs;
+            }
+            // When deleting from individual playlist
+            else if (PlaylistsBox.SelectedItem != null)
+            {
+                Smpl playlist = Playlists[this.PlaylistsBox.SelectedIndex];
+                DeleteSongsFromPlaylist(playlist, selection);
+            }
+        }
+
+        // Internal Methods
+        private void DisplaySelectedPlaylist()
+        {
+            AllSongsListBox.UnselectAll();
+            Smpl playlist = Playlists[PlaylistsBox.SelectedIndex];
+            SongsListBox.ItemsSource = playlist.members;
+            SongsListBox.ScrollIntoView(SongsListBox.Items[0]);
+            NameAndCountDisplay.Text = playlist.ToString() + "  " + playlist.members.Count;
+        }
+        
+        private void DisplayAllSongs()
+        {
+            PlaylistsBox.UnselectAll();
+            SongsListBox.ItemsSource = AllSongs;
+            NameAndCountDisplay.Text = "All Songs  " + AllSongs.Count;
+        }
+
+        private Song[] GetSelection()
         {
             var selectionListInterface = SongsListBox.SelectedItems;
             Song[] selection = new Song[selectionListInterface.Count];
             selectionListInterface.CopyTo(selection, 0);
-            if (AllSongsListBox.SelectedItem != null)
+            return selection;
+        }
+
+        private void AddSongs(Smpl targetList, Song[] addition)
+        {
+            targetList.AddSongs(addition);
+        }
+
+        private void DeleteSongsFromAll(Song[] songsToDelete)
+        {
+            // Remove from playlists
+            foreach (Smpl playlist in this.Playlists)
             {
-                foreach (Smpl playlist in this.Playlists)
-                {
-                    playlist.RemoveSongs(selection);
-                }
-                foreach (Song song in selection)
-                {
-                    this.AllSongs.Remove(song);
-                }
-                SongsListBox.ItemsSource = null;
-                SongsListBox.ItemsSource = this.AllSongs;
+                playlist.RemoveSongs(songsToDelete);
             }
-            else if (PlaylistsBox.SelectedItem != null)
+            // Remove from all songs
+            foreach (Song song in songsToDelete)
             {
-                Smpl playlist = Playlists[this.PlaylistsBox.SelectedIndex];
-                playlist.RemoveSongs(selection);
-                foreach (Song song in selection)
-                {
-                    this.AllSongs.Remove(song);
-                }
-                SongsListBox.ItemsSource = null;
-                SongsListBox.ItemsSource = playlist.members;
+                this.AllSongs.Remove(song);
             }
         }
 
-        private void SelectedAllSongs(object sender, SelectionChangedEventArgs e)
+        private void DeleteSongsFromPlaylist(Smpl playlist, Song[] SongsToDelete)
         {
-            if (AllSongsListBox.SelectedItem != null)
-            {
-                PlaylistsBox.UnselectAll();
-                SongsListBox.ItemsSource = AllSongs;
-            }
+            playlist.RemoveSongs(SongsToDelete);
+            // Update the WPF
+            SongsListBox.ItemsSource = null;
+            SongsListBox.ItemsSource = playlist.members;
         }
     }
 }

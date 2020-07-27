@@ -7,18 +7,20 @@
         mc:Ignorable="d"
         Title="SMPL Editor" Height="450" Width="800">
     <Grid Margin="0,0,-20,0">
-        <ListBox x:Name="PlaylistsBox" HorizontalAlignment="Left" Height="365" Margin="10,44,0,0" VerticalAlignment="Top" Width="179" SelectionChanged="ChangeList"/>
-        <ListBox x:Name="SongsListBox" HorizontalAlignment="Left" Height="399" Margin="200,10,0,0" VerticalAlignment="Top" Width="502" SelectionMode="Extended"/>
-        <Button x:Name="AddToPlaylistButton" HorizontalAlignment="Left" Margin="707,10,10,0" VerticalAlignment="Top" Width="75" Height="59">
-            <TextBlock Text="Add to playlists" TextWrapping="WrapWithOverflow" TextAlignment="Center" HorizontalAlignment="Stretch"/>
+        <Border HorizontalAlignment="Left" Height="22" Margin="200,11,0,0" VerticalAlignment="Top" Width="502">
+            <TextBlock x:Name="NameAndCountDisplay" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="NameAndCountDisplay" VerticalAlignment="Center" Height="17" Width="248"/>
+        </Border>
+        <ListBox x:Name="PlaylistsBox" HorizontalAlignment="Left" Height="365" Margin="10,44,0,0" VerticalAlignment="Top" Width="179" SelectionChanged="OnPlaylistSelectionChanged"/>
+        <ListBox x:Name="SongsListBox" HorizontalAlignment="Left" Height="365" Margin="200,44,0,0" VerticalAlignment="Top" Width="502" SelectionMode="Extended"/>
+        <Button x:Name="AddToPlaylistButton" HorizontalAlignment="Left" Margin="707,41,0,0" VerticalAlignment="Top" Width="75" Height="59" Click="OnAddSongsClicked">
+            <TextBlock Text="Add to playlist" TextWrapping="WrapWithOverflow" TextAlignment="Center" HorizontalAlignment="Stretch"/>
         </Button>
-        <Button x:Name="DeleteFromPlaylistButton" HorizontalAlignment="Left" Margin="707,74,0,0" VerticalAlignment="Top" Width="75" Height="59" Click="DeleteSong">
-            <TextBlock Text="Delet from this playlist" TextWrapping="WrapWithOverflow" TextAlignment="Center" HorizontalAlignment="Stretch"/>
+        <Button x:Name="DeleteFromPlaylistButton" HorizontalAlignment="Left" Margin="707,105,0,0" VerticalAlignment="Top" Width="75" Height="59" Click="OnDeleteSongsClicked">
+            <TextBlock Text="Delete from this playlist" TextWrapping="WrapWithOverflow" TextAlignment="Center" HorizontalAlignment="Stretch"/>
         </Button>
-        <ListBox x:Name="AllSongsListBox" Margin="10,10,0,0" Padding="0" Width="179" Height="23" HorizontalAlignment="Left" VerticalAlignment="Top" SelectionChanged="SelectedAllSongs" SelectedIndex="0">
+        <ListBox x:Name="AllSongsListBox" Margin="10,10,0,0" Padding="0" Width="179" Height="23" HorizontalAlignment="Left" VerticalAlignment="Top" SelectionChanged="OnAllSongsListSelectionChanged" SelectedIndex="0">
             <TextBlock HorizontalAlignment="Left" Height="16" TextWrapping="Wrap" Text="All Songs" VerticalAlignment="Top" Margin="0" Width="102"/>
         </ListBox>
-
-
+        <ComboBox x:Name="AddingListSelector" HorizontalAlignment="Left" Margin="707,11,0,0" VerticalAlignment="Top" Width="75"/>
     </Grid>
 </Window>
