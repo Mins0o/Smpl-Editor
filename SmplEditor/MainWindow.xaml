@@ -5,22 +5,52 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SmplEditor"
         mc:Ignorable="d"
-        Title="SMPL Editor" Height="450" Width="800">
-    <Grid Margin="0,0,-20,0">
-        <Border HorizontalAlignment="Left" Height="22" Margin="200,11,0,0" VerticalAlignment="Top" Width="502">
-            <TextBlock x:Name="NameAndCountDisplay" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="NameAndCountDisplay" VerticalAlignment="Center" Height="17" Width="248"/>
-        </Border>
-        <ListBox x:Name="PlaylistsBox" HorizontalAlignment="Left" Height="365" Margin="10,44,0,0" VerticalAlignment="Top" Width="179" SelectionChanged="OnPlaylistSelectionChanged"/>
+        Title="SMPL Editor" MinHeight="460" MaxHeight="460" MinWidth="816" MaxWidth="816">
+    <Grid Margin="0,0,0,0">
+
+        <!--This TextBlock displays name and count of the currently selected playlist-->
+        <Grid HorizontalAlignment="Left" Height="22" Margin="200,11,0,0" VerticalAlignment="Top" Width="502">
+            <TextBlock x:Name="NameAndCountDisplay" HorizontalAlignment="Left" Margin="0,2" TextWrapping="Wrap" Text="NameAndCountDisplay" VerticalAlignment="Center" Height="18" Width="250"/>
+            <TextBlock x:Name="SortBy" Text="Sort By:" Margin="330,0,0,0" VerticalAlignment="Center" Height="18"/>
+            <ComboBox x:Name="SortOptionComboBox" HorizontalAlignment="Left" Margin="375,0,0,0" VerticalAlignment="Center" Width="127" SelectionChanged="OnSortOptionChanged">
+                <ComboBoxItem>Custom Order</ComboBoxItem>
+                <ComboBoxItem IsSelected="True">Artist</ComboBoxItem>
+                <ComboBoxItem>Title</ComboBoxItem>
+                <ComboBoxItem>Directory(Folder)</ComboBoxItem>
+            </ComboBox>
+        </Grid>
+
+        <!--List of playlists is shown here-->
+        <ListBox x:Name="PlaylistsBox" HorizontalAlignment="Left" Height="337" Margin="10,44,0,0" VerticalAlignment="Top" Width="179" SelectionChanged="OnPlaylistSelectionChanged"/>
+        <!--List of songs for the selected playlist(from PlaylistsBox) is shown here-->
         <ListBox x:Name="SongsListBox" HorizontalAlignment="Left" Height="365" Margin="200,44,0,0" VerticalAlignment="Top" Width="502" SelectionMode="Extended"/>
-        <Button x:Name="AddToPlaylistButton" HorizontalAlignment="Left" Margin="707,41,0,0" VerticalAlignment="Top" Width="75" Height="59" Click="OnAddSongsClicked">
-            <TextBlock Text="Add to playlist" TextWrapping="WrapWithOverflow" TextAlignment="Center" HorizontalAlignment="Stretch"/>
-        </Button>
-        <Button x:Name="DeleteFromPlaylistButton" HorizontalAlignment="Left" Margin="707,105,0,0" VerticalAlignment="Top" Width="75" Height="59" Click="OnDeleteSongsClicked">
-            <TextBlock Text="Delete from this playlist" TextWrapping="WrapWithOverflow" TextAlignment="Center" HorizontalAlignment="Stretch"/>
-        </Button>
+        <!--Selecing box for viewing all songs-->
         <ListBox x:Name="AllSongsListBox" Margin="10,10,0,0" Padding="0" Width="179" Height="23" HorizontalAlignment="Left" VerticalAlignment="Top" SelectionChanged="OnAllSongsListSelectionChanged" SelectedIndex="0">
             <TextBlock HorizontalAlignment="Left" Height="16" TextWrapping="Wrap" Text="All Songs" VerticalAlignment="Top" Margin="0" Width="102"/>
         </ListBox>
-        <ComboBox x:Name="AddingListSelector" HorizontalAlignment="Left" Margin="707,11,0,0" VerticalAlignment="Top" Width="75"/>
+
+        <!--The three buttons(and a ComboBox) on the right-->
+        <!--Selection of this control is where the selected songs will be added to-->
+        <ComboBox x:Name="AddingListSelector" HorizontalAlignment="Left" Margin="713,11,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button x:Name="AddToPlaylistButton" HorizontalAlignment="Left" Margin="713,41,0,0" VerticalAlignment="Top" Width="75" Height="59" Click="OnAddSongsClicked">
+            <TextBlock Text="Add to playlist" TextWrapping="WrapWithOverflow" TextAlignment="Center" HorizontalAlignment="Stretch"/>
+        </Button>
+        <Button x:Name="DeleteFromPlaylistButton" HorizontalAlignment="Left" Margin="713,105,0,0" VerticalAlignment="Top" Width="75" Height="59" Click="OnDeleteSongsClicked">
+            <TextBlock Text="Delete from this playlist" TextWrapping="WrapWithOverflow" TextAlignment="Center" HorizontalAlignment="Stretch"/>
+        </Button>
+        <Button x:Name="ExportButton" HorizontalAlignment="Left" Margin="713,169,0,0" VerticalAlignment="Top" Width="75" Height="59" Click="OnExportButtonClicked">
+            <TextBlock Text="Export playlists" TextWrapping="WrapWithOverflow" TextAlignment="Center" HorizontalAlignment="Stretch"/>
+        </Button>
+
+        <!--The buttons below the playlists, used for creating and removing playlists-->
+        <Button x:Name="CreatePlaylistButton" HorizontalAlignment="Left" Margin="123,386,0,0" VerticalAlignment="Top" Width="29" Height="23" Click="OnCreatePlaylistClicked">
+            <Image Source="D:/Workspace/01 C# Workspace/09 Smpl-Editor/SmplEditor/src/img/AddPlaylist.png"/>
+        </Button>
+        <Button x:Name="RemovePlaylistButton" HorizontalAlignment="Left" Margin="160,386,0,0" VerticalAlignment="Top" Width="29" Height="23" Click="OnRemovePlaylistClicked">
+            <Image Source="D:/Workspace/01 C# Workspace/09 Smpl-Editor/SmplEditor/src/img/RemovePlaylist.png"/>
+        </Button>
+        <!--New playlists name is fetched from here-->
+        <TextBox x:Name="NewPlaylistNameBox" HorizontalAlignment="Left" Height="23" Margin="10,386,0,0" TextWrapping="Wrap" Text="New Playlist 1" VerticalAlignment="Top" Width="108"/>
+
     </Grid>
 </Window>

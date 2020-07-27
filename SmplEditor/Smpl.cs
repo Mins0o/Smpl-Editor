@@ -23,56 +23,76 @@ namespace SmplEditor
         }
         public void AddSong(Song addition)
         {
+            addition.order = this.members.Count;
             this.members.Add(addition);
         }
         public void AddSongs(List<Song> additions)
         {
+            int i = this.members.Count;
+            foreach (Song song in additions)
+            {
+                song.order = i++;
+            }
             this.members.AddRange(additions);
         }
         public void AddSongs(Song[] additions)
         {
+            int i = this.members.Count;
+            foreach (Song song in additions)
+            {
+                song.order = i++;
+            }
             this.members.AddRange(additions);
+        }
+        public void RemoveSong(Song removingSong)
+        {
+            try
+            {
+                this.members.Remove(removingSong);
+            }
+            catch (KeyNotFoundException e)
+            {
+                System.Diagnostics.Debug.Print(removingSong.ToString() + " not in " + this.name);
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.Print(e.Message);
+            }
         }
         public void RemoveSongs(List<Song> removingSongs)
         {
             foreach (Song removingSong in removingSongs)
             {
-                try
-                {
-                    this.members.Remove(removingSong);
-                }
-                catch(KeyNotFoundException e)
-                {
-                    System.Diagnostics.Debug.Print(removingSong.ToString() + " not in " + this.name);
-                }catch(Exception e)
-                {
-                    System.Diagnostics.Debug.Print(e.Message);
-                }
+                this.RemoveSong(removingSong);
             }
             
         }
-        public Smpl RemoveSongs(Song[] removingSongs)
+        public void RemoveSongs(Song[] removingSongs)
         {
             foreach (Song removingSong in removingSongs)
             {
-                try
-                {
-                    this.members.Remove(removingSong);
-                }
-                catch (KeyNotFoundException e)
-                {
-                    System.Diagnostics.Debug.Print(removingSong.ToString() + " not in " + this.name);
-                }
-                catch (Exception e)
-                {
-                    System.Diagnostics.Debug.Print(e.Message);
-                }
+                this.RemoveSong(removingSong);
             }
-            return this;
         }
         public override string ToString()
         {
             return this.name;
+        }
+        public void SortByArtist()
+        {
+            this.members.Sort((Song x, Song y) => x.artist.CompareTo(y.artist));
+        }
+        public void SortByTitle()
+        {
+            this.members.Sort((Song x, Song y) => x.title.CompareTo(y.title));
+        }
+        public void SortByDirectory()
+        {
+            this.members.Sort((Song x, Song y) => x.info.CompareTo(y.info));
+        }
+        public void SortByOrder()
+        {
+            this.members.Sort((Song x, Song y) => x.info.CompareTo(y.info));
         }
     }
     public class Song
@@ -84,7 +104,7 @@ namespace SmplEditor
         public int type { get; set; }
         public override string ToString()
         {
-            return artist +"-" +title;
+            return artist +"  -  " +title;
         }
     }
 }

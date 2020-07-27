@@ -53,6 +53,9 @@ namespace SmplEditor
             }
             InitializeComponent();
 
+            // Initialize new playlist name(to not overlap with existing playlistname)
+            NewPlaylistNameBox.Text = FetchNewPlaylistName();
+
             // Link the listbox contents with playlists and songs
             PlaylistsBox.ItemsSource = Playlists;
             DisplayAllSongs();
@@ -89,6 +92,7 @@ namespace SmplEditor
                 int extensionStartIndex = shortName.IndexOf('.',shortName.Length-5);
                 shortName = shortName.Substring(0,extensionStartIndex);
                 playlist.name = shortName;
+                playlist.SortByArtist();
 
                 // Type of playlists is List<Smpl>. Type of playlist is Smpl, which has .name :string and .members :List<Song> properties.
                 try
@@ -102,6 +106,20 @@ namespace SmplEditor
                 }
                 try
                 {
+                    Dictionary<string,Song> infoSongDict= new Dictionary<string,Song>();
+                    foreach (Song member in playlist.members)
+                    {
+                        foreach (Song song in allSongs)
+                        {
+                            if (member.info == song.info)
+                            {
+                                infoSongDict.Add(member.info, member);
+                            }
+                        }
+                    }
+                    Song[] deleteTempArray = new Song[infoSongDict.Count];
+                    infoSongDict.Values.CopyTo(deleteTempArray, 0);
+                    playlist.RemoveSongs(deleteTempArray);
                     allSongs.AddRange(playlist.members);
                 }
                 catch (ArgumentException e)
@@ -111,31 +129,9 @@ namespace SmplEditor
 
 
             }
+            allSongs.Sort((Song x,Song y)=>x.artist.CompareTo(y.artist));
             this.AllSongs = allSongs;
             this.Playlists = playlists;
-        }
-
-        public void CreatePlaylist(string name,List<Song> songList)
-        {
-            Playlists.Add(new Smpl(name,songList));
-        }
-        public Boolean DeletePlaylist(string name)
-        {
-            Boolean deleted = false;
-            foreach (Smpl playlist in Playlists)
-            {
-                if (playlist.name == name)
-                {
-                    Playlists.Remove(playlist);
-                    deleted = true;
-                    break;
-                }
-            }
-            if (!deleted)
-            {
-                System.Diagnostics.Debug.Print("No such playlist found!");
-            }
-            return deleted;
         }
 
         // UI events
@@ -161,10 +157,17 @@ namespace SmplEditor
         {
             Smpl targetList = Playlists[AddingListSelector.SelectedIndex];
             Song[] selectedSongs = GetSelection();
-            AddSongs(targetList, selectedSongs);
+            if (targetList.members.Count+selectedSongs.Length > 1000)
+            {
+                MessageBox.Show("This playlist already has " + targetList.members.Count + "songs. Maximum number of songs per a playlist is 1000");
+                return;
+            }
+            targetList.AddSongs(selectedSongs);
+            PlaylistsBox.SelectedIndex = AddingListSelector.SelectedIndex;
+            DisplaySelectedPlaylist();
         }
 
-        private void OnDeleteSongsClicked(object sendor, RoutedEventArgs e)
+        private void OnDeleteSongsClicked(object sender, RoutedEventArgs e)
         {
             Song[] selection = GetSelection();
 
@@ -172,7 +175,7 @@ namespace SmplEditor
             if (AllSongsListBox.SelectedItem != null)
             {
                 DeleteSongsFromAll(selection);
-                // Update the WPF
+                // UI refresh
                 SongsListBox.ItemsSource = null;
                 SongsListBox.ItemsSource = this.AllSongs;
             }
@@ -180,8 +183,99 @@ namespace SmplEditor
             else if (PlaylistsBox.SelectedItem != null)
             {
                 Smpl playlist = Playlists[this.PlaylistsBox.SelectedIndex];
+
+                // UI refresh is included
                 DeleteSongsFromPlaylist(playlist, selection);
             }
+        }
+
+        private void OnCreatePlaylistClicked(object sender, RoutedEventArgs e)
+        {
+            string name = NewPlaylistNameBox.Text;
+            List<Song> songList = new List<Song>();
+            if (SongsListBox.SelectedItems != null)
+            {
+                songList.AddRange(GetSelection());
+            }
+            Playlists.Add(new Smpl(name, songList));
+
+            // Refresh UI
+            PlaylistsBox.ItemsSource = null;
+            PlaylistsBox.ItemsSource = Playlists;
+            PlaylistsBox.SelectedIndex = Playlists.Count;
+            NewPlaylistNameBox.Text = FetchNewPlaylistName();
+        }
+
+        private void OnRemovePlaylistClicked(object sender, RoutedEventArgs e)
+        {
+            if (PlaylistsBox.SelectedItem != null)
+            {
+                int currentSelectionIndex = PlaylistsBox.SelectedIndex;
+                Smpl targetPlaylist = Playlists[currentSelectionIndex];
+                DeletePlaylist(targetPlaylist.name);
+
+                // Refresh UI
+
+                PlaylistsBox.ItemsSource = null;
+                PlaylistsBox.ItemsSource = Playlists;
+                if (Playlists.Count > 0)
+                {
+                    PlaylistsBox.SelectedIndex = currentSelectionIndex - 1;
+                }
+                else
+                {
+                    PlaylistsBox.UnselectAll();
+                }
+            }
+        }
+
+        private void OnExportButtonClicked(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void OnSortOptionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            int selectedOption = SortOptionComboBox.SelectedIndex;
+            switch (selectedOption){
+                case 0:
+                    {
+                        foreach (Smpl playlist in Playlists)
+                        {
+                            playlist.SortByOrder();
+                        }
+                        break;
+                    }
+                case 1:
+                    {
+                        AllSongs.Sort((Song x, Song y) => x.artist.CompareTo(y.artist));
+                        foreach (Smpl playlist in Playlists)
+                        {
+                            playlist.SortByArtist();
+                        }
+                        break;
+                    }
+                case 2:
+                    {
+                        AllSongs.Sort((Song x, Song y) => x.title.CompareTo(y.title));
+                        foreach (Smpl playlist in Playlists)
+                        {
+                            playlist.SortByTitle();
+                        }
+                        break;
+                    }
+                case 3:
+                    {
+                        AllSongs.Sort((Song x, Song y) => x.info.CompareTo(y.info));
+                        foreach (Smpl playlist in Playlists)
+                        {
+                            playlist.SortByDirectory();
+                        }
+                        break;
+                    }
+                default:
+                    return;
+            }
+            RefreshDisplay();
         }
 
         // Internal Methods
@@ -189,16 +283,37 @@ namespace SmplEditor
         {
             AllSongsListBox.UnselectAll();
             Smpl playlist = Playlists[PlaylistsBox.SelectedIndex];
+            SongsListBox.ItemsSource = null;
             SongsListBox.ItemsSource = playlist.members;
-            SongsListBox.ScrollIntoView(SongsListBox.Items[0]);
-            NameAndCountDisplay.Text = playlist.ToString() + "  " + playlist.members.Count;
+            if (SongsListBox.Items.Count > 0)
+            {
+                SongsListBox.ScrollIntoView(SongsListBox.Items[0]);
+            }
+            NameAndCountDisplay.Text = playlist.ToString() + "  -  " + playlist.members.Count+" songs";
         }
         
         private void DisplayAllSongs()
         {
             PlaylistsBox.UnselectAll();
+            SongsListBox.ItemsSource = null;
             SongsListBox.ItemsSource = AllSongs;
-            NameAndCountDisplay.Text = "All Songs  " + AllSongs.Count;
+            NameAndCountDisplay.Text = "All Songs  -  " + AllSongs.Count+" songs";
+        }
+
+        private void RefreshDisplay()
+        {
+            if (AllSongsListBox == null || PlaylistsBox == null)
+            {
+                return;
+            }
+            if (AllSongsListBox.SelectedItem != null)
+            {
+                DisplayAllSongs();
+            }
+            else if (PlaylistsBox.SelectedItem != null)
+            {
+                DisplaySelectedPlaylist();
+            }
         }
 
         private Song[] GetSelection()
@@ -209,17 +324,12 @@ namespace SmplEditor
             return selection;
         }
 
-        private void AddSongs(Smpl targetList, Song[] addition)
-        {
-            targetList.AddSongs(addition);
-        }
-
         private void DeleteSongsFromAll(Song[] songsToDelete)
         {
             // Remove from playlists
             foreach (Smpl playlist in this.Playlists)
             {
-                playlist.RemoveSongs(songsToDelete);
+                DeleteSongsFromPlaylist(playlist,songsToDelete);
             }
             // Remove from all songs
             foreach (Song song in songsToDelete)
@@ -234,6 +344,42 @@ namespace SmplEditor
             // Update the WPF
             SongsListBox.ItemsSource = null;
             SongsListBox.ItemsSource = playlist.members;
+        }
+
+        private string FetchNewPlaylistName()
+        {
+            string[] playlistNames = new string[Playlists.Count];
+            string newPlaylistName = "New Playlist 1";
+            int count = 0;
+            foreach (Smpl playlist in Playlists)
+            {
+                playlistNames[count++] = playlist.name;
+            }
+            int newPlaylistIndex = 1;
+            while (Array.Find(playlistNames, pn => pn == newPlaylistName) != null)
+            {
+                newPlaylistName = "New Playlist " + newPlaylistIndex++;
+            }
+            return newPlaylistName;
+        }
+
+        public Boolean DeletePlaylist(string name)
+        {
+            Boolean deleted = false;
+            foreach (Smpl playlist in Playlists)
+            {
+                if (playlist.name == name)
+                {
+                    Playlists.Remove(playlist);
+                    deleted = true;
+                    break;
+                }
+            }
+            if (!deleted)
+            {
+                System.Diagnostics.Debug.Print("No such playlist found!");
+            }
+            return deleted;
         }
     }
 }
