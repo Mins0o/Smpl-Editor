@@ -8,6 +8,7 @@ using System.IO;
 using System.Text.Json;
 using Microsoft.Win32;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -89,7 +90,7 @@ namespace SmplEditor
 
                 // When adding to our application, we will drop the extension from the file name
                 string shortName = shortNames[i];
-                int extensionStartIndex = shortName.IndexOf('.',shortName.Length-5);
+                int extensionStartIndex = shortName.LastIndexOf('.');
                 shortName = shortName.Substring(0,extensionStartIndex);
                 playlist.name = shortName;
                 playlist.SortByArtist();
@@ -104,23 +105,28 @@ namespace SmplEditor
                     e.Data.Add("shortName", shortName);
                     throw;
                 }
+
+                // Don't add duplicate to the all songs list
                 try
                 {
-                    Dictionary<string,Song> infoSongDict= new Dictionary<string,Song>();
+                    List<Song> addList = new List<Song>();
                     foreach (Song member in playlist.members)
                     {
+                        bool noDuplicate = true;
                         foreach (Song song in allSongs)
                         {
                             if (member.info == song.info)
                             {
-                                infoSongDict.Add(member.info, member);
+                                noDuplicate = false;
                             }
                         }
+                        if (noDuplicate)
+                        {
+                            // The songs added to the allsongs list will be a deep copy(different reference, same values) of the things in the playlists
+                            addList.Add(member.DeepCopy());
+                        }
                     }
-                    Song[] deleteTempArray = new Song[infoSongDict.Count];
-                    infoSongDict.Values.CopyTo(deleteTempArray, 0);
-                    playlist.RemoveSongs(deleteTempArray);
-                    allSongs.AddRange(playlist.members);
+                    allSongs.AddRange(addList);
                 }
                 catch (ArgumentException e)
                 {
@@ -146,6 +152,7 @@ namespace SmplEditor
 
         private void OnAllSongsListSelectionChanged(object sendor, RoutedEventArgs e)
         {
+            // If not deselection,
             if (AllSongsListBox.SelectedItem != null)
             {
                 DisplayAllSongs();
@@ -157,12 +164,17 @@ namespace SmplEditor
         {
             Smpl targetList = Playlists[AddingListSelector.SelectedIndex];
             Song[] selectedSongs = GetSelection();
+
+            // The size of the playlist should not exceed 1,000 songs.
             if (targetList.members.Count+selectedSongs.Length > 1000)
             {
                 MessageBox.Show("This playlist already has " + targetList.members.Count + "songs. Maximum number of songs per a playlist is 1000");
                 return;
             }
+            // Every copy of song in different lists are different instances. The deep copying is handled inside the method.
             targetList.AddSongs(selectedSongs);
+
+            // Go to the list that the song was just added
             PlaylistsBox.SelectedIndex = AddingListSelector.SelectedIndex;
             DisplaySelectedPlaylist();
         }
@@ -174,10 +186,8 @@ namespace SmplEditor
             // When deleting from 'All Songs' list
             if (AllSongsListBox.SelectedItem != null)
             {
+                // UI refresh is included
                 DeleteSongsFromAll(selection);
-                // UI refresh
-                SongsListBox.ItemsSource = null;
-                SongsListBox.ItemsSource = this.AllSongs;
             }
             // When deleting from individual playlist
             else if (PlaylistsBox.SelectedItem != null)
@@ -197,13 +207,16 @@ namespace SmplEditor
             {
                 songList.AddRange(GetSelection());
             }
+            // The new playlist is instantiated with deep copy of the songList, which means they don't share the same reference.
+            // The order is also reset.
             Playlists.Add(new Smpl(name, songList));
 
             // Refresh UI
             PlaylistsBox.ItemsSource = null;
             PlaylistsBox.ItemsSource = Playlists;
-            PlaylistsBox.SelectedIndex = Playlists.Count;
             NewPlaylistNameBox.Text = FetchNewPlaylistName();
+            // Focus the view on the new playlist
+            PlaylistsBox.SelectedIndex = Playlists.Count - 1;
         }
 
         private void OnRemovePlaylistClicked(object sender, RoutedEventArgs e)
@@ -215,7 +228,6 @@ namespace SmplEditor
                 DeletePlaylist(targetPlaylist.name);
 
                 // Refresh UI
-
                 PlaylistsBox.ItemsSource = null;
                 PlaylistsBox.ItemsSource = Playlists;
                 if (Playlists.Count > 0)
@@ -231,6 +243,7 @@ namespace SmplEditor
 
         private void OnExportButtonClicked(object sender, RoutedEventArgs e)
         {
+            FileDialog
         }
 
         private void OnSortOptionChanged(object sender, SelectionChangedEventArgs e)
@@ -239,6 +252,14 @@ namespace SmplEditor
             switch (selectedOption){
                 case 0:
                     {
+                        AllSongs.Sort((Song x, Song y) => {
+                            if (x.upperDirectory().CompareTo(y.upperDirectory()) == 0) {
+                                return x.order.CompareTo(y.order);
+                            } else {
+                                return x.upperDirectory().CompareTo(y.upperDirectory());
+                            }
+                        }
+                        );
                         foreach (Smpl playlist in Playlists)
                         {
                             playlist.SortByOrder();
@@ -320,6 +341,7 @@ namespace SmplEditor
         {
             var selectionListInterface = SongsListBox.SelectedItems;
             Song[] selection = new Song[selectionListInterface.Count];
+            // Copies the reference of the Song objects
             selectionListInterface.CopyTo(selection, 0);
             return selection;
         }
@@ -336,14 +358,15 @@ namespace SmplEditor
             {
                 this.AllSongs.Remove(song);
             }
+            // UI refresh
+            DisplayAllSongs();
         }
 
-        private void DeleteSongsFromPlaylist(Smpl playlist, Song[] SongsToDelete)
+        private void DeleteSongsFromPlaylist(Smpl targetPlaylist, Song[] SongsToDelete)
         {
-            playlist.RemoveSongs(SongsToDelete);
-            // Update the WPF
-            SongsListBox.ItemsSource = null;
-            SongsListBox.ItemsSource = playlist.members;
+            targetPlaylist.RemoveSongs(SongsToDelete);
+            // UI refresh
+            DisplaySelectedPlaylist();
         }
 
         private string FetchNewPlaylistName()

@@ -16,39 +16,54 @@ namespace SmplEditor
         public Smpl(string name,List<Song> songList)
         {
             this.name = name;
-            this.members = songList;
+            this.members = Smpl.DeepCopySongList(songList);
+            int i = 0;
+            foreach (Song member in members)
+            {
+                member.order = i++;
+            }
         }
         public Smpl()
         {
         }
         public void AddSong(Song addition)
         {
-            addition.order = this.members.Count;
-            this.members.Add(addition);
+            Song newAddition = addition.DeepCopy();
+            newAddition.order = this.members.Count;
+            this.members.Add(newAddition);
         }
         public void AddSongs(List<Song> additions)
         {
             int i = this.members.Count;
             foreach (Song song in additions)
             {
-                song.order = i++;
+                AddSong(song);
             }
-            this.members.AddRange(additions);
         }
         public void AddSongs(Song[] additions)
         {
             int i = this.members.Count;
             foreach (Song song in additions)
             {
-                song.order = i++;
+                AddSong(song);
             }
-            this.members.AddRange(additions);
         }
         public void RemoveSong(Song removingSong)
         {
+            int removedOrder = removingSong.order;
             try
             {
-                this.members.Remove(removingSong);
+                foreach (Song member in this.members)
+                {
+                    if (Song.DeepCompareSongs(member, removingSong))
+                    {
+                        this.members.Remove(member);
+                        if (member.order > removedOrder)
+                        {
+                            member.order -= 1;
+                        }
+                    }
+                }
             }
             catch (KeyNotFoundException e)
             {
@@ -94,6 +109,15 @@ namespace SmplEditor
         {
             this.members.Sort((Song x, Song y) => x.info.CompareTo(y.info));
         }
+        public static List<Song> DeepCopySongList(List<Song> songList)
+        {
+            List<Song> coppiedList = new List<Song>();
+            foreach (Song song in songList)
+            {
+                coppiedList.Add(song.DeepCopy());
+            }
+            return coppiedList;
+        }
     }
     public class Song
     {
@@ -102,9 +126,33 @@ namespace SmplEditor
         public int order { get; set; }
         public string title { get; set; }
         public int type { get; set; }
+        public string upperDirectory()
+        {
+            return info.Substring(0, info.LastIndexOf('/'));
+        }
+        public Song DeepCopy()
+        {
+            Song copy = new Song();
+            copy.artist = string.Copy(this.artist);
+            copy.info = string.Copy(this.info);
+            copy.order = this.order;
+            copy.title = string.Copy(this.title);
+            copy.type = this.type;
+            return copy;
+        }
         public override string ToString()
         {
             return artist +"  -  " +title;
+        }
+        public static bool DeepCompareSongs(Song x, Song y,bool strict=true)
+        {
+            bool result = true;
+            if (strict)
+            {
+                result = result && (x.info == y.info);
+            }
+            result = result && (x.artist == y.artist && x.title == y.title);
+            return result;
         }
     }
 }
