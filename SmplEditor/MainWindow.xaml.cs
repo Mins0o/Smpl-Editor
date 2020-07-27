@@ -8,7 +8,6 @@ using System.IO;
 using System.Text.Json;
 using Microsoft.Win32;
 using System.Windows.Controls;
-using System.Windows.Forms;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -92,7 +91,7 @@ namespace SmplEditor
                 string shortName = shortNames[i];
                 int extensionStartIndex = shortName.LastIndexOf('.');
                 shortName = shortName.Substring(0,extensionStartIndex);
-                playlist.name = shortName;
+                //playlist.name = shortName;
                 playlist.SortByArtist();
 
                 // Type of playlists is List<Smpl>. Type of playlist is Smpl, which has .name :string and .members :List<Song> properties.
@@ -243,7 +242,23 @@ namespace SmplEditor
 
         private void OnExportButtonClicked(object sender, RoutedEventArgs e)
         {
-            FileDialog
+            System.Windows.Forms.FolderBrowserDialog folderBrowser = new System.Windows.Forms.FolderBrowserDialog()
+            {
+                Description =
+            "Select the directory to save the playlists",
+                ShowNewFolderButton=true
+            };
+            folderBrowser.ShowDialog();
+            foreach (Smpl playlist in Playlists)
+            {
+                string jsonString = JsonSerializer.Serialize(playlist);
+                if (!Directory.Exists(folderBrowser.SelectedPath + "\\Exported_Smpl"))
+                {
+                    Directory.CreateDirectory(folderBrowser.SelectedPath + "\\Exported_Smpl");
+                }
+                File.WriteAllText(folderBrowser.SelectedPath + "\\Exported_Smpl\\"+playlist.name+".smpl", jsonString);
+                System.Diagnostics.Process.Start(folderBrowser.SelectedPath + "\\Exported_Smpl");
+            }
         }
 
         private void OnSortOptionChanged(object sender, SelectionChangedEventArgs e)

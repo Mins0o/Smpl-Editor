@@ -13,6 +13,9 @@ namespace SmplEditor
     {
         public string name { get; set; }
         public List<Song> members { get; set; }
+        public int recentlyPlayedDate { get; set; }
+        public int sortBy { get; set; }
+        public int version { get; set; }
         public Smpl(string name,List<Song> songList)
         {
             this.name = name;
@@ -22,9 +25,15 @@ namespace SmplEditor
             {
                 member.order = i++;
             }
+            this.recentlyPlayedDate = 1595831442;
+            this.sortBy = 4;
+            this.version = 1;
         }
         public Smpl()
         {
+            this.recentlyPlayedDate = 1595831442;
+            this.sortBy = 4;
+            this.version = 1;
         }
         public void AddSong(Song addition)
         {

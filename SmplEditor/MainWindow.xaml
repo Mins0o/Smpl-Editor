@@ -44,10 +44,10 @@
 
         <!--The buttons below the playlists, used for creating and removing playlists-->
         <Button x:Name="CreatePlaylistButton" HorizontalAlignment="Left" Margin="123,386,0,0" VerticalAlignment="Top" Width="29" Height="23" Click="OnCreatePlaylistClicked">
-            <Image Source="D:/Workspace/01 C# Workspace/09 Smpl-Editor/SmplEditor/src/img/AddPlaylist.png"/>
+            <Image Source="D:/Workspace/01 C# Workspace/09 Smpl-Editor/SmplEditor/SmplEditor/src/img/AddPlaylist.png"/>
         </Button>
         <Button x:Name="RemovePlaylistButton" HorizontalAlignment="Left" Margin="160,386,0,0" VerticalAlignment="Top" Width="29" Height="23" Click="OnRemovePlaylistClicked">
-            <Image Source="D:/Workspace/01 C# Workspace/09 Smpl-Editor/SmplEditor/src/img/RemovePlaylist.png"/>
+            <Image Source="D:/Workspace/01 C# Workspace/09 Smpl-Editor/SmplEditor/SmplEditor/src/img/RemovePlaylist.png"/>
         </Button>
         <!--New playlists name is fetched from here-->
         <TextBox x:Name="NewPlaylistNameBox" HorizontalAlignment="Left" Height="23" Margin="10,386,0,0" TextWrapping="Wrap" Text="New Playlist 1" VerticalAlignment="Top" Width="108"/>
