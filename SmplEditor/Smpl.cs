@@ -11,8 +11,16 @@ namespace SmplEditor
 {
     public class Smpl
     {
-        public string name;
+        public string name { get; set; }
         public List<Song> members { get; set; }
+        public Smpl(string name,List<Song> songList)
+        {
+            this.name = name;
+            this.members = songList;
+        }
+        public Smpl()
+        {
+        }
         public void AddSong(Song addition)
         {
             this.members.Add(addition);

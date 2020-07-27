@@ -23,17 +23,20 @@ namespace SmplEditor
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Dictionary<string,Smpl> Playlists;
+        // Playlists : List of playlists throughtout the application
+        private List<Smpl> Playlists;
+        private List<Song> AllSongs;
         public MainWindow()
         {
             while (Playlists == null)
             {
                 try
                 {
-                    Playlists = this.LoadSmpls();
+                    this.LoadSmpls();
                 }
                 catch (ArgumentException e)
                 {
+                    // If SMPL of same name exists, try again after a message
                     if (e.Data.Contains("shortName"))
                     {
                         string shortName=(string)e.Data["shortName"];
@@ -41,87 +44,136 @@ namespace SmplEditor
                     }
                 }
             }
+
+            // If no playlists were load from LoadSmpls(), shutdown the app
             if (Playlists.Count == 0)
             {
-                MessageBox.Show("No Samsung Music Playlist detected");
+                MessageBox.Show("No Samsung Music Playlist detected. Exitting the application.");
                 System.Windows.Application.Current.Shutdown();
             }
             InitializeComponent();
-            TextBlock tb = new TextBlock() { Text = "hey there" };
-            PlaylistsBox.ItemsSource = Playlists.Keys;
-            SongsListBox.ItemsSource = AllSongs();
+
+            // Link the listbox contents with playlists and songs
+            PlaylistsBox.ItemsSource = Playlists;
+            SongsListBox.ItemsSource = AllSongs;
         }
 
-        public Dictionary<string,Smpl> LoadSmpls()
+        // This function prompts OpenFileDialog and loads file with SMPL information.
+        // Playlist will be created as the file name and its members will be added into the Smpl class.
+        public void LoadSmpls()
         {
+            // Get the file paths to load.
             OpenFileDialog openSmpls = new OpenFileDialog();
             openSmpls.Multiselect = true;
             openSmpls.ShowDialog();
+            // Without full path, just names with extensions
             string[] shortNames=openSmpls.SafeFileNames;
+            // Full path
+            string[] fileNames = openSmpls.FileNames;
 
-            Dictionary<string,Smpl> playlists = new Dictionary<string,Smpl>();
+            // List to keep newly generated Smpls
+            List<Smpl> playlists = new List<Smpl>();
+            List<Song> allSongs = new List<Song>();
+
+            //For every path user selected in the OpenFileDialog
             for(int i=0;i<shortNames.Length;i++)
             {
-                string shortName = shortNames[i];
-                string jsonString = File.ReadAllText(openSmpls.FileNames[i]);
+                // The files' contents are loaded to jsonString
+                string jsonString = File.ReadAllText(fileNames[i]);
                 Smpl playlist = JsonSerializer.Deserialize<Smpl>(jsonString);
+
+                // When adding to our application, we will drop the extension from the file name
+                string shortName = shortNames[i];
                 int extensionStartIndex = shortName.IndexOf('.',shortName.Length-5);
                 shortName = shortName.Substring(0,extensionStartIndex);
                 playlist.name = shortName;
+
+                // Type of playlists is List<Smpl>. Type of playlist is Smpl, which has .name :string and .members :List<Song> properties.
                 try
                 {
-                    playlists.Add(shortName, playlist);
+                    playlists.Add(playlist);
                 }
                 catch (ArgumentException e)
                 {
                     e.Data.Add("shortName", shortName);
                     throw;
                 }
+                try
+                {
+                    allSongs.AddRange(playlist.members);
+                }
+                catch (ArgumentException e)
+                {
+                    MessageBox.Show(e.Message);
+                }
 
 
             }
-            return playlists;
+            this.AllSongs = allSongs;
+            this.Playlists = playlists;
         }
 
-        public Song[] AllSongs()
+        public void CreatePlaylist(string name,List<Song> songList)
         {
-            List<Song> allSongs = new List<Song>();
-            foreach (Smpl playlist in Playlists.Values)
+            Playlists.Add(new Smpl(name,songList));
+        }
+        public Boolean DeletePlaylist(string name)
+        {
+            Boolean deleted = false;
+            foreach (Smpl playlist in Playlists)
             {
-                allSongs.AddRange(playlist.members);
+                if (playlist.name == name)
+                {
+                    Playlists.Remove(playlist);
+                    deleted = true;
+                    break;
+                }
             }
-            return allSongs.ToArray();
-        }
-
-        public void CreatePlaylist(string name)
-        {
-            Playlists.Add(name, new Smpl());
-        }
-        public void DeletePlaylist(string name)
-        {
-            Playlists.Remove(name);
+            if (!deleted)
+            {
+                System.Diagnostics.Debug.Print("No such playlist found!");
+            }
+            return deleted;
         }
 
         private void ChangeList(object sender, SelectionChangedEventArgs e)
         {
             if (PlaylistsBox.SelectedItem != null)
             {
-                SongsListBox.ItemsSource = Playlists[PlaylistsBox.SelectedItem.ToString()].members;
+                SongsListBox.ItemsSource = Playlists[PlaylistsBox.SelectedIndex].members;
                 AllSongsListBox.UnselectAll();
             }
+            SongsListBox.ScrollIntoView(SongsListBox.Items[0]);
         }
 
         private void DeleteSong(object sender, RoutedEventArgs e)
         {
+            var selectionListInterface = SongsListBox.SelectedItems;
+            Song[] selection = new Song[selectionListInterface.Count];
+            selectionListInterface.CopyTo(selection, 0);
             if (AllSongsListBox.SelectedItem != null)
             {
-                var selectionListInterface = SongsListBox.SelectedItems;
-                Song[] selection = new Song[selectionListInterface.Count];
-                selectionListInterface.CopyTo(selection, 0);
+                foreach (Smpl playlist in this.Playlists)
+                {
+                    playlist.RemoveSongs(selection);
+                }
+                foreach (Song song in selection)
+                {
+                    this.AllSongs.Remove(song);
+                }
+                SongsListBox.ItemsSource = null;
+                SongsListBox.ItemsSource = this.AllSongs;
             }
             else if (PlaylistsBox.SelectedItem != null)
             {
-
+                Smpl playlist = Playlists[this.PlaylistsBox.SelectedIndex];
+                playlist.RemoveSongs(selection);
+                foreach (Song song in selection)
+                {
+                    this.AllSongs.Remove(song);
+                }
+                SongsListBox.ItemsSource = null;
+                SongsListBox.ItemsSource = playlist.members;
             }
         }
 
@@ -130,7 +182,7 @@ namespace SmplEditor
             if (AllSongsListBox.SelectedItem != null)
             {
                 PlaylistsBox.UnselectAll();
-                SongsListBox.ItemsSource = AllSongs();
+                SongsListBox.ItemsSource = AllSongs;
             }
         }
     }
