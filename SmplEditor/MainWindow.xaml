@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SmplEditor"
         mc:Ignorable="d"
-        Title="SMPL Editor" MinHeight="460" MaxHeight="460" MinWidth="816" MaxWidth="816">
+        Title="SMPL Editor" Height="460" Width="816"  MinHeight="460" MaxHeight="460" MinWidth="816" MaxWidth="816">
     <Grid Margin="0,0,0,0">
 
         <!--This TextBlock displays name and count of the currently selected playlist-->

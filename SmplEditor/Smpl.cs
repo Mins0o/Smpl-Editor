@@ -85,6 +85,7 @@ namespace SmplEditor
         }
         public void RemoveSongs(List<Song> removingSongs)
         {
+            removingSongs.Sort((Song x, Song y) => -x.order.CompareTo(y.order));
             foreach (Song removingSong in removingSongs)
             {
                 this.RemoveSong(removingSong);
@@ -93,6 +94,7 @@ namespace SmplEditor
         }
         public void RemoveSongs(Song[] removingSongs)
         {
+            Array.Sort(removingSongs, (Song x, Song y) => -x.order.CompareTo(y.order));
             foreach (Song removingSong in removingSongs)
             {
                 this.RemoveSong(removingSong);
