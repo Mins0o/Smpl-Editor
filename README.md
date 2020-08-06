@@ -13,12 +13,12 @@ A tool to make smpl editing for Samsung Music Player easier
 # .smpl files json structure
 .smpl  
 |- members:List of jsons  
-|  - song  
-|    |- artist:string  
-|    |- info\:stirng  
-|    |- order:int  
-|    |- title:string  
-|    L type:int  
+|\_\_L song  
+|\_\_\_\_|- artist:string  
+|\_\_\_\_|- info\:stirng  
+|\_\_\_\_|- order:int  
+|\_\_\_\_|- title:string  
+|\_\_\_\_L type:int  
 |- recentlyPlayedDate:int  
 |- name:string  
 |- sortBy:int  
