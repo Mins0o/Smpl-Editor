@@ -9,4 +9,18 @@ A tool to make smpl editing for Samsung Music Player easier
 - Export the playlists into .smpl format
 - Sort songs according to various tags
 
-Documentation in progress(2020.07.29)...
+
+# .smpl files json structure
+.smpl  
+|- members:List of jsons  
+|  - song  
+|    |- artist:string  
+|    |- info\:stirng  
+|    |- order:int  
+|    |- title:string  
+|    L type:int  
+|- recentlyPlayedDate:int  
+|- name:string  
+|- sortBy:int  
+L version:int  
+Documentation in progress(2020.07.29)...  
