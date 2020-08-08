@@ -34,7 +34,7 @@ L- version\:int
   4. You can go to each playlists and view them.
   ![lists_view](ForReadme/Other_list_view.png)
   5. Select multiple songs(Utilize ctrl and shift keys) and delete or add them to other playlists.
-  - deleting *vvv*  
+  - deleting **vvv**  
   ![Deleting01](ForReadme/Delete_Songs01.png)  ![Deleting02](ForReadme/Delete_Songs02.png)  
   - adding **vvv**  
     ![Adding01](ForReadme/Add_Songs01.png)  
