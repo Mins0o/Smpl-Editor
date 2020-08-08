@@ -25,6 +25,41 @@ A tool to make smpl editing for Samsung Music Player easier
 L- version\:int  
 
 # How to use
+  1. Export playlists as .smpl files on your phone  
+  ![Smpl_Export01](ForReadme/Smpl_Export01.jpg)  ![Smpl_Export02](ForReadme/Smpl_Export02.jpg)
+  2. Move the file to your Windows PC  
+  ![Smpl_Export03](ForReadme/Smpl_Export03.jpg)
+  3. Open the program and load the Smpls. You will see the whole list of musics included in the playlists.
+  ![Loading_Smpls](ForReadme/Load_Smpls.png)  ![Loaded](ForReadme/Loaded.png)
+  4. You can go to each playlists and view them.
+  ![lists_view](ForReadme/Other_list_view.png)
+  5. Select multiple songs(Utilize ctrl and shift keys) and delete or add them to other playlists.
+  - deleting  
+  ![Deleting01](ForReadme/Delete_Songs01.png)!  [Deleting02](ForReadme/Delete_Songs02.png)  
+  - adding  
+    ![Adding01](ForReadme/Add_Songs01.png)  
+    The playlist we want to add the songs to.  
+    ![Adding02](ForReadme/Add_Songs02.png)  
+    Select songs from a playlist.  
+    ![Adding03](ForReadme/Add_Songs03.png)  
+    Choose a target playlist.  
+    ![Adding04](ForReadme/Add_Songs04.png)  
+    Add songs to the playlist.  
+    ![Adding05](ForReadme/Add_Songs05.png)  
+    Now they are added to the target list.
+    *If you remove songs from the All Songs list, then it will be deleted from every playlists.
+  6. You can also create a new playlist or remove existing ones with the buttons on the bottom left.
+  - removing  
+    ![Remove_List01](ForReadme/Remove_List01.png)  ![Remove_List02](ForReadme/Remove_List02.png)  
+  - creating new list  
+    ![Create_List01](ForReadme/Create_List01.png)  
+    Select the songs to start with the new playlist. It's okay to choose none.  
+    ![Create_List02](ForReadme/Create_List02.png)  
+  7. Sort songs  
+  8. Export lists  
+  This will export all the lists to a selected folder under an automatically created subfolder named Exported_Smpl.
+  ![Export01](ForReadme/Export01.png)  ![Export02](ForReadme/Export02.png)
+
 
 ---
 # Program code detail
