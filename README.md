@@ -34,30 +34,30 @@ L- version\:int
   4. You can go to each playlists and view them.
   ![lists_view](ForReadme/Other_list_view.png)
   5. Select multiple songs(Utilize ctrl and shift keys) and delete or add them to other playlists.
-  - deleting  
-  ![Deleting01](ForReadme/Delete_Songs01.png)!  [Deleting02](ForReadme/Delete_Songs02.png)  
-  - adding  
+  - deleting vv  
+  ![Deleting01](ForReadme/Delete_Songs01.png)  ![Deleting02](ForReadme/Delete_Songs02.png)  
+  - adding vv  
     ![Adding01](ForReadme/Add_Songs01.png)  
-    The playlist we want to add the songs to.  
+    ^The playlist we want to add the songs to.^  
     ![Adding02](ForReadme/Add_Songs02.png)  
-    Select songs from a playlist.  
+    ^Select songs from a playlist.^  
     ![Adding03](ForReadme/Add_Songs03.png)  
-    Choose a target playlist.  
+    ^Choose a target playlist.^  
     ![Adding04](ForReadme/Add_Songs04.png)  
-    Add songs to the playlist.  
+    ^Add songs to the playlist.^  
     ![Adding05](ForReadme/Add_Songs05.png)  
-    Now they are added to the target list.
+    ^Now they are added to the target list.^  
     *If you remove songs from the All Songs list, then it will be deleted from every playlists.
   6. You can also create a new playlist or remove existing ones with the buttons on the bottom left.
-  - removing  
+  - removing vv  
     ![Remove_List01](ForReadme/Remove_List01.png)  ![Remove_List02](ForReadme/Remove_List02.png)  
-  - creating new list  
+  - creating new list vv  
     ![Create_List01](ForReadme/Create_List01.png)  
-    Select the songs to start with the new playlist. It's okay to choose none.  
+    ^Select the songs to start with the new playlist. It's okay to choose none.^  
     ![Create_List02](ForReadme/Create_List02.png)  
   7. Sort songs  
   8. Export lists  
-  This will export all the lists to a selected folder under an automatically created subfolder named Exported_Smpl.
+  This will export all the lists to a selected folder under an automatically created subfolder named Exported_Smpl. vv  
   ![Export01](ForReadme/Export01.png)  ![Export02](ForReadme/Export02.png)
 
 
