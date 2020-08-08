@@ -27,7 +27,7 @@ L- version\:int
 # How to use
   1. Export playlists as .smpl files on your phone  
   ![Smpl_Export01](ForReadme/Smpl_Export01.jpg)  ![Smpl_Export02](ForReadme/Smpl_Export02.jpg)
-  2. Move the file to your Windows PC  
+  2. Move the files to your Windows PC  
   ![Smpl_Export03](ForReadme/Smpl_Export03.jpg)
   3. Open the program and load the Smpls. You will see the whole list of musics included in the playlists.
   ![Loading_Smpls](ForReadme/Load_Smpls.png)  ![Loaded](ForReadme/Loaded.png)
@@ -47,7 +47,7 @@ L- version\:int
     ^Add songs to the playlist.^  
     ![Adding05](ForReadme/Add_Songs05.png)  
     ^Now they are added to the target list.^  
-    *If you remove songs from the All Songs list, then it will be deleted from every playlists.
+    *If you remove songs from the All Songs list, then it will be deleted from every playlists.*
   6. You can also create a new playlist or remove existing ones with the buttons on the bottom left.
   - removing vv  
     ![Remove_List01](ForReadme/Remove_List01.png)  ![Remove_List02](ForReadme/Remove_List02.png)  
@@ -83,5 +83,3 @@ L- version\:int
   - `DeepCopy`: returns a new separate instance of the same song.
   - `ToString`: Directly printing this class or anywhere it is represented as a string, it uses "`artist` - `title`" format for that.
   - `DeepCompareSongs`: This method returns a boolean depending on the comparison or its `artist` and `title` value.(full path is also possible with the `strict` option)
-  
-Documentation in progress(2020.08.07)...  
