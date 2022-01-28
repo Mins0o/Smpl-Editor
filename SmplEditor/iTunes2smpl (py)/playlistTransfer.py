@@ -106,7 +106,7 @@ for iplist in iplaylists:
             if match:
                 sm_phone_path = match["info"]
             if score < 1:
-                print("\t",track_num,"\t{:0.2f}".format(score), itrack_title," "*(110-len(itrack_title)),"\t", sm_phone_path)
+                print("\t",track_num,"\t{:0.2f}".format(score), itrack_title," "*(70-len(itrack_title)),"\t", sm_phone_path)
             
             # if the match is not None, write it to the list
             if match:
