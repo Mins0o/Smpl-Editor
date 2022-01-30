@@ -109,12 +109,12 @@ namespace SmplEditor
                 try
                 {
                     List<Song> addList = new List<Song>();
-                    foreach (Song member in playlist.Members)
+                    foreach (Song member in playlist.members)
                     {
                         bool noDuplicate = true;
                         foreach (Song song in allSongs)
                         {
-                            if (member.Info == song.Info)
+                            if (member.info == song.info)
                             {
                                 noDuplicate = false;
                             }
@@ -134,7 +134,7 @@ namespace SmplEditor
 
 
             }
-            allSongs.Sort((Song x,Song y)=>x.Artist.CompareTo(y.Artist));
+            allSongs.Sort((Song x,Song y)=>x.artist.CompareTo(y.artist));
             this.AllSongs = allSongs;
             this.Playlists = playlists;
         }
@@ -165,9 +165,9 @@ namespace SmplEditor
             Song[] selectedSongs = GetSelection();
 
             // The size of the playlist should not exceed 1,000 songs.
-            if (targetList.Members.Count+selectedSongs.Length > 1000)
+            if (targetList.members.Count+selectedSongs.Length > 1000)
             {
-                MessageBox.Show("This playlist already has " + targetList.Members.Count + "songs. Maximum number of songs per a playlist is 1000");
+                MessageBox.Show("This playlist already has " + targetList.members.Count + "songs. Maximum number of songs per a playlist is 1000");
                 return;
             }
             // Every copy of song in different lists are different instances. The deep copying is handled inside the method.
@@ -269,7 +269,7 @@ namespace SmplEditor
                     {
                         AllSongs.Sort((Song x, Song y) => {
                             if (x.UpperDirectory().CompareTo(y.UpperDirectory()) == 0) {
-                                return x.Order.CompareTo(y.Order);
+                                return x.order.CompareTo(y.order);
                             } else {
                                 return x.UpperDirectory().CompareTo(y.UpperDirectory());
                             }
@@ -283,7 +283,7 @@ namespace SmplEditor
                     }
                 case 1:
                     {
-                        AllSongs.Sort((Song x, Song y) => x.Artist.CompareTo(y.Artist));
+                        AllSongs.Sort((Song x, Song y) => x.artist.CompareTo(y.artist));
                         foreach (Smpl playlist in Playlists)
                         {
                             playlist.SortByArtist();
@@ -292,7 +292,7 @@ namespace SmplEditor
                     }
                 case 2:
                     {
-                        AllSongs.Sort((Song x, Song y) => x.Title.CompareTo(y.Title));
+                        AllSongs.Sort((Song x, Song y) => x.title.CompareTo(y.title));
                         foreach (Smpl playlist in Playlists)
                         {
                             playlist.SortByTitle();
@@ -301,7 +301,7 @@ namespace SmplEditor
                     }
                 case 3:
                     {
-                        AllSongs.Sort((Song x, Song y) => x.Info.CompareTo(y.Info));
+                        AllSongs.Sort((Song x, Song y) => x.info.CompareTo(y.info));
                         foreach (Smpl playlist in Playlists)
                         {
                             playlist.SortByDirectory();
@@ -320,12 +320,12 @@ namespace SmplEditor
             AllSongsListBox.UnselectAll();
             Smpl playlist = Playlists[PlaylistsBox.SelectedIndex];
             SongsListBox.ItemsSource = null;
-            SongsListBox.ItemsSource = playlist.Members;
+            SongsListBox.ItemsSource = playlist.members;
             if (SongsListBox.Items.Count > 0)
             {
                 SongsListBox.ScrollIntoView(SongsListBox.Items[0]);
             }
-            NameAndCountDisplay.Text = playlist.ToString() + "  -  " + playlist.Members.Count+" songs";
+            NameAndCountDisplay.Text = playlist.ToString() + "  -  " + playlist.members.Count+" songs";
         }
         
         private void DisplayAllSongs()
