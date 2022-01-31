@@ -26,7 +26,9 @@ L- version\:int
 
 # How to use
   1. Export playlists as .smpl files on your phone  
-  ![Smpl_Export01](ForReadme/Smpl_Export01.jpg)  ![Smpl_Export02](ForReadme/Smpl_Export02.jpg)
+  ![Smpl_Export01](ForReadme/Smpl_Export01.jpg)  ![Smpl_Export02](ForReadme/Smpl_Export02.jpg)  
+  or,  
+  ![Smpl_Export02_](ForReadme/Smpl_Export02_.jpg)  ![Smpl_Export03_](ForReadme/Smpl_Export03_.jpg)  
   2. Move the files to your Windows PC  
   ![Smpl_Export03](ForReadme/Smpl_Export03.jpg)
   3. Open the program and load the Smpls. You will see the whole list of musics included in the playlists.

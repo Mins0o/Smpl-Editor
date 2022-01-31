@@ -43,7 +43,7 @@ namespace SmplEditor
         }
         public void AddSongs(List<Song> additions)
         {
-            int i = this.members.Count;
+            // int i = this.members.Count;
             foreach (Song song in additions)
             {
                 AddSong(song);
@@ -51,7 +51,7 @@ namespace SmplEditor
         }
         public void AddSongs(Song[] additions)
         {
-            int i = this.members.Count;
+            // int i = this.members.Count;
             foreach (Song song in additions)
             {
                 AddSong(song);
