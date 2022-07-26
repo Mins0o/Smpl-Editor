@@ -113,6 +113,7 @@
     </ApplicationDefinition>
     <Compile Include="Itunes.cs" />
     <Compile Include="Smpl.cs" />
+    <Compile Include="Song.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

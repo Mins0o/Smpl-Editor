@@ -32,7 +32,7 @@ namespace SmplEditor
             {
                 try
                 {
-                    this.LoadSmpls();
+                    LoadSmpls();
                 }
                 catch (ArgumentException e)
                 {
@@ -45,11 +45,11 @@ namespace SmplEditor
                 }
             }
 
-            // If no playlists were load from LoadSmpls(), shutdown the app
+            // If no playlists were loaded from LoadSmpls(), shutdown the app
             if (Playlists.Count == 0)
             {
                 MessageBox.Show("No Samsung Music Playlist detected. Exitting the application.");
-                System.Windows.Application.Current.Shutdown();
+                Application.Current.Shutdown();
             }
             InitializeComponent();
 
@@ -68,11 +68,13 @@ namespace SmplEditor
         public void LoadSmpls()
         {
             // Get the file paths to load.
-            OpenFileDialog openSmpls = new OpenFileDialog();
-            openSmpls.Multiselect = true;
+            OpenFileDialog openSmpls = new OpenFileDialog
+            {
+                Multiselect = true
+            };
             openSmpls.ShowDialog();
             // Without full path, just names with extensions
-            string[] shortNames=openSmpls.SafeFileNames;
+            string[] shortNames = openSmpls.SafeFileNames;
             // Full path
             string[] fileNames = openSmpls.FileNames;
 
