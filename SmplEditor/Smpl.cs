@@ -11,6 +11,8 @@ namespace SmplEditor
 {
     public class Smpl
     {
+        // field name should match the json format when using
+        // the .smpl uses lowercase.
         public string name { get; set; }
         public List<Song> members { get; set; }
         public int recentlyPlayedDate { get; set; }
@@ -128,42 +130,6 @@ namespace SmplEditor
                 coppiedList.Add(song.DeepCopy());
             }
             return coppiedList;
-        }
-    }
-    public class Song
-    {
-        public string artist { get; set; }
-        public string info { get; set; }
-        public int order { get; set; }
-        public string title { get; set; }
-        public int type { get; set; }
-        public string UpperDirectory()
-        {
-            return info.Substring(0, info.LastIndexOf('/'));
-        }
-        public Song DeepCopy()
-        {
-            Song copy = new Song();
-            copy.artist = string.Copy(this.artist);
-            copy.info = string.Copy(this.info);
-            copy.order = this.order;
-            copy.title = string.Copy(this.title);
-            copy.type = this.type;
-            return copy;
-        }
-        public override string ToString()
-        {
-            return artist +"  -  " +title;
-        }
-        public static bool DeepCompareSongs(Song x, Song y,bool strict=true)
-        {
-            bool result = true;
-            if (strict)
-            {
-                result = result && (x.info == y.info);
-            }
-            result = result && (x.artist == y.artist && x.title == y.title);
-            return result;
         }
     }
 }

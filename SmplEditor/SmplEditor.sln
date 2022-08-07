@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmplEditor", "SmplEditor.cs
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmplEditorExperiments", "..\..\SmplEditorExperiments\SmplEditorExperiments\SmplEditorExperiments.csproj", "{7AA4413B-9A81-470E-975B-0D2C0662A644}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox", "..\Sandbox\Sandbox\Sandbox.csproj", "{63CD0B65-A8F3-4844-B01B-D64B5E9F7D62}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sandbox", "..\Sandbox\Sandbox\Sandbox.csproj", "{63CD0B65-A8F3-4844-B01B-D64B5E9F7D62}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

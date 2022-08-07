@@ -28,6 +28,7 @@ namespace SmplEditor
         private List<Song> AllSongs;
         public MainWindow()
         {
+            // initializing
             while (Playlists == null)
             {
                 try
@@ -124,7 +125,7 @@ namespace SmplEditor
                         if (noDuplicate)
                         {
                             // The songs added to the allsongs list will be a deep copy(different reference, same values) of the things in the playlists
-                            addList.Add(member.DeepCopy());
+                            addList.Add(member.DeepCopy()); //!!why?
                         }
                     }
                     allSongs.AddRange(addList);
@@ -136,6 +137,7 @@ namespace SmplEditor
 
 
             }
+            // sort by artist
             allSongs.Sort((Song x,Song y)=>x.artist.CompareTo(y.artist));
             this.AllSongs = allSongs;
             this.Playlists = playlists;
@@ -144,7 +146,7 @@ namespace SmplEditor
         // UI events
         private void OnPlaylistSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // If not de-selection
+            // If not de-selection //!! ?? why do I need this?
             if (PlaylistsBox.SelectedItem != null)
             {
                 DisplaySelectedPlaylist();
@@ -320,7 +322,7 @@ namespace SmplEditor
         private void DisplaySelectedPlaylist()
         {
             AllSongsListBox.UnselectAll();
-            Smpl playlist = Playlists[PlaylistsBox.SelectedIndex];
+            Smpl playlist = Playlists[PlaylistsBox.SelectedIndex]; //!!exception occurs when trying to delete from allsongs lists
             SongsListBox.ItemsSource = null;
             SongsListBox.ItemsSource = playlist.members;
             if (SongsListBox.Items.Count > 0)
