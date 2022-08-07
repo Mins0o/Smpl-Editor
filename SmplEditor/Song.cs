@@ -15,7 +15,7 @@ namespace SmplEditorExperiments
         public int type { get; set; }
         public string UpperDirectory()
         {
-            return info[..info.LastIndexOf('/')];
+            return info.Substring(0, info.LastIndexOf('/'));
         }
         public Song Copy()
         {
