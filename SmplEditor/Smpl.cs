@@ -14,16 +14,16 @@ namespace SmplEditor
         // field name should match the json format when using
         // the .smpl uses lowercase.
         public string name { get; set; }
-        public List<Song> members { get; set; }
+        public List<SmplSong> members { get; set; }
         public int recentlyPlayedDate { get; set; }
         public int sortBy { get; set; }
         public int version { get; set; }
-        public Smpl(string name,List<Song> songList)
+        public Smpl(string name,List<SmplSong> songList)
         {
             this.name = name;
             this.members = Smpl.DeepCopySongList(songList);
             int i = 0;
-            foreach (Song member in members)
+            foreach (SmplSong member in members)
             {
                 member.order = i++;
             }
@@ -37,36 +37,36 @@ namespace SmplEditor
             this.sortBy = 4;
             this.version = 1;
         }
-        public void AddSong(Song addition)
+        public void AddSong(SmplSong addition)
         {
-            Song newAddition = addition.DeepCopy();
+            SmplSong newAddition = addition.DeepCopy();
             newAddition.order = this.members.Count;
             this.members.Add(newAddition);
         }
-        public void AddSongs(List<Song> additions)
+        public void AddSongs(List<SmplSong> additions)
         {
             // int i = this.members.Count;
-            foreach (Song song in additions)
+            foreach (SmplSong song in additions)
             {
                 AddSong(song);
             }
         }
-        public void AddSongs(Song[] additions)
+        public void AddSongs(SmplSong[] additions)
         {
             // int i = this.members.Count;
-            foreach (Song song in additions)
+            foreach (SmplSong song in additions)
             {
                 AddSong(song);
             }
         }
-        public void RemoveSong(Song removingSong)
+        public void RemoveSong(SmplSong removingSong)
         {
             int removedOrder = removingSong.order;
             try
             {
-                foreach (Song member in this.members)
+                foreach (SmplSong member in this.members)
                 {
-                    if (Song.DeepCompareSongs(member, removingSong))
+                    if (SmplSong.DeepCompareSongs(member, removingSong))
                     {
                         this.members.Remove(member);
                         if (member.order > removedOrder)
@@ -85,19 +85,19 @@ namespace SmplEditor
                 System.Diagnostics.Debug.Print(e.Message);
             }
         }
-        public void RemoveSongs(List<Song> removingSongs)
+        public void RemoveSongs(List<SmplSong> removingSongs)
         {
-            removingSongs.Sort((Song x, Song y) => -x.order.CompareTo(y.order));
-            foreach (Song removingSong in removingSongs)
+            removingSongs.Sort((SmplSong x, SmplSong y) => -x.order.CompareTo(y.order));
+            foreach (SmplSong removingSong in removingSongs)
             {
                 this.RemoveSong(removingSong);
             }
             
         }
-        public void RemoveSongs(Song[] removingSongs)
+        public void RemoveSongs(SmplSong[] removingSongs)
         {
-            Array.Sort(removingSongs, (Song x, Song y) => -x.order.CompareTo(y.order));
-            foreach (Song removingSong in removingSongs)
+            Array.Sort(removingSongs, (SmplSong x, SmplSong y) => -x.order.CompareTo(y.order));
+            foreach (SmplSong removingSong in removingSongs)
             {
                 this.RemoveSong(removingSong);
             }
@@ -108,24 +108,24 @@ namespace SmplEditor
         }
         public void SortByArtist()
         {
-            this.members.Sort((Song x, Song y) => x.artist.CompareTo(y.artist));
+            this.members.Sort((SmplSong x, SmplSong y) => x.artist.CompareTo(y.artist));
         }
         public void SortByTitle()
         {
-            this.members.Sort((Song x, Song y) => x.title.CompareTo(y.title));
+            this.members.Sort((SmplSong x, SmplSong y) => x.title.CompareTo(y.title));
         }
         public void SortByDirectory()
         {
-            this.members.Sort((Song x, Song y) => x.info.CompareTo(y.info));
+            this.members.Sort((SmplSong x, SmplSong y) => x.info.CompareTo(y.info));
         }
         public void SortByOrder()
         {
-            this.members.Sort((Song x, Song y) => x.info.CompareTo(y.info));
+            this.members.Sort((SmplSong x, SmplSong y) => x.info.CompareTo(y.info));
         }
-        public static List<Song> DeepCopySongList(List<Song> songList)
+        public static List<SmplSong> DeepCopySongList(List<SmplSong> songList)
         {
-            List<Song> coppiedList = new List<Song>();
-            foreach (Song song in songList)
+            List<SmplSong> coppiedList = new List<SmplSong>();
+            foreach (SmplSong song in songList)
             {
                 coppiedList.Add(song.DeepCopy());
             }

@@ -102,7 +102,7 @@
     </ApplicationDefinition>
     <Compile Include="Itunes.cs" />
     <Compile Include="Smpl.cs" />
-    <Compile Include="Song.cs" />
+    <Compile Include="SmplSong.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -135,6 +135,11 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="packages.config" />
+    <None Include="Playlists\SMPL\All01.smpl" />
+    <None Include="Playlists\SMPL\All02.smpl" />
+    <None Include="Playlists\SMPL\All03.smpl" />
+    <None Include="Playlists\SMPL\All04.smpl" />
+    <None Include="Playlists\SMPL\All05.smpl" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -142,6 +147,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Playlists\iTunes\Library.xml" />
+    <Content Include="Python\playlistTransfer.py" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="packages\System.Text.Json.6.0.1\build\System.Text.Json.targets" Condition="Exists('packages\System.Text.Json.6.0.1\build\System.Text.Json.targets')" />
