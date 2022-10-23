@@ -164,6 +164,16 @@ namespace SmplEditor
         }
         private void OnImportPlaylistClicked(object sender, RoutedEventArgs e)
         {
+            // Get the file paths to load.
+            OpenFileDialog openSmpls = new OpenFileDialog
+            {
+                Multiselect = true
+            };
+            openSmpls.ShowDialog();
+            // Without full path, just names with extensions
+            string[] shortNames = openSmpls.SafeFileNames;
+            // Full path
+            string[] fileNames = openSmpls.FileNames;
             return;
         }
 
