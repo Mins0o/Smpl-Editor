@@ -162,6 +162,10 @@ namespace SmplEditor
             }
 
         }
+        private void OnImportPlaylistClicked(object sender, RoutedEventArgs e)
+        {
+            return;
+        }
 
         private void OnAddSongsClicked(object sender, RoutedEventArgs e)
         {

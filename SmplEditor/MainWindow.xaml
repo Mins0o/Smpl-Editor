@@ -32,13 +32,16 @@
         <!--The three buttons(and a ComboBox) on the right-->
         <!--Selection of this control is where the selected songs will be added to-->
         <ComboBox x:Name="AddingListSelector" HorizontalAlignment="Left" Margin="713,11,0,0" VerticalAlignment="Top" Width="75"/>
-        <Button x:Name="AddToPlaylistButton" HorizontalAlignment="Left" Margin="713,41,0,0" VerticalAlignment="Top" Width="75" Height="59" Click="OnAddSongsClicked">
+        <Button x:Name="ImportPlaylistButton" HorizontalAlignment="Left" Margin="713,44,0,0" VerticalAlignment="Top" Width="75" Height="59" Click="OnImportPlaylistClicked">
+            <TextBlock Text="Import Playlists" TextWrapping="WrapWithOverFlow" TextAlignment="Center" HorizontalAlignment="Stretch"/>
+        </Button>
+        <Button x:Name="AddToPlaylistButton" HorizontalAlignment="Left" Margin="713,108,0,0" VerticalAlignment="Top" Width="75" Height="59" Click="OnAddSongsClicked">
             <TextBlock Text="Add to playlist" TextWrapping="WrapWithOverflow" TextAlignment="Center" HorizontalAlignment="Stretch"/>
         </Button>
-        <Button x:Name="DeleteFromPlaylistButton" HorizontalAlignment="Left" Margin="713,105,0,0" VerticalAlignment="Top" Width="75" Height="59" Click="OnDeleteSongsClicked">
+        <Button x:Name="DeleteFromPlaylistButton" HorizontalAlignment="Left" Margin="713,172,0,0" VerticalAlignment="Top" Width="75" Height="59" Click="OnDeleteSongsClicked">
             <TextBlock Text="Delete from this playlist" TextWrapping="WrapWithOverflow" TextAlignment="Center" HorizontalAlignment="Stretch"/>
         </Button>
-        <Button x:Name="ExportButton" HorizontalAlignment="Left" Margin="713,169,0,0" VerticalAlignment="Top" Width="75" Height="59" Click="OnExportButtonClicked">
+        <Button x:Name="ExportButton" HorizontalAlignment="Left" Margin="713,236,0,0" VerticalAlignment="Top" Width="75" Height="59" Click="OnExportButtonClicked">
             <TextBlock Text="Export playlists" TextWrapping="WrapWithOverflow" TextAlignment="Center" HorizontalAlignment="Stretch"/>
         </Button>
 
