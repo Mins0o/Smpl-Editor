@@ -28,6 +28,7 @@ namespace SmplEditor
         private List<SmplSong> AllSongs;
         public MainWindow()
         {
+            ImportPlaylist();
             // initializing
             while (Playlists == null)
             {
@@ -164,6 +165,10 @@ namespace SmplEditor
         }
         private void OnImportPlaylistClicked(object sender, RoutedEventArgs e)
         {
+            ImportPlaylist();
+        }
+        private void ImportPlaylist()
+        {
             // Get the file paths to load.
             OpenFileDialog openSmpls = new OpenFileDialog
             {
@@ -171,9 +176,16 @@ namespace SmplEditor
             };
             openSmpls.ShowDialog();
             // Without full path, just names with extensions
-            string[] shortNames = openSmpls.SafeFileNames;
+            string[] safeNames = openSmpls.SafeFileNames;
             // Full path
             string[] fileNames = openSmpls.FileNames;
+
+            for (int ii = 0; ii < safeNames.Length; ii++)
+            {
+                string safeName = safeNames[ii];
+                string extension = safeName.Substring(safeName.LastIndexOf("."));
+                int break_here = 1;
+            }
             return;
         }
 
