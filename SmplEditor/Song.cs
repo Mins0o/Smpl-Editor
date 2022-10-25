@@ -11,5 +11,10 @@ namespace SmplEditor
         SmplSong smplSong;
         ITunesLibraryParser.Track iTunesSong;
         bool is_mapped;
+
+        void remove_from_lib()
+        {
+            return;
+        }
     }
 }

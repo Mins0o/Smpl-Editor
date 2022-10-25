@@ -6,10 +6,14 @@ using System.Threading.Tasks;
 
 namespace SmplEditor
 {
-    internal class Playlist<T>
+    internal class Playlist
     {
-        T data;
+        string name;
+        List<Song> list;
         bool type;
+        int recentlyPlayedDate;
+        int sortBy;
+        int version;
         public virtual void AddSongs(Song song)
         {
             return;

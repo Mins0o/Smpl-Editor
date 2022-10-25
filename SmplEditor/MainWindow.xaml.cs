@@ -180,10 +180,23 @@ namespace SmplEditor
             // Full path
             string[] fileNames = openSmpls.FileNames;
 
-            for (int ii = 0; ii < safeNames.Length; ii++)
+            int fileCount = safeNames.Length;
+            for (int fileIdx = 0; fileIdx < fileCount; fileIdx++)
             {
-                string safeName = safeNames[ii];
+                string safeName = safeNames[fileIdx];
                 string extension = safeName.Substring(safeName.LastIndexOf("."));
+                if (extension == "xml")
+                {
+
+                }else if(extension == "smpl")
+                {
+                    string jsonString = File.ReadAllText(fileNames[fileIdx]);
+                    Smpl newPlaylist = JsonSerializer.Deserialize<Smpl>(jsonString);
+                }
+                else
+                {
+                    // file extension not supported
+                }
                 int break_here = 1;
             }
             return;
