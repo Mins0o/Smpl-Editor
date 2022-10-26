@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SmplEditor
 {
-    internal class Playlist
+    internal class Playlist<T>
     {
         string name;
         List<Song> list;
