@@ -194,7 +194,7 @@ namespace SmplEditor
                 }
                 if (extension == "xml")
                 {
-
+                    // this file is iTunes file
                 }else if(extension == "smpl")
                 {
                     string jsonString = File.ReadAllText(fileNames[fileIdx]);
