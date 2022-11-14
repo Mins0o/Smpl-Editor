@@ -7,7 +7,7 @@ using ITunesLibraryParser;
 
 namespace SmplEditor
 {
-    internal class ITunesPlaylist :Playlist<ITunesLibraryParser.Playlist>
+    internal class ITunesPlaylist :Playlist
     {
 
     }

@@ -9,7 +9,7 @@ using Microsoft.Win32;
 
 namespace SmplEditor
 {
-    public class Smpl
+    internal class Smpl:Playlist
     {
         // field name should match the json format when using
         // the .smpl uses lowercase.

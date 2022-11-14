@@ -23,8 +23,10 @@ namespace SmplEditor
     /// </summary>
     public partial class MainWindow : Window
     {
+        private List<Playlist> playlistLibrary = new List<Playlist>();
+        private List<Song> songLibrary = new List<Song>();
         // Playlists : List of playlists throughtout the application
-        private List<Smpl> playlists = new List<Smpl>();
+        private List<Smpl> playlists;// = new List<Smpl>();
         private List<SmplSong> allSongs = new List<SmplSong>();
         private List<string> prevImportFileName = new List<string>();
         public MainWindow()
@@ -186,22 +188,26 @@ namespace SmplEditor
             {
                 string safeName = safeNames[fileIdx];
                 string fileName = fileNames[fileIdx];
-                string extension = safeName.Substring(safeName.LastIndexOf("."));
+                int extStartIndex = safeName.LastIndexOf(".");
+                string extension = safeName.Substring(extStartIndex);
+                string plName = safeName.Substring(0,extStartIndex);
                 int find = prevImportFileName.IndexOf(fileName);
                 if (find >= 0)
                 {
                     // file has been imported before
                 }
-                if (extension == "xml")
+                if (extension == ".xml")
                 {
                     // this file is iTunes file
-                }else if(extension == "smpl")
+                }else if(extension == ".smpl")
                 {
                     string jsonString = File.ReadAllText(fileNames[fileIdx]);
                     Smpl newPlaylist = JsonSerializer.Deserialize<Smpl>(jsonString);
+                    this.playlistLibrary.Add(newPlaylist);
                 }
                 else
                 {
+                    System.Diagnostics.Trace.WriteLine("This file format not supported");
                     // file extension not supported
                 }
                 int break_here = 1;

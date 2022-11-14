@@ -15,6 +15,7 @@ namespace SmplEditor
         public int order { get; set; }
         public string title { get; set; }
         public int type { get; set; }
+        public int extraStuff { get; set; }
         public string UpperDirectory()
         {
             return info.Substring(0, info.LastIndexOf('/'));
