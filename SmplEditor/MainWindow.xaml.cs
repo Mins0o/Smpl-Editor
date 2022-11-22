@@ -172,6 +172,43 @@ namespace SmplEditor
         }
         private void ImportPlaylist()
         {
+            /* Pseudo code
+             * 1. Select files
+             * 2. Check if file has been imported already
+             *    If imported before, skip that file
+             * 3. If file should be imported, parse the file
+             *    During this procedure both iTunes library and .smpl will create playlist(s) and songs.
+             *      Their formats differ by file type (iTunes/smpl).
+             * 4. If a playlist with same name and file type exists, skip
+             * 5. If the playlist is new, add the playlist into the playlist library.
+             *     Playlist from smpl and iTunes are different.
+             *     --- How should a playlist from iTunes work??
+             *       -- can be edited
+             *       -- can be created anew
+             *       -- can be removed (easy)
+             *       -- can be exported into .xml
+             *       -- can be converted to smpl (same for smpl --> iTunes)
+             *          -- only if all the songs in the playlist has its mapping back and forth.
+             *     --- For the requirements, should a new class be generated? 
+             *          or the existing automatic data structure support these features?
+             *          If it does not support this features, for every iTunes playlist, create a custom playlist object.
+             *     --- What about folders in iTunes?
+             *       -- For now, folders will be ignored. Only the leaf playlist will be exportable.
+             *     Do this for all the playlists, accumulate all the songs that are not duplicates.
+             *     if song is duplicate among import, don't add to the cumulative list.
+             * 6. For all the songs in the new cumulative list, check if they already exist in the song library.
+             *     song for different file type should be comparable with:
+             *       1) Title and Artist
+             *       2) Filename (not full path, but file name)
+             *     If same song exist,
+             *       If different file format, add the new format entry to the libraries existing song
+             *        -- this is the mapping. mark the song as mapped.
+             *       If same file format, discard (or maybe collectively notify the user about it)
+             * 7. If not, 
+             *    For smpl songs, just store the automatically generated objects references.
+             *    For iTuens songs, create a new song object and put its reference 
+            */
+
             // Get the file paths to load.
             OpenFileDialog openSmpls = new OpenFileDialog
             {
@@ -203,6 +240,7 @@ namespace SmplEditor
                 {
                     string jsonString = File.ReadAllText(fileNames[fileIdx]);
                     Smpl newPlaylist = JsonSerializer.Deserialize<Smpl>(jsonString);
+                    //
                     this.playlistLibrary.Add(newPlaylist);
                 }
                 else
