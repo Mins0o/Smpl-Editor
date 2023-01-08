@@ -170,6 +170,11 @@ namespace SmplEditor
         {
             ImportPlaylist();
         }
+        /// <summary> This function takes in a list of newly selected files and 
+        /// separates them into `already imported` ones and `to be imported` ones. </summary>
+        private void FilterImporteFiles(string[] selectedFileNames, List<string> importedFiles){
+            // name? extension? check dups
+        }
         private void ImportPlaylist()
         {
             /* Pseudo code
