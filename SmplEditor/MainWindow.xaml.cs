@@ -262,14 +262,13 @@ namespace SmplEditor
                 string safeName = safeNames[fileIdx];
                 string fileName = fileNames[fileIdx];
                 string extension = this.GetExtensionFromSafeName(safeName);
-                string playlistName = this.GetPlaylistNameFromSafeName(safeName);
                 if (extension == ".xml"){
                     // this file is iTunes file
                 }
                 else if(extension == ".smpl"){
                     string jsonString = File.ReadAllText(fileNames[fileIdx]);
                     Smpl newPlaylist = JsonSerializer.Deserialize<Smpl>(jsonString);
-                    //
+                    // I should create a Song, that can contain iTunes song and SMPL at the sametime, and replace it inthe SMPL..?
                     this.playlistLibrary.Add(newPlaylist);
                 }
                 else // Other than iTunes or SMPL
