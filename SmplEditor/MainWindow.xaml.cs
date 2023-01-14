@@ -172,12 +172,43 @@ namespace SmplEditor
         }
         /// <summary> This function takes in a list of newly selected files and 
         /// separates them into `already imported` ones and `to be imported` ones. </summary>
-        private void FilterImporteFiles(string[] selectedFileNames, List<string> importedFiles){
+        private List<int> FilterNewFileIndices(string[] selectedFileNames, List<string> importedFiles){
             // name? extension? check dups
+            List<int> availableIndices = new List<int>();
+            int listSize = selectedFileNames.Length;
+            for(int ii = 0; ii < listSize; ++ii){
+                string fileName = selectedFileNames[ii];
+                if(importedFiles.IndexOf(fileName) >= 0){
+                    continue;
+                }
+                else{
+                    availableIndices.Add(ii);
+                }
+            }
+            return availableIndices;
         }
+        
+        private void AddImportedFiles(string[] selectedFileNames, List<int> processedIndices){
+            foreach(int fileIndex in processedIndices){
+                this.prevImportFileName.Add(selectedFileNames[fileIndex]);
+            }
+        }
+
+        private string GetExtensionFromSafeName(string safeName){
+            int extStartIndex = safeName.LastIndexOf(".");
+            string extension = safeName.Substring(extStartIndex);
+            return extension;
+        }
+        
+        private string GetPlaylistNameFromSafeName(string safeName){
+            int extStartIndex = safeName.LastIndexOf(".");
+            string playlistName = safeName.Substring(0, extStartIndex);
+            return playlistName;
+        }
+
         private void ImportPlaylist()
         {
-            /* Pseudo code
+            {/* Pseudo code (all comments)
              * 1. Select files
              * 2. Check if file has been imported already
              *    If imported before, skip that file
@@ -213,6 +244,7 @@ namespace SmplEditor
              *    For smpl songs, just store the automatically generated objects references.
              *    For iTuens songs, create a new song object and put its reference 
             */
+            }
 
             // Get the file paths to load.
             OpenFileDialog openSmpls = new OpenFileDialog
@@ -220,38 +252,29 @@ namespace SmplEditor
                 Multiselect = true
             };
             openSmpls.ShowDialog();
-            // Without full path, just names with extensions
+            // safeNames are only the name + extension, fileNames are full paths
             string[] safeNames = openSmpls.SafeFileNames;
-            // Full path
             string[] fileNames = openSmpls.FileNames;
 
-            int fileCount = safeNames.Length;
-            for (int fileIdx = 0; fileIdx < fileCount; fileIdx++)
+            List<int> newFileIndices = FilterNewFileIndices(fileNames, prevImportFileName);
+            foreach (int fileIdx in newFileIndices)
             {
                 string safeName = safeNames[fileIdx];
                 string fileName = fileNames[fileIdx];
-                int extStartIndex = safeName.LastIndexOf(".");
-                string extension = safeName.Substring(extStartIndex);
-                string plName = safeName.Substring(0,extStartIndex);
-                int find = prevImportFileName.IndexOf(fileName);
-                if (find >= 0)
-                {
-                    // file has been imported before
-                }
-                if (extension == ".xml")
-                {
+                string extension = this.GetExtensionFromSafeName(safeName);
+                string playlistName = this.GetPlaylistNameFromSafeName(safeName);
+                if (extension == ".xml"){
                     // this file is iTunes file
-                }else if(extension == ".smpl")
-                {
+                }
+                else if(extension == ".smpl"){
                     string jsonString = File.ReadAllText(fileNames[fileIdx]);
                     Smpl newPlaylist = JsonSerializer.Deserialize<Smpl>(jsonString);
                     //
                     this.playlistLibrary.Add(newPlaylist);
                 }
-                else
+                else // Other than iTunes or SMPL
                 {
                     System.Diagnostics.Trace.WriteLine("This file format not supported");
-                    // file extension not supported
                 }
                 int break_here = 1;
             }
