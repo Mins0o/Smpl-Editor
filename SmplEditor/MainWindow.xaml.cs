@@ -206,13 +206,15 @@ namespace SmplEditor
             return playlistName;
         }
 
-        private void addNewSongsToLibrary(Smpl playlist){
-
+        private List<Song> addNewSongsToLibrary(Smpl playlist, List<Song> library){
+            List<Song> newSongsList = new List<Song>();
+            return newSongsList;
         }
-        private void addNewSongsToLibrary(ITunesPlaylist playlist){
-
+        private List<Song> addNewSongsToLibrary(ITunesPlaylist playlist, List<Song> library){
+            List<Song> newSongsList = new List<Song>();
+            return newSongsList;
         }
-        private Playlist getPlaylist(Smpl playlist){
+        private Playlist getPlaylist(Smpl playlist, List<Song> library){
             Playlist newPlaylist = new Playlist();
             return newPlaylist;
         }
@@ -282,9 +284,11 @@ namespace SmplEditor
                 }
                 else if(extension == ".smpl"){
                     string jsonString = File.ReadAllText(fileNames[fileIdx]);
+                    // This playlist object will be just temporary.
                     Smpl importingPlaylist = JsonSerializer.Deserialize<Smpl>(jsonString);
-                    Playlist playlist = getPlaylist(importingPlaylist);
-                    // Add the songs to the existing songs library, and replace the list with the refernce in the library.
+                    List<Song> newSongs = addNewSongsToLibrary(importingPlaylist, songLibrary);
+                    Playlist playlist = getPlaylist(importingPlaylist, songLibrary);
+                    // add the playlist to the playlist library
                     // If it already exist, just do the latter part
                     // There must a temporary song class only for getting the raw formats, for each
                     // and there should be a universal one, that is actually stored in the library.
