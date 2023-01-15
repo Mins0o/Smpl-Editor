@@ -14,7 +14,7 @@ namespace SmplEditor
         // field name should match the json format when using
         // the .smpl uses lowercase.
         public string name { get; set; }
-        public List<SmplSong> members { get; set; }
+        public List<Song> members { get; set; }
         public int recentlyPlayedDate { get; set; }
         public int sortBy { get; set; }
         public int version { get; set; }

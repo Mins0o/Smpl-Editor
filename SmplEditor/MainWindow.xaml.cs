@@ -188,7 +188,7 @@ namespace SmplEditor
             return availableIndices;
         }
         
-        private void AddImportedFiles(string[] selectedFileNames, List<int> processedIndices){
+        private void AddToImportedFiles(string[] selectedFileNames, List<int> processedIndices){
             foreach(int fileIndex in processedIndices){
                 this.prevImportFileName.Add(selectedFileNames[fileIndex]);
             }
@@ -206,6 +206,20 @@ namespace SmplEditor
             return playlistName;
         }
 
+        private void addNewSongsToLibrary(Smpl playlist){
+
+        }
+        private void addNewSongsToLibrary(ITunesPlaylist playlist){
+
+        }
+        private Playlist getPlaylist(Smpl playlist){
+            Playlist newPlaylist = new Playlist();
+            return newPlaylist;
+        }
+        private Playlist getPlaylist(ITunesPlaylist playlist){
+            Playlist newPlaylist = new Playlist();
+            return newPlaylist;
+        }
         private void ImportPlaylist()
         {
             {/* Pseudo code (all comments)
@@ -257,6 +271,7 @@ namespace SmplEditor
             string[] fileNames = openSmpls.FileNames;
 
             List<int> newFileIndices = FilterNewFileIndices(fileNames, prevImportFileName);
+            List<Song> newSongToLibrary = new List<Song>();
             foreach (int fileIdx in newFileIndices)
             {
                 string safeName = safeNames[fileIdx];
@@ -267,8 +282,13 @@ namespace SmplEditor
                 }
                 else if(extension == ".smpl"){
                     string jsonString = File.ReadAllText(fileNames[fileIdx]);
-                    Smpl newPlaylist = JsonSerializer.Deserialize<Smpl>(jsonString);
-                    // I should create a Song, that can contain iTunes song and SMPL at the sametime, and replace it inthe SMPL..?
+                    Smpl importingPlaylist = JsonSerializer.Deserialize<Smpl>(jsonString);
+                    Playlist playlist = getPlaylist(importingPlaylist);
+                    // Add the songs to the existing songs library, and replace the list with the refernce in the library.
+                    // If it already exist, just do the latter part
+                    // There must a temporary song class only for getting the raw formats, for each
+                    // and there should be a universal one, that is actually stored in the library.
+                    // playlist also.
                     this.playlistLibrary.Add(newPlaylist);
                 }
                 else // Other than iTunes or SMPL
