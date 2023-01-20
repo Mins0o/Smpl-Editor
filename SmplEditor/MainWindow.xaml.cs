@@ -25,6 +25,14 @@ namespace SmplEditor
     {
         private List<Playlist> playlistLibrary = new List<Playlist>();
         private List<Song> songLibrary = new List<Song>();
+
+        private Song matchSong(Song looking, List<Song> list){
+            Song match = new Song();
+            if (true){
+                return null;
+            }
+            return match;
+        }
         // Playlists : List of playlists throughtout the application
         private List<Smpl> playlists;// = new List<Smpl>();
         private List<SmplSong> allSongs = new List<SmplSong>();
@@ -208,6 +216,17 @@ namespace SmplEditor
 
         private List<Song> addNewSongsToLibrary(Smpl playlist, List<Song> library){
             List<Song> newSongsList = new List<Song>();
+            List<Song> playlistSongs = playlist.members;
+            foreach (Song song in playlistSongs){
+                Song matched = this.matchSong(song, library);
+                if(matched != null){ // More like, if it is matched
+                    ;
+                }
+                else{
+                    library.Add(song);
+                    newSongsList.Add(song);
+                }
+            }
             return newSongsList;
         }
         private List<Song> addNewSongsToLibrary(ITunesPlaylist playlist, List<Song> library){
@@ -293,7 +312,6 @@ namespace SmplEditor
                     // There must a temporary song class only for getting the raw formats, for each
                     // and there should be a universal one, that is actually stored in the library.
                     // playlist also.
-                    this.playlistLibrary.Add(newPlaylist);
                 }
                 else // Other than iTunes or SMPL
                 {
