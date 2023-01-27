@@ -15,7 +15,35 @@ namespace SmplEditor
         public int order { get; set; }
         public string title { get; set; }
         public int type { get; set; }
-        SmplSong smplSong;
+
+        {
+        // An iTunes song have
+        //        Album string
+        //        AlbumArtist string
+        //        AlbumRating int?
+        //        AlbumRatingComputed bool
+        //        Artist string
+        //        BitRate int?
+        //        Composer string
+        //+		  DateAdded	System.DateTime
+        //+		  DateModified System.DateTime?
+        //        Genre string
+        //		  Kind string
+        //		  Location string
+        //		  Name string
+        //		  PartOfCompilation bool
+        //		  PersistentId string
+        //		  PlayCount int?
+        //+		  PlayDate System.DateTime?
+        //        PlayingTime string
+        //		  Rating int?
+        //		  SampleRate int?
+        //		  Size long?
+        //		  TrackId int
+        //		  TrackNumber int?
+        //		  Year int?
+        }
+    SmplSong smplSong;
         ITunesLibraryParser.Track iTunesSong;
         bool is_mapped;
 
