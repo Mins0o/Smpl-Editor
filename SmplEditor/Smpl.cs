@@ -18,7 +18,9 @@ namespace SmplEditor
         public int recentlyPlayedDate { get; set; }
         public int sortBy { get; set; }
         public int version { get; set; }
-        public Smpl(string name,List<SmplSong> songList)
+
+        // vvv All the methods requires revision vvv
+        public Smpl(string name,List<Song> songList)
         {
             this.name = name;
             this.members = Smpl.DeepCopySongList(songList);
@@ -122,7 +124,7 @@ namespace SmplEditor
         {
             this.members.Sort((SmplSong x, SmplSong y) => x.info.CompareTo(y.info));
         }
-        public static List<SmplSong> DeepCopySongList(List<SmplSong> songList)
+        public static List<Song> DeepCopySongList(List<Song> songList)
         {
             List<SmplSong> coppiedList = new List<SmplSong>();
             foreach (SmplSong song in songList)

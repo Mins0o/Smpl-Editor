@@ -8,8 +8,8 @@ namespace SmplEditor
 {
     internal class Song
     {
-        // field name should match the json format when using
-        // the .smpl uses lowercase.
+        // This class should be able to accomodate both 
+        // iTunes songs' data and smpl songs' data
         public string artist { get; set; }
         public string info { get; set; }
         public int order { get; set; }

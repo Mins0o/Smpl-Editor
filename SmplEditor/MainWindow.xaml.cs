@@ -26,13 +26,14 @@ namespace SmplEditor
         private List<Playlist> playlistLibrary = new List<Playlist>();
         private List<Song> songLibrary = new List<Song>();
 
-        private Song matchSong(Song looking, List<Song> list){
+        private Song matchSong(Song looking, List<Song> list) {
             Song match = new Song();
-            if (true){
+            if (true) {
                 return null;
             }
             return match;
         }
+
         // Playlists : List of playlists throughtout the application
         private List<Smpl> playlists;// = new List<Smpl>();
         private List<SmplSong> allSongs = new List<SmplSong>();
@@ -282,14 +283,15 @@ namespace SmplEditor
             }
 
             // Get the file paths to load.
-            OpenFileDialog openSmpls = new OpenFileDialog
+            OpenFileDialog openFiles = new OpenFileDialog
             {
                 Multiselect = true
             };
-            openSmpls.ShowDialog();
-            // safeNames are only the name + extension, fileNames are full paths
-            string[] safeNames = openSmpls.SafeFileNames;
-            string[] fileNames = openSmpls.FileNames;
+            openFiles.ShowDialog();
+            // Without full path, just names with extensions
+            string[] safeNames = openFiles.SafeFileNames;
+            // Full path
+            string[] fileNames = openFiles.FileNames;
 
             List<int> newFileIndices = FilterNewFileIndices(fileNames, prevImportFileName);
             List<Song> newSongToLibrary = new List<Song>();
