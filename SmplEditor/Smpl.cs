@@ -39,6 +39,9 @@ namespace SmplEditor
             this.sortBy = 4;
             this.version = 1;
         }
+        public bool CompareWith(Song target){
+            return false;
+        }
         public void AddSong(SmplSong addition)
         {
             SmplSong newAddition = addition.DeepCopy();

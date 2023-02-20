@@ -26,7 +26,7 @@ namespace SmplEditor
         private List<Playlist> playlistLibrary = new List<Playlist>();
         private List<Song> songLibrary = new List<Song>();
 
-        private Song matchSong(Song looking, List<Song> list) {
+        private Song matchSong(Song lookingFor, List<Song> list) {
             Song match = new Song();
             if (true) {
                 return null;
@@ -215,6 +215,12 @@ namespace SmplEditor
             return playlistName;
         }
 
+        // private List<T> addNewSongsToLibrary<T,P>(P palylist, List<T> library)
+        // where T:Song
+        // where P:Playlist
+        // {
+        //     return new List<T>();
+        // }
         private List<Song> addNewSongsToLibrary(Smpl playlist, List<Song> library){
             List<Song> newSongsList = new List<Song>();
             List<Song> playlistSongs = playlist.members;
