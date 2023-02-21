@@ -1,6 +1,6 @@
 ﻿namespace sandbox_Console
 {
-    class Tester
+    class LocalGlobalTester
     {
         private int testingLocals(int passGlobal)
         {
@@ -14,11 +14,11 @@
         }
         private List<int> testingGlobalList = new List<int> { 1, 2, 3 };
         private int testingGlobalInt = 4;
-        public Tester()
+        public LocalGlobalTester()
         {
             ;
         }
-        public void test()
+        public void LocalGlobalTest()
         {
             int outputInt;
             List<int> outputList;
@@ -33,17 +33,42 @@
 
         }
     }
-    internal class Program
+    
+    class LevensteinTester
+    {
+        private SimMetrics.Net.Metric.Levenstein levenstein = new SimMetrics.Net.Metric.Levenstein();
+        public LevensteinTester()
+        {
+            ;
+        }
+        public void LevensteinTest()
+        {
+            string firstString = "File-Importing";
+            string secondString = "File-exporting";
+            double compareScore = this.levenstein.GetSimilarity(firstString, secondString);
+            int length = firstString.Length;
+            Console.WriteLine(firstString + " " + secondString);
+            Console.WriteLine(compareScore.ToString("0.00") + " len " + length + " sim " + (compareScore * length));
+        }
+    }
+    
+        internal class Program
     {
         static void Main(string[] args)
         {
-            Tester test = new Tester();
+            LocalGlobalTester localGlobal = new LocalGlobalTester();
+            LevensteinTester levenstein = new LevensteinTester();
+
             Console.WriteLine("Hello, World!");
+
             var iTunesLibrary = new
                 ITunesLibraryParser.ITunesLibrary("../../../../SmplEditor/Playlists/iTunes/Library.xml");
+
             string currd = System.IO.Directory.GetCurrentDirectory();
             Console.WriteLine(currd);
-            test.test();
+
+            localGlobal.LocalGlobalTest();
+            levenstein.LevensteinTest();
             int breakhere = 1;
         }
     }

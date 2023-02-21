@@ -21,19 +21,19 @@ namespace SmplEditor
 
         public void SortByArtist()
         {
-            this.members.Sort((SmplSong x, SmplSong y) => x.artist.CompareTo(y.artist));
+            this.members.Sort((SmplSong x, SmplSong y) => x.Artist.CompareTo(y.Artist));
         }
         public void SortByTitle()
         {
-            this.members.Sort((SmplSong x, SmplSong y) => x.title.CompareTo(y.title));
+            this.members.Sort((SmplSong x, SmplSong y) => x.Title.CompareTo(y.Title));
         }
         public void SortByDirectory()
         {
-            this.members.Sort((SmplSong x, SmplSong y) => x.info.CompareTo(y.info));
+            this.members.Sort((SmplSong x, SmplSong y) => x.Info.CompareTo(y.Info));
         }
         public void SortByOrder()
         {
-            this.members.Sort((SmplSong x, SmplSong y) => x.info.CompareTo(y.info));
+            this.members.Sort((SmplSong x, SmplSong y) => x.Order.CompareTo(y.Order));
         }
     }
 }

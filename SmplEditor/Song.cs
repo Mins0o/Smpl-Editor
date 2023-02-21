@@ -3,19 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SimMetrics.Net.Metric;
 
 namespace SmplEditor
 {
     public class Song
     {
-        // This class should be able to accomodate both 
-        // iTunes songs' data and smpl songs' data
-        public string artist { get; set; }
-        public string info { get; set; }
-        public int order { get; set; }
-        public string title { get; set; }
-        public int type { get; set; }
-
+        public bool HasSmplSong(){
+            return this.smplMusic == default;
+        }
+        public bool HasITunesSong(){
+            return this.iTunesSong == default;
+        }
         // An iTunes song have
         //        Album string
         //        AlbumArtist string
@@ -42,10 +41,45 @@ namespace SmplEditor
         //		  TrackNumber int?
         //		  Year int?
 
-        SmplSong smplSong;
-        ITunesLibraryParser.Track iTunesSong;
-        bool is_mapped;
+        private Levenstein levenstein = new Levenstein();
 
+        private SmplSong smplMusic = default(SmplSong);
+        public SmplSong SmplMusic{
+            get{
+                return this.smplMusic;
+            }
+        }
+        private ITunesLibraryParser.Track iTunesSong = default(ITunesLibraryParser.Track);
+        public ITunesLibraryParser.Track ITunesSong{
+            get{
+                return this.iTunesSong;
+            }
+        }
+
+        public bool CompareWith(SmplSong smplSong){
+            if (this.HasSmplSong()){
+                return smplSong.CompareWith(this.SmplMusic);
+            }
+            if (this.HasITunesSong()){
+                return smplSong.CompareWith(this.ITunesSong);
+            }
+            return false;
+        }
+        public bool CompareWith(ITunesLibraryParser.Track iTunesSong){
+            if (this.HasSmplSong()){
+                return this.SmplMusic.CompareWith(iTunesSong);
+            }
+            if (this.HasITunesSong()){
+                double artistScore = this.levenstein.GetSimilarity(this.ITunesSong.Artist, iTunesSong.Artist);
+                double titleScore = this.levenstein.GetSimilarity(this.ITunesSong.Name, iTunesSong.Name);
+                double albumScore = this.levenstein.GetSimilarity(this.ITunesSong.Album, iTunesSong.Album);
+
+                if (artistScore > 0.9 && titleScore > 0.8 && albumScore > 0.8){
+                    return true;
+                }
+            }
+            return false;
+        }
         void remove_from_lib()
         {
             return;
