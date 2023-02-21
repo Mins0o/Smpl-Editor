@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SmplEditor
 {
-    internal class Song
+    public class Song
     {
         // This class should be able to accomodate both 
         // iTunes songs' data and smpl songs' data
@@ -16,13 +16,12 @@ namespace SmplEditor
         public string title { get; set; }
         public int type { get; set; }
 
-        {
         // An iTunes song have
         //        Album string
         //        AlbumArtist string
         //        AlbumRating int?
         //        AlbumRatingComputed bool
-        //        Artist string
+        //        Artist string -------------------*
         //        BitRate int?
         //        Composer string
         //+		  DateAdded	System.DateTime
@@ -30,7 +29,7 @@ namespace SmplEditor
         //        Genre string
         //		  Kind string
         //		  Location string
-        //		  Name string
+        //		  Name string   -------------------*
         //		  PartOfCompilation bool
         //		  PersistentId string
         //		  PlayCount int?
@@ -42,8 +41,8 @@ namespace SmplEditor
         //		  TrackId int
         //		  TrackNumber int?
         //		  Year int?
-        }
-    SmplSong smplSong;
+
+        SmplSong smplSong;
         ITunesLibraryParser.Track iTunesSong;
         bool is_mapped;
 
