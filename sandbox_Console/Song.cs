@@ -9,15 +9,11 @@ namespace SmplEditor
 {
     public class Song
     {
-        public Song(SmplSong smplSong){
-            this.smplMusic = smplSong;
-        }
-
         public bool HasSmplSong(){
-            return this.smplMusic == default(SmplSong);
+            return this.smplMusic == default;
         }
         public bool HasITunesSong(){
-            return this.iTunesSong == default(ITunesLibraryParser.Track);
+            return this.iTunesSong == default;
         }
         // An iTunes song have
         //        Album string

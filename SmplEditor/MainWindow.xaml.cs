@@ -26,14 +26,6 @@ namespace SmplEditor
         private List<Playlist> playlistLibrary = new List<Playlist>();
         private List<Song> songLibrary = new List<Song>();
 
-        private Song matchSong(Song lookingFor, List<Song> list) {
-            Song match = new Song();
-            if (true) {
-                return null;
-            }
-            return match;
-        }
-
         // Playlists : List of playlists throughtout the application
         private List<Smpl> playlists;// = new List<Smpl>();
         private List<SmplSong> allSongs = new List<SmplSong>();
@@ -216,23 +208,19 @@ namespace SmplEditor
         }
 
         // private List<T> addNewSongsToLibrary<T,P>(P palylist, List<T> library)
-        // where T:Song
-        // where P:Playlist
-        // {
-        //     return new List<T>();
-        // }
-        private List<Song> addNewSongsToLibrary(Smpl playlist, List<Song> library){
+        private List<Song> matchExistingSongs(Smpl playlist, List<Song> library, List<Song> newSongs){
             List<Song> newSongsList = new List<Song>();
-            List<Song> playlistSongs = playlist.members;
-            foreach (Song song in playlistSongs){
-                Song matched = this.matchSong(song, library);
-                if(matched != null){ // More like, if it is matched
-                    ;
+            List<Song> remappedPlaylist = new List<Song>();
+            List<SmplSong> playlistSongs = playlist.members;
+            foreach (SmplSong targetSong in playlistSongs){
+                Song matched = library.Find(libSong => targetSong.CompareWith(libSong));
+                if(matched != default(Song)){ // not found
+                    // convert the SmplSong to a Song and add to the list
+                    matched = new Song(targetSong);
+                    newSongsList.Add(matched);
+                    library.Add(matched);
                 }
-                else{
-                    library.Add(song);
-                    newSongsList.Add(song);
-                }
+                remappedPlaylist.Add(matched);
             }
             return newSongsList;
         }
@@ -313,11 +301,14 @@ namespace SmplEditor
                     string jsonString = File.ReadAllText(fileNames[fileIdx]);
                     // This playlist object will be just temporary.
                     Smpl importingPlaylist = JsonSerializer.Deserialize<Smpl>(jsonString);
-                    List<Song> newSongs = addNewSongsToLibrary(importingPlaylist, songLibrary);
+                    
+                    List<Song> newSongs = new List<Song>();
+                    List<Song> remappedPlaylist = matchExistingSongs(importingPlaylist, songLibrary, newSongs);
                     Playlist playlist = getPlaylist(importingPlaylist, songLibrary);
                     // add the playlist to the playlist library
                     // If it already exist, just do the latter part
                     // There must a temporary song class only for getting the raw formats, for each
+
                     // and there should be a universal one, that is actually stored in the library.
                     // playlist also.
                 }
