@@ -304,6 +304,7 @@ namespace SmplEditor
                     
                     List<Song> newSongs = new List<Song>();
                     List<Song> remappedPlaylist = matchExistingSongs(importingPlaylist, songLibrary, newSongs);
+                    
                     Playlist playlist = getPlaylist(importingPlaylist, songLibrary);
                     // add the playlist to the playlist library
                     // If it already exist, just do the latter part

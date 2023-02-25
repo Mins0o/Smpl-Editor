@@ -20,6 +20,7 @@
         }
         public void LocalGlobalTest()
         {
+            Console.WriteLine("\n\n↓↓↓↓↓Local Global Test↓↓↓↓↓\n");
             int outputInt;
             List<int> outputList;
             Console.WriteLine("inputInt " + testingGlobalInt);
@@ -29,8 +30,8 @@
             Console.WriteLine("outputInt " + outputInt);
             Console.WriteLine("outputList " + string.Join(", ", outputList));
             Console.WriteLine("afterOutInt " + testingGlobalInt);
-            Console.WriteLine("afterOutList " + string.Join(", ", testingGlobalList));
-
+            Console.WriteLine("afterOutList " + string.Join(", ", testingGlobalList)); 
+            Console.WriteLine("\n\n↑↑↑↑↑Local Global Test↑↑↑↑↑\n");
         }
     }
     
@@ -43,21 +44,148 @@
         }
         public void LevensteinTest()
         {
+            Console.WriteLine("\n\n↓↓↓↓↓Levenstein Test↓↓↓↓↓\n");
             string firstString = "File-Importing";
             string secondString = "File-exporting";
             double compareScore = this.levenstein.GetSimilarity(firstString, secondString);
             int length = firstString.Length;
             Console.WriteLine(firstString + " " + secondString);
             Console.WriteLine(compareScore.ToString("0.00") + " len " + length + " sim " + (compareScore * length));
+            Console.WriteLine("\n\n↑↑↑↑↑Levenstein Testing↑↑↑↑↑\n");
         }
     }
     
-        internal class Program
+    class InheritanceBase
+    {
+        private int code = 1; 
+        public int Code { get { return code;} }
+        private int virtualCode = 2;
+        virtual public int VirtualCode { get { return virtualCode;} }
+        private int selectiveInt = 3;
+        public int SelectiveInt { get { return selectiveInt; } }
+        private string selectiveString = "Hi";
+        public string SelectiveString { get { return selectiveString; } }
+        private List<int> selectiveList= new List<int> { 1, 2, 3 };
+        public List<int> SelectiveList { get { return selectiveList ; } }
+
+        public void Method01()
+        {
+            Console.WriteLine("01Call from Method01()");
+        }
+        public void Method02_override()
+        {
+            Console.WriteLine("02Call from the Base");
+        }
+        //abstract public void Method03_override();
+        // cannot be declared abstract if it belongs to a non-abstract class
+        /*{
+        // cannot declare body because it is abstract.
+            Console.WriteLine("Abstract, from Base");
+        }*/
+        /*public abstract void Method04_override()
+        {
+
+        }*/
+        virtual public void Method05_override()
+        {
+            Console.WriteLine("05Virtual, from Base");
+        }
+
+        /*override public void Method06_override()
+        {
+            Console.WriteLine("override, from Base");
+        }*/
+        // This is not overriding a base of this class
+        // This classs have it's base class
+    }
+
+    class InheritanceDerivedA : InheritanceBase
+    {
+        private int code = -1;
+        public int Code { get { return code;} }
+        private int virtualCode = -2;
+        //public override int VirtualCode => base.VirtualCode;
+        public override int VirtualCode { get { return virtualCode; } }
+        public void Method02_override()
+        {
+            Console.WriteLine("02override, from A");
+        }
+        public override void Method05_override()
+        {
+            Console.WriteLine("05Virtual, from A");
+        }
+    }
+
+    class InheritanceDerivedB : InheritanceBase
+    {
+        private int onlyBCode = 3;
+        public int OnlyBCode { get { return onlyBCode; } }
+        public void OnlyBMethod()
+        {
+            Console.WriteLine("Only B Method");
+        }
+    }
+
+    class InheritanceTester
+    {
+        InheritanceBase baseClass = new InheritanceBase();
+        InheritanceDerivedA aClass = new InheritanceDerivedA();
+        InheritanceDerivedB bClass = new InheritanceDerivedB();
+
+        private void printAll<T>(T inheritanceClass) where T : InheritanceBase
+        {
+            string printString = "Code : "
+                               + inheritanceClass.Code.ToString()
+                               + "|VirtualCode : "
+                               + inheritanceClass.VirtualCode.ToString()
+                               + "|SelectiveInt : "
+                               + inheritanceClass.SelectiveInt.ToString()
+                               + "|SelectiveString : "
+                               + inheritanceClass.SelectiveString
+                               + "|SelectiveList : "
+                               + string.Join(", ",inheritanceClass.SelectiveList);
+            Console.WriteLine(printString);
+            inheritanceClass.Method01();
+            inheritanceClass.Method02_override();
+            inheritanceClass.Method05_override();
+            /*Console.WriteLine(inheritanceClass.OnlyBCode.ToString());
+            inheritanceClass.OnlyBMethod();*/
+        }
+        public void Test()
+        {
+            Console.WriteLine("\n\n↓↓↓↓↓Inheritance Testing↓↓↓↓↓\n");
+            Console.WriteLine("Base");
+            printAll(baseClass);
+            Console.WriteLine("A");
+            printAll(aClass);
+            Console.WriteLine("B");
+            printAll(bClass);
+            Console.WriteLine(bClass.OnlyBCode.ToString());
+            bClass.OnlyBMethod();
+            Console.Write("A.Code, A not as inheritBase --> ");
+            Console.WriteLine(aClass.Code);
+
+            InheritanceDerivedA asKeywordA = new InheritanceDerivedA();
+            InheritanceBase asKeywordBase = asKeywordA as InheritanceBase;
+            Console.WriteLine("\nA itself →");
+            asKeywordA.Method01();
+            asKeywordA.Method02_override();
+            asKeywordA.Method05_override();
+            Console.WriteLine("A as Base →");
+            asKeywordBase.Method01();
+            asKeywordBase.Method02_override();
+            asKeywordBase.Method05_override();
+            Console.WriteLine("\n\n↑↑↑↑↑Inheritance Testing↑↑↑↑↑\n");
+        }
+    }
+
+    internal class Program
     {
         static void Main(string[] args)
         {
             LocalGlobalTester localGlobal = new LocalGlobalTester();
             LevensteinTester levenstein = new LevensteinTester();
+            InheritanceTester inheritance01 = new InheritanceTester();
 
             Console.WriteLine("Hello, World!");
 
@@ -69,6 +197,7 @@
 
             localGlobal.LocalGlobalTest();
             levenstein.LevensteinTest();
+            inheritance01.Test();
             int breakhere = 1;
         }
     }
