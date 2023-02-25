@@ -14,10 +14,10 @@ namespace SmplEditor
         }
 
         public bool HasSmplSong(){
-            return this.smplMusic == default(SmplSong);
+            return this.smplMusic != default(SmplSong);
         }
         public bool HasITunesSong(){
-            return this.iTunesSong == default(ITunesLibraryParser.Track);
+            return this.iTunesSong != default(ITunesLibraryParser.Track);
         }
         // An iTunes song have
         //        Album string

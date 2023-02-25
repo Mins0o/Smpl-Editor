@@ -9,16 +9,48 @@ using Microsoft.Win32;
 
 namespace SmplEditor
 {
-    internal class Smpl:Playlist
+    internal class Smpl
     {
-        // field name should match the json format when using
-        // the .smpl uses lowercase.
-        public string name { get; set; }
-        public List<SmplSong> members { get; set; }
-        public int recentlyPlayedDate { get; set; }
-        public int sortBy { get; set; }
-        public int version { get; set; }
-
+        private string name;
+        public string Name 
+        {
+            get { return name; } 
+        }
+        private List<SmplSong> members;
+        public List<SmplSong> Members
+        {
+            get { return members; }
+        }
+        private int recentlyPlayedDate;
+        public int RecentlyPlayedDate
+        {
+            get { return recentlyPlayedDate;}
+        }
+        private int sortBy;
+        public int SortBy
+        {
+            get { return sortBy; }
+        }
+        private int version;
+        public int Version
+        {
+            get { return version; }
+        }
+        public Smpl(string name, int recentlyPlayedDate
+                    , int sortBy, int version){
+            this.name = string.Copy(name);
+            this.recentlyPlayedDate = recentlyPlayedDate;
+            this.members = new List<SmplSong> ();
+            this.sortBy = sortBy;
+            this.version = version;
+        }
+        public Smpl Clone(){
+            Smpl cloned = new Smpl(this.name, 
+                                this.recentlyPlayedDate,
+                                this.sortBy,
+                                this.version);
+            return cloned;
+        }
         public void SortByArtist()
         {
             this.members.Sort((SmplSong x, SmplSong y) => x.Artist.CompareTo(y.Artist));

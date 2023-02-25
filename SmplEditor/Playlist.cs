@@ -8,12 +8,17 @@ namespace SmplEditor
 {
     internal class Playlist
     {
-        string name;
-        List<Song> list;
-        bool type;
-        int recentlyPlayedDate;
-        int sortBy;
-        int version;
+        private bool isSmpl;
+        private bool isITunes;
+        private Smpl smplProperties;
+        private ITunesPlaylist iTunesProperties;
+        private List<Song> listOfTracks;
+        public Playlist(Smpl smpl, List<Song> songList){
+            isSmpl = true;
+            isITunes = false;
+            smplProperties = smpl.Clone();
+            listOfTracks = songList;
+        }
         public virtual void AddSongs(Song song)
         {
             System.Diagnostics.Trace.WriteLine("AddSongs: Not implemented");

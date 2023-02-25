@@ -211,7 +211,7 @@ namespace SmplEditor
         private List<Song> matchExistingSongs(Smpl playlist, List<Song> library, List<Song> newSongs){
             List<Song> newSongsList = new List<Song>();
             List<Song> remappedPlaylist = new List<Song>();
-            List<SmplSong> playlistSongs = playlist.members;
+            List<SmplSong> playlistSongs = playlist.Members;
             foreach (SmplSong targetSong in playlistSongs){
                 Song matched = library.Find(libSong => targetSong.CompareWith(libSong));
                 if(matched != default(Song)){ // not found
@@ -299,19 +299,15 @@ namespace SmplEditor
                 }
                 else if(extension == ".smpl"){
                     string jsonString = File.ReadAllText(fileNames[fileIdx]);
-                    // This playlist object will be just temporary.
                     Smpl importingPlaylist = JsonSerializer.Deserialize<Smpl>(jsonString);
-                    
+
+                    // Separate new songs with the existing ones
+                    // Remap the playlist to the library songs
+                    // Add new songs to the library
                     List<Song> newSongs = new List<Song>();
                     List<Song> remappedPlaylist = matchExistingSongs(importingPlaylist, songLibrary, newSongs);
-                    
-                    Playlist playlist = getPlaylist(importingPlaylist, songLibrary);
-                    // add the playlist to the playlist library
-                    // If it already exist, just do the latter part
-                    // There must a temporary song class only for getting the raw formats, for each
 
-                    // and there should be a universal one, that is actually stored in the library.
-                    // playlist also.
+                    Playlist playlist = new Playlist(importingPlaylist, remappedPlaylist);
                 }
                 else // Other than iTunes or SMPL
                 {
