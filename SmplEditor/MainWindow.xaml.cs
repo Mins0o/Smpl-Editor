@@ -32,13 +32,12 @@ namespace SmplEditor
         private List<string> prevImportFileName = new List<string>();
         public MainWindow()
         {
-            ImportPlaylist();
             // initializing
-            while (playlists == null)
+            while (playlistLibrary.Count == 0)
             {
                 try
                 {
-                    LoadSmpls();
+                    ImportPlaylist();
                 }
                 catch (ArgumentException e)
                 {
@@ -52,7 +51,7 @@ namespace SmplEditor
             }
 
             // If no playlists were loaded from LoadSmpls(), shutdown the app
-            if (playlists.Count == 0)
+            if (playlistLibrary.Count == 0)
             {
                 MessageBox.Show("No Samsung Music Playlist detected. Exitting the application.");
                 Application.Current.Shutdown();
@@ -288,7 +287,6 @@ namespace SmplEditor
             string[] fileNames = openFiles.FileNames;
 
             List<int> newFileIndices = FilterNewFileIndices(fileNames, prevImportFileName);
-            List<Song> newSongToLibrary = new List<Song>();
             foreach (int fileIdx in newFileIndices)
             {
                 string safeName = safeNames[fileIdx];
@@ -311,6 +309,7 @@ namespace SmplEditor
                     List<Song> remappedPlaylist = matchExistingSongs(importingPlaylist, songLibrary, newSongs);
 
                     Playlist playlist = new Playlist(importingPlaylist, remappedPlaylist);
+                    playlistLibrary.Add(playlist);
                 }
                 else // Other than iTunes or SMPL
                 {
