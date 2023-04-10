@@ -11,48 +11,12 @@ namespace SmplEditor
     {
         // field name should match the json format when using
         // the .smpl uses lowercase.
-        private string artist;
-        private string info;
-        private int order;
-        private string title;
-        private int type;
-        private int extraStuff;
-        public string Artist {
-            get{
-                return this.artist;
-            }
-        }
-        public string Info {
-            get{
-                return this.info;
-            }
-        }   
-        public int Order {
-            get{
-                return this.order;
-            }
-            set{
-                this.order = value;
-            }
-        }
-        public string Title {
-            get{
-                return this.title;
-            }
-        }
-        public int Type {
-            get{
-                return this.type;
-            }
-        }
-        public int ExtraStuff {
-            get{
-                return this.extraStuff;
-            }
-            set{
-                this.extraStuff = value;
-            }
-        }
+        public string artist {get; set;}
+        public string info {get; set;}
+        public int order {get; set;}
+        public string title {get; set;}
+        public int type {get; set;}
+        public int extraStuff {get; set;}
 
         private Levenstein levenstein = new Levenstein();
         public string UpperDirectory()
@@ -71,8 +35,8 @@ namespace SmplEditor
         }
 
         public bool CompareWith(SmplSong smplSong){
-            double artistScore = this.levenstein.GetSimilarity(this.artist, smplSong.Artist);
-            double titleScore = this.levenstein.GetSimilarity(this.title, smplSong.Artist);
+            double artistScore = this.levenstein.GetSimilarity(this.artist, smplSong.artist);
+            double titleScore = this.levenstein.GetSimilarity(this.title, smplSong.artist);
 
             if (artistScore > 0.9 && titleScore > 0.8){
                 return true;

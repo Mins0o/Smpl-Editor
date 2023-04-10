@@ -16,8 +16,11 @@ namespace SmplEditor
         public Playlist(Smpl smpl, List<Song> songList){
             isSmpl = true;
             isITunes = false;
-            smplProperties = smpl.Clone();
+            smplProperties = smpl.CloneProperties();
             listOfTracks = songList;
+        }
+        public Playlist(){
+            ;
         }
         public virtual void AddSongs(Song song)
         {

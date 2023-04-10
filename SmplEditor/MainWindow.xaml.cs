@@ -130,7 +130,7 @@ namespace SmplEditor
                         if (noDuplicate)
                         {
                             // The songs added to the allsongs list will be a deep copy(different reference, same values) of the things in the playlists
-                            addList.Add(member.DeepCopy()); //!!why?
+                            addList.Add(member);
                         }
                     }
                     allSongs.AddRange(addList);
@@ -209,20 +209,20 @@ namespace SmplEditor
 
         // private List<T> addNewSongsToLibrary<T,P>(P palylist, List<T> library)
         private List<Song> matchExistingSongs(Smpl playlist, List<Song> library, List<Song> newSongs){
-            List<Song> newSongsList = new List<Song>();
             List<Song> remappedPlaylist = new List<Song>();
-            List<SmplSong> playlistSongs = playlist.Members;
+            List<SmplSong> playlistSongs = playlist.members;
+
             foreach (SmplSong targetSong in playlistSongs){
                 Song matched = library.Find(libSong => targetSong.CompareWith(libSong));
-                if(matched != default(Song)){ // not found
+                if(matched == default(Song)){ // not found
                     // convert the SmplSong to a Song and add to the list
                     matched = new Song(targetSong);
-                    newSongsList.Add(matched);
+                    newSongs.Add(matched);
                     library.Add(matched);
                 }
                 remappedPlaylist.Add(matched);
             }
-            return newSongsList;
+            return remappedPlaylist;
         }
         private List<Song> addNewSongsToLibrary(ITunesPlaylist playlist, List<Song> library){
             List<Song> newSongsList = new List<Song>();
@@ -300,6 +300,9 @@ namespace SmplEditor
                 else if(extension == ".smpl"){
                     string jsonString = File.ReadAllText(fileNames[fileIdx]);
                     Smpl importingPlaylist = JsonSerializer.Deserialize<Smpl>(jsonString);
+
+                    // If the playlist has no songs, skip the playlist
+                    if (importingPlaylist.members == null) continue; 
 
                     // Separate new songs with the existing ones
                     // Remap the playlist to the library songs

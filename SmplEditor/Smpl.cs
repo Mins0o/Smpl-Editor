@@ -11,30 +11,13 @@ namespace SmplEditor
 {
     internal class Smpl
     {
-        private string name;
-        public string Name 
-        {
-            get { return name; } 
-        }
-        private List<SmplSong> members;
-        public List<SmplSong> Members
-        {
-            get { return members; }
-        }
-        private int recentlyPlayedDate;
-        public int RecentlyPlayedDate
-        {
-            get { return recentlyPlayedDate;}
-        }
-        private int sortBy;
-        public int SortBy
-        {
-            get { return sortBy; }
-        }
-        private int version;
-        public int Version
-        {
-            get { return version; }
+        public string name {get; set;}
+        public List<SmplSong> members {get; set;}
+        public int recentlyPlayedDate {get; set;}
+        public int sortBy {get; set;}
+        public int version {get; set;}
+        public Smpl(){
+            ;
         }
         public Smpl(string name, int recentlyPlayedDate
                     , int sortBy, int version){
@@ -44,7 +27,10 @@ namespace SmplEditor
             this.sortBy = sortBy;
             this.version = version;
         }
-        public Smpl Clone(){
+        public Smpl(string name, List<SmplSong> songList){
+            ;
+        }
+        public Smpl CloneProperties(){
             Smpl cloned = new Smpl(this.name, 
                                 this.recentlyPlayedDate,
                                 this.sortBy,
@@ -53,19 +39,26 @@ namespace SmplEditor
         }
         public void SortByArtist()
         {
-            this.members.Sort((SmplSong x, SmplSong y) => x.Artist.CompareTo(y.Artist));
+            this.members.Sort((SmplSong x, SmplSong y) => x.artist.CompareTo(y.artist));
         }
         public void SortByTitle()
         {
-            this.members.Sort((SmplSong x, SmplSong y) => x.Title.CompareTo(y.Title));
+            this.members.Sort((SmplSong x, SmplSong y) => x.title.CompareTo(y.title));
         }
         public void SortByDirectory()
         {
-            this.members.Sort((SmplSong x, SmplSong y) => x.Info.CompareTo(y.Info));
+            this.members.Sort((SmplSong x, SmplSong y) => x.info.CompareTo(y.info));
         }
         public void SortByOrder()
         {
-            this.members.Sort((SmplSong x, SmplSong y) => x.Order.CompareTo(y.Order));
+            this.members.Sort((SmplSong x, SmplSong y) => x.order.CompareTo(y.order));
+        }
+
+        public void AddSongs(SmplSong[] selectedSongs){
+            ;
+        }
+        public void RemoveSongs(SmplSong[] songsToDelete){
+            ;
         }
     }
 }
