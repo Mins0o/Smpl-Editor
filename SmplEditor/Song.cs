@@ -46,15 +46,20 @@ namespace SmplEditor
         //		  Year int?
 
         private Levenstein levenstein = new Levenstein();
-
         private SmplSong smplMusic = default(SmplSong);
         public SmplSong SmplMusic{
+            set{
+                this.smplMusic = value;
+            }
             get{
                 return this.smplMusic;
             }
         }
         private ITunesLibraryParser.Track iTunesSong = default(ITunesLibraryParser.Track);
         public ITunesLibraryParser.Track ITunesSong{
+            set{
+                this.iTunesSong = value;
+            }
             get{
                 return this.iTunesSong;
             }

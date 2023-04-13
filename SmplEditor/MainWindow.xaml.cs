@@ -219,6 +219,11 @@ namespace SmplEditor
                     newSongs.Add(matched);
                     library.Add(matched);
                 }
+                else{ // existing song found on library
+                    if(!matched.HasSmplSong()){ // if the song doesn't have SMPLSong, add the new information
+                        matched.SmplMusic = targetSong;
+                    }
+                }
                 remappedPlaylist.Add(matched);
             }
             return remappedPlaylist;
