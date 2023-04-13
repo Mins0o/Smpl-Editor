@@ -432,46 +432,39 @@ namespace SmplEditor
         {
             int selectedOption = SortOptionComboBox.SelectedIndex;
             switch (selectedOption){
-                case 0:
+                case 0: // by Order, directory
                     {
-                        allSongs.Sort((SmplSong x, SmplSong y) => {
-                            if (x.UpperDirectory().CompareTo(y.UpperDirectory()) == 0) {
-                                return x.order.CompareTo(y.order);
-                            } else {
-                                return x.UpperDirectory().CompareTo(y.UpperDirectory());
-                            }
-                        }
-                        );
-                        foreach (Smpl playlist in playlists)
+                        songLibrary.Sort((Song x, Song y) => x.CompareByOrder(y));
+                        foreach (Playlist playlist in playlistLibrary)
                         {
-                            playlist.SortByOrder();
+                            ;
                         }
                         break;
                     }
-                case 1:
+                case 1: // by artists
                     {
-                        allSongs.Sort((SmplSong x, SmplSong y) => x.artist.CompareTo(y.artist));
-                        foreach (Smpl playlist in playlists)
+                        songLibrary.Sort((Song x, Song y) => x.CompareByArtist(y));
+                        foreach (Playlist playlist in playlistLibrary)
                         {
-                            playlist.SortByArtist();
+                            ;
                         }
                         break;
                     }
-                case 2:
+                case 2: // by title
                     {
-                        allSongs.Sort((SmplSong x, SmplSong y) => x.title.CompareTo(y.title));
-                        foreach (Smpl playlist in playlists)
+                        songLibrary.Sort((Song x, Song y) => x.CompareByTitle(y));
+                        foreach (Playlist playlist in playlistLibrary)
                         {
-                            playlist.SortByTitle();
+                            ;
                         }
                         break;
                     }
-                case 3:
+                case 3: // by folder directory?
                     {
                         allSongs.Sort((SmplSong x, SmplSong y) => x.info.CompareTo(y.info));
-                        foreach (Smpl playlist in playlists)
+                        foreach (Playlist playlist in playlistLibrary)
                         {
-                            playlist.SortByDirectory();
+                            ;
                         }
                         break;
                     }
@@ -501,7 +494,7 @@ namespace SmplEditor
             SongsListBox.ItemsSource = null;
             SongsListBox.ItemsSource = allSongs;
             NameAndCountDisplay.Text = "All Songs  -  " + allSongs.Count+" songs";
-        }
+        } 
 
         private void RefreshDisplay()
         {
@@ -553,15 +546,15 @@ namespace SmplEditor
 
         private string FetchNewPlaylistName()
         {
-            string[] playlistNames = new string[playlists.Count];
+            List<string> playlistNames = new List<string>();
             string newPlaylistName = "New Playlist 1";
             int count = 0;
-            foreach (Smpl playlist in playlists)
+            foreach (Playlist playlist in playlistLibrary)
             {
-                playlistNames[count++] = playlist.name;
+                playlistNames.Add(playlist.Name);
             }
             int newPlaylistIndex = 1;
-            while (Array.Find(playlistNames, pn => pn == newPlaylistName) != null)
+            while (playlistNames.Find(playlistName => playlistName == newPlaylistName) != null)
             {
                 newPlaylistName = "New Playlist " + newPlaylistIndex++;
             }

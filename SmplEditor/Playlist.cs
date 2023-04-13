@@ -10,6 +10,16 @@ namespace SmplEditor
     {
         private bool isSmpl;
         private bool isITunes;
+        public string Name{
+            get{
+                if (this.isSmpl){
+                    return this.smplProperties.name;
+                }
+                else{
+                    return "iTunes not implemented yet";
+                }
+            }
+        }
         private Smpl smplProperties;
         private ITunesPlaylist iTunesProperties;
         private List<Song> listOfTracks;

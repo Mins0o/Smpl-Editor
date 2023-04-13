@@ -53,5 +53,37 @@ namespace SmplEditor
             }
             return false;
         }
+        
+        public int CompareByOrder(SmplSong comparingTo){
+            if (this.UpperDirectory().CompareTo(comparingTo.UpperDirectory()) == 0) {
+                return this.order.CompareTo(comparingTo.order);
+            } else{
+                return this.UpperDirectory().CompareTo(comparingTo.UpperDirectory());
+            }
+        }
+        public int CompareByOrder(ITunesLibraryParser.Track comparingTo){
+            return 0;
+        }
+
+        public int CompareByArtist(SmplSong comparingTo){
+            return this.artist.CompareTo(comparingTo.artist);
+        }
+        public int CompareByArtist(ITunesLibraryParser.Track comparingTo){
+            return 0;
+        }
+
+        public int CompareByTitle(SmplSong comparingTo){
+            return this.title.CompareTo(comparingTo.title);
+        }
+        public int CompareByTitle(ITunesLibraryParser.Track comparingTo){
+            return 0;
+        }
+
+        public int CompareByDir(SmplSong comparingTo){
+            return this.info.CompareTo(comparingTo.info);
+        }
+        public int CompareBydir(ITunesLibraryParser.Track comparingTo){
+            return 0;
+        }
     }
 }
