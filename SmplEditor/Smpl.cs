@@ -60,5 +60,9 @@ namespace SmplEditor
         public void RemoveSongs(SmplSong[] songsToDelete){
             ;
         }
+        public override string ToString()
+        {
+            return this.name;
+        }
     }
 }

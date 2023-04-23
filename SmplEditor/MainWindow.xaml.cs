@@ -492,8 +492,8 @@ namespace SmplEditor
         {
             PlaylistsBox.UnselectAll();
             SongsListBox.ItemsSource = null;
-            SongsListBox.ItemsSource = allSongs;
-            NameAndCountDisplay.Text = "All Songs  -  " + allSongs.Count+" songs";
+            SongsListBox.ItemsSource = songLibrary;
+            NameAndCountDisplay.Text = "All Songs  -  " + songLibrary.Count+" songs";
         } 
 
         private void RefreshDisplay()

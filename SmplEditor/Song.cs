@@ -9,8 +9,12 @@ namespace SmplEditor
 {
     public class Song
     {
-        public Song(SmplSong smplSong) {
-            this.smplMusic = smplSong;
+        private string title;
+        private string artist;
+        public Song(SmplSong smplMusic) {
+            this.smplMusic = smplMusic;
+            this.title = smplMusic.title;
+            this.artist = smplMusic.artist;
         }
 
         public bool HasSmplSong() {
@@ -165,6 +169,10 @@ namespace SmplEditor
         void remove_from_lib()
         {
             return;
+        }
+        public override string ToString()
+        {
+            return this.artist + " - " + this.title;
         }
     }
 }
