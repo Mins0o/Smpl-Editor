@@ -23,6 +23,20 @@ namespace SmplEditor
         private Smpl smplProperties;
         private ITunesPlaylist iTunesProperties;
         private List<Song> listOfTracks;
+        public List<Song> ListOfTracks{
+            get{
+                return this.listOfTracks;
+            }
+        }
+        public Playlist(string name, List<Song> songList){
+            isSmpl = true;
+            isITunes = false;
+            smplProperties.name = name;
+            smplProperties.version = 1;
+            smplProperties.recentlyPlayedDate = 0;
+            smplProperties.sortBy = 0;
+            listOfTracks = songList;
+        }
         public Playlist(Smpl smpl, List<Song> songList){
             isSmpl = true;
             isITunes = false;
@@ -32,25 +46,37 @@ namespace SmplEditor
         public Playlist(){
             ;
         }
-        public virtual void AddSongs(Song song)
+        public void AddSongs(List<Song> song)
         {
             System.Diagnostics.Trace.WriteLine("AddSongs: Not implemented");
             return;
         }
-        public virtual void DeleteSongs()
+        public void AddSongs(SmplSong[] songs){
+            System.Diagnostics.Trace.WriteLine("AddSongs: Not implemented");
+            return;
+        }
+        public void DeleteSongs()
         {
             System.Diagnostics.Trace.WriteLine("DeleteSongs: Not implemented");
             return;
         }
-        public virtual void AddSong()
+        public void AddSong()
         {
             System.Diagnostics.Trace.WriteLine("AddSong: Not implemented");
             return;
         }
-        public virtual void DeleteSong()
+        public void DeleteSong()
         {
             System.Diagnostics.Trace.WriteLine("DeleteSong: Not implemented");
             return;
+        }
+        public void RemoveSongs(List<Song> songsToDelete){
+            System.Diagnostics.Trace.WriteLine("Removesongs: Not implemented");
+            return;
+        }
+        public override string ToString()
+        {
+            return this.Name;
         }
     }
 }

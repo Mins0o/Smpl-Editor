@@ -166,6 +166,31 @@ namespace SmplEditor
                 return 0;
             }
         }
+        public int CompareByDir(Song comparingTo){
+            System.Diagnostics.Trace.WriteLine("CompareByDir: Not implemented. Cloning ByTitle behavior.");
+            if (this.HasSmplSong() && comparingTo.HasSmplSong()){
+                // smpl <--> smpl
+                SmplSong x = this.SmplMusic;
+                SmplSong y = comparingTo.SmplMusic;
+
+                return x.CompareByTitle(y);
+            }
+            else if (this.HasITunesSong() && comparingTo.HasITunesSong()){
+                // iTuens <--> iTunes
+                return 0;
+            }
+            else {
+                bool thisIsGlitched = !this.HasITunesSong() && !this.HasSmplSong();
+                bool comparingIsGlitched = !this.HasITunesSong() && !this.HasSmplSong();
+
+                if(thisIsGlitched || comparingIsGlitched){
+                    System.Diagnostics.Debug.Print(thisIsGlitched.ToString());
+                    System.Diagnostics.Debug.Print(comparingIsGlitched.ToString());
+                }
+                // smpl <--> iTunes
+                return 0;
+            }
+        }
         void remove_from_lib()
         {
             return;
