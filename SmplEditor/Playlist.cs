@@ -31,6 +31,7 @@ namespace SmplEditor
         public Playlist(string name, List<Song> songList){
             isSmpl = true;
             isITunes = false;
+            smplProperties = new Smpl();
             smplProperties.name = name;
             smplProperties.version = 1;
             smplProperties.recentlyPlayedDate = 0;
@@ -46,32 +47,35 @@ namespace SmplEditor
         public Playlist(){
             ;
         }
-        public void AddSongs(List<Song> song)
+        public void AddSongs(List<Song> songsToAdd)
         {
-            System.Diagnostics.Trace.WriteLine("AddSongs: Not implemented");
+            this.listOfTracks.AddRange(songsToAdd);
             return;
         }
-        public void AddSongs(SmplSong[] songs){
-            System.Diagnostics.Trace.WriteLine("AddSongs: Not implemented");
-            return;
-        }
-        public void DeleteSongs()
-        {
-            System.Diagnostics.Trace.WriteLine("DeleteSongs: Not implemented");
-            return;
-        }
-        public void AddSong()
-        {
-            System.Diagnostics.Trace.WriteLine("AddSong: Not implemented");
-            return;
-        }
-        public void DeleteSong()
-        {
-            System.Diagnostics.Trace.WriteLine("DeleteSong: Not implemented");
-            return;
-        }
-        public void RemoveSongs(List<Song> songsToDelete){
-            System.Diagnostics.Trace.WriteLine("Removesongs: Not implemented");
+        public void RemoveSongs(List<Song> tracksToDelete){
+            int successCount = 0;
+            List<Song> failedTracks = new List<Song>();
+            foreach (Song track in tracksToDelete){
+                bool success = this.listOfTracks.Remove(track);
+                if (success)
+                {
+                    successCount++;
+                }
+                else
+                {
+                    failedTracks.Add(track);
+                }
+            }
+            string debugMessage = "Deleted " + successCount + " tracks from " + this.Name;
+            System.Diagnostics.Debug.Print(debugMessage);
+            if (failedTracks.Count > 0)
+            {
+                System.Diagnostics.Debug.Print("These tracks failed while trying to remove from the playlist");
+                foreach(Song track in failedTracks)
+                {
+                    System.Diagnostics.Debug.Print(track.ToString());
+                }
+            }
             return;
         }
         public override string ToString()

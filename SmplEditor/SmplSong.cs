@@ -18,6 +18,8 @@ namespace SmplEditor
         public int type {get; set;}
         public int extraStuff {get; set;}
 
+        private const double ARTIST_TH = 0.9;
+        private const double TITLE_TH = 0.8;
         private Levenstein levenstein = new Levenstein();
         public string UpperDirectory()
         {
@@ -38,7 +40,7 @@ namespace SmplEditor
             double artistScore = this.levenstein.GetSimilarity(this.artist, smplSong.artist);
             double titleScore = this.levenstein.GetSimilarity(this.title, smplSong.artist);
 
-            if (artistScore > 0.9 && titleScore > 0.8){
+            if (artistScore > ARTIST_TH && titleScore > TITLE_TH){
                 return true;
             }
             return false;
@@ -48,7 +50,7 @@ namespace SmplEditor
             double artistScore = this.levenstein.GetSimilarity(this.artist, iTunesSong.Artist);
             double titleScore = this.levenstein.GetSimilarity(this.title, iTunesSong.Name);
             
-            if (artistScore > 0.9 && titleScore > 0.8){
+            if (artistScore > ARTIST_TH && titleScore > TITLE_TH){
                 return true;
             }
             return false;

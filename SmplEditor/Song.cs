@@ -167,7 +167,6 @@ namespace SmplEditor
             }
         }
         public int CompareByDir(Song comparingTo){
-            System.Diagnostics.Trace.WriteLine("CompareByDir: Not implemented. Cloning ByTitle behavior.");
             if (this.HasSmplSong() && comparingTo.HasSmplSong()){
                 // smpl <--> smpl
                 SmplSong x = this.SmplMusic;
