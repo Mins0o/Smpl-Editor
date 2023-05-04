@@ -10,7 +10,17 @@ namespace SmplEditor
     public class Song
     {
         private string title;
+        public string Title{
+            get{
+                return this.title;
+            }
+        }
         private string artist;
+        public string Artist{
+            get{
+                return this.artist;
+            }
+        }
         public Song(SmplSong smplMusic) {
             this.smplMusic = smplMusic;
             this.title = smplMusic.title;

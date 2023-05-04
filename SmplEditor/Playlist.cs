@@ -21,6 +21,11 @@ namespace SmplEditor
             }
         }
         private Smpl smplProperties;
+        public Smpl SmplProperties{
+            get{
+                return this.smplProperties;
+            }
+        }
         private ITunesPlaylist iTunesProperties;
         private List<Song> listOfTracks;
         public List<Song> ListOfTracks{
@@ -81,6 +86,25 @@ namespace SmplEditor
         public override string ToString()
         {
             return this.Name;
+        }
+        public void SortByArtist()
+        {
+            this.listOfTracks.Sort((Song x, Song y) => x.Artist.CompareTo(y.Artist));
+            return;
+        }
+        public void SortByTitle()
+        {
+            this.listOfTracks.Sort((Song x, Song y) => x.Title.CompareTo(y.Title));
+            return;
+        }
+        public void SortByDirectory(){
+            if (this.isSmpl){
+                this.listOfTracks.Sort((Song x, Song y) => x.SmplMusic.info.CompareTo(y.SmplMusic.info));
+                return;
+            }
+            else if (this.isITunes){
+                return;
+            }
         }
     }
 }
