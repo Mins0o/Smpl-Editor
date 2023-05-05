@@ -27,38 +27,12 @@ namespace SmplEditor
             this.sortBy = sortBy;
             this.version = version;
         }
-        public Smpl(string name, List<SmplSong> songList){
-            ;
-        }
         public Smpl CloneProperties(){
             Smpl cloned = new Smpl(this.name, 
                                 this.recentlyPlayedDate,
                                 this.sortBy,
                                 this.version);
             return cloned;
-        }
-        public void SortByArtist()
-        {
-            this.members.Sort((SmplSong x, SmplSong y) => x.artist.CompareTo(y.artist));
-        }
-        public void SortByTitle()
-        {
-            this.members.Sort((SmplSong x, SmplSong y) => x.title.CompareTo(y.title));
-        }
-        public void SortByDirectory()
-        {
-            this.members.Sort((SmplSong x, SmplSong y) => x.info.CompareTo(y.info));
-        }
-        public void SortByOrder()
-        {
-            this.members.Sort((SmplSong x, SmplSong y) => x.order.CompareTo(y.order));
-        }
-
-        public void AddSongs(SmplSong[] selectedSongs){
-            ;
-        }
-        public void RemoveSongs(SmplSong[] songsToDelete){
-            ;
         }
         public override string ToString()
         {
