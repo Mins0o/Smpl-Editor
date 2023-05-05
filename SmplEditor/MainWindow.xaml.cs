@@ -30,12 +30,12 @@ namespace SmplEditor
         public MainWindow()
         {
             // initializing
-            while (playlistLibrary.Count == 0)
+            while (this.playlistLibrary.Count == 0)
             {
                 ImportPlaylist();
             }
 
-            if (playlistLibrary.Count == 0)
+            if (this.playlistLibrary.Count == 0)
             {
                 MessageBox.Show("No Music Playlist detected. Exitting the application.");
                 Application.Current.Shutdown();
@@ -46,19 +46,19 @@ namespace SmplEditor
             NewPlaylistNameBox.Text = FetchNewPlaylistName();
 
             // Link the listbox contents with playlists and songs
-            PlaylistsBox.ItemsSource = playlistLibrary;
+            PlaylistsBox.ItemsSource = this.playlistLibrary;
             DisplayAllSongs();
-            AddingListSelector.ItemsSource = playlistLibrary;
+            AddingListSelector.ItemsSource = this.playlistLibrary;
             AddingListSelector.SelectedIndex = 0;
         }
 
         // UI events
         private void OnPlaylistSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // If not de-selection //!! ?? why do I need this?
+            // If not de-selection
             if (PlaylistsBox.SelectedItem != null)
             {
-                DisplaySelectedPlaylist();
+                this.DisplaySelectedPlaylist();
             }
         }
 
@@ -67,14 +67,16 @@ namespace SmplEditor
             // If not deselection,
             if (AllSongsListBox.SelectedItem != null)
             {
-                DisplayAllSongs();
+                this.DisplayAllSongs();
             }
 
         }
+        
         private void OnImportPlaylistClicked(object sender, RoutedEventArgs e)
         {
             ImportPlaylist();
         }
+
         /// <summary> This function takes in a list of newly selected files and 
         /// separates them into `already imported` ones and `to be imported` ones. </summary>
         private List<int> getNewFileIndices(string[] selectedFileNames, List<string> importedFiles){
@@ -93,11 +95,6 @@ namespace SmplEditor
             return availableIndices;
         }
         
-        private void AddToImportedFiles(string[] selectedFileNames, List<int> processedIndices){
-            foreach(int fileIndex in processedIndices){
-                this.importedFileNames.Add(selectedFileNames[fileIndex]);
-            }
-        }
 
         private string GetExtensionFromSafeName(string safeName){
             int extStartIndex = safeName.LastIndexOf(".");
@@ -111,10 +108,14 @@ namespace SmplEditor
             return playlistName;
         }
 
-        // private List<T> addNewSongsToLibrary<T,P>(P palylist, List<T> library)
-        private List<Song> matchExistingSongs(Smpl playlist, List<Song> library, List<Song> newSongs){
+        /// <summary> 
+        /// For each track in the imported list, search if the track already exists in the library.<br/>
+        /// If any song was not found in the existing library, convert it to a &lt;Song&gt;.<br/>
+        /// Return the importedPlaylist after converting it to a &lt;Playlist&gt; and connecting each track to the library.
+        /// </summary>
+        private List<Song> convertPlaylistAndRegisterTracks(Smpl importePlaylist, List<Song> library, List<Song> newSongs){
             List<Song> remappedPlaylist = new List<Song>();
-            List<SmplSong> playlistSongs = playlist.members;
+            List<SmplSong> playlistSongs = importePlaylist.members;
 
             foreach (SmplSong targetSong in playlistSongs){
                 Song matched = library.Find(libSong => targetSong.CompareWith(libSong));
@@ -133,18 +134,7 @@ namespace SmplEditor
             }
             return remappedPlaylist;
         }
-        private List<Song> addNewSongsToLibrary(ITunesPlaylist playlist, List<Song> library){
-            List<Song> newSongsList = new List<Song>();
-            return newSongsList;
-        }
-        private Playlist getPlaylist(Smpl playlist, List<Song> library){
-            Playlist newPlaylist = new Playlist();
-            return newPlaylist;
-        }
-        private Playlist getPlaylist(ITunesPlaylist playlist){
-            Playlist newPlaylist = new Playlist();
-            return newPlaylist;
-        }
+
         private void ImportPlaylist()
         {
             {/* Pseudo code (all comments)
@@ -216,10 +206,10 @@ namespace SmplEditor
                     // Remap the playlist to the library songs
                     // Add new songs to the library
                     List<Song> newSongs = new List<Song>();
-                    List<Song> remappedPlaylist = matchExistingSongs(importingPlaylist, this.songLibrary, newSongs);
+                    List<Song> remappedPlaylist = this.convertPlaylistAndRegisterTracks(importingPlaylist, this.songLibrary, newSongs);
 
                     Playlist playlist = new Playlist(importingPlaylist, remappedPlaylist);
-                    playlistLibrary.Add(playlist);
+                    this.playlistLibrary.Add(playlist);
                 }
                 else // Other than iTunes or SMPL
                 {
@@ -263,7 +253,7 @@ namespace SmplEditor
             // When deleting from individual playlist
             else if (PlaylistsBox.SelectedItem != null)
             {
-                Playlist playlist = playlistLibrary[this.PlaylistsBox.SelectedIndex];
+                Playlist playlist = this.playlistLibrary[this.PlaylistsBox.SelectedIndex];
 
                 // UI refresh is included
                 DeleteSongsFromPlaylist(playlist, selection);
@@ -280,14 +270,14 @@ namespace SmplEditor
             }
             // The new playlist is instantiated with deep copy of the songList, which means they don't share the same reference.
             // The order is also reset.
-            playlistLibrary.Add(new Playlist(name, songList));
+            this.playlistLibrary.Add(new Playlist(name, songList));
 
             // Refresh UI
             PlaylistsBox.ItemsSource = null;
-            PlaylistsBox.ItemsSource = playlistLibrary;
+            PlaylistsBox.ItemsSource = this.playlistLibrary;
             NewPlaylistNameBox.Text = FetchNewPlaylistName();
             // Focus the view on the new playlist
-            PlaylistsBox.SelectedIndex = playlistLibrary.Count - 1;
+            PlaylistsBox.SelectedIndex = this.playlistLibrary.Count - 1;
         }
 
         private void OnRemovePlaylistClicked(object sender, RoutedEventArgs e)
@@ -295,13 +285,13 @@ namespace SmplEditor
             if (PlaylistsBox.SelectedItem != null)
             {
                 int currentSelectionIndex = PlaylistsBox.SelectedIndex;
-                Playlist targetPlaylist = playlistLibrary[currentSelectionIndex];
+                Playlist targetPlaylist = this.playlistLibrary[currentSelectionIndex];
                 DeletePlaylist(targetPlaylist.Name);
 
                 // Refresh UI
                 PlaylistsBox.ItemsSource = null;
-                PlaylistsBox.ItemsSource = playlistLibrary;
-                if (playlistLibrary.Count > 0)
+                PlaylistsBox.ItemsSource = this.playlistLibrary;
+                if (this.playlistLibrary.Count > 0)
                 {
                     PlaylistsBox.SelectedIndex = currentSelectionIndex - 1;
                 }
@@ -321,7 +311,7 @@ namespace SmplEditor
                 ShowNewFolderButton=true
             };
             folderBrowser.ShowDialog();
-            foreach (Playlist playlist in playlistLibrary)
+            foreach (Playlist playlist in this.playlistLibrary)
             {
                 string jsonString = JsonSerializer.Serialize(playlist);
                 if (!Directory.Exists(folderBrowser.SelectedPath + "\\Exported_Smpl"))
@@ -340,27 +330,27 @@ namespace SmplEditor
                 case 0: // by Order, directory
                     {
                         songLibrary.Sort((Song x, Song y) => x.CompareByOrder(y));
-                        foreach (Playlist playlist in playlistLibrary)
+                        foreach (Playlist playlist in this.playlistLibrary)
                         {
-                            ;
+                            playlist.SortByDirectory();
                         }
                         break;
                     }
                 case 1: // by artists
                     {
                         songLibrary.Sort((Song x, Song y) => x.CompareByArtist(y));
-                        foreach (Playlist playlist in playlistLibrary)
+                        foreach (Playlist playlist in this.playlistLibrary)
                         {
-                            ;
+                            playlist.SortByArtist();
                         }
                         break;
                     }
                 case 2: // by title
                     {
                         songLibrary.Sort((Song x, Song y) => x.CompareByTitle(y));
-                        foreach (Playlist playlist in playlistLibrary)
+                        foreach (Playlist playlist in this.playlistLibrary)
                         {
-                            ;
+                            playlist.SortByTitle();
                         }
                         break;
                     }
@@ -368,9 +358,9 @@ namespace SmplEditor
                     {
                         System.Diagnostics.Trace.WriteLine("CompareByDir: Not implemented. Cloning ByTitle behavior.");
                         songLibrary.Sort((Song x, Song y) => x.CompareByDir(y));
-                        foreach (Playlist playlist in playlistLibrary)
+                        foreach (Playlist playlist in this.playlistLibrary)
                         {
-                            ;
+                            playlist.SortByDirectory();
                         }
                         break;
                     }
@@ -384,7 +374,7 @@ namespace SmplEditor
         private void DisplaySelectedPlaylist()
         {
             AllSongsListBox.UnselectAll();
-            Playlist playlist = playlistLibrary[PlaylistsBox.SelectedIndex]; //!!exception occurs when trying to delete from allsongs lists
+            Playlist playlist = this.playlistLibrary[PlaylistsBox.SelectedIndex]; //!!exception occurs when trying to delete from allsongs lists
             SongsListBox.ItemsSource = null;
             SongsListBox.ItemsSource = playlist.ListOfTracks;
             if (SongsListBox.Items.Count > 0)
@@ -454,7 +444,7 @@ namespace SmplEditor
             List<string> playlistNames = new List<string>();
             string newPlaylistName = "New Playlist 1";
             int count = 0;
-            foreach (Playlist playlist in playlistLibrary)
+            foreach (Playlist playlist in this.playlistLibrary)
             {
                 playlistNames.Add(playlist.Name);
             }
@@ -469,11 +459,11 @@ namespace SmplEditor
         public Boolean DeletePlaylist(string name)
         {
             Boolean deleted = false;
-            foreach (Playlist playlist in playlistLibrary)
+            foreach (Playlist playlist in this.playlistLibrary)
             {
                 if (playlist.Name == name)
                 {
-                    playlistLibrary.Remove(playlist);
+                    this.playlistLibrary.Remove(playlist);
                     deleted = true;
                     break;
                 }
