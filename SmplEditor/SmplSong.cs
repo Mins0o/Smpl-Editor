@@ -26,17 +26,18 @@ namespace SmplEditor
             return info.Substring(0, info.LastIndexOf('/'));
         }
 
-        public bool CompareWith(Song song){
+        public bool IsEqualTo(Song song){
             if (song.HasSmplSong()){
-                return this.CompareWith(song.SmplMusic);
+                return this.IsEqualTo(song.SmplMusic);
             }
             else if(song.HasITunesSong()){
-                return this.CompareWith(song.ITunesSong);
+                return this.IsEqualTo(song.ITunesSong);
             }
             return false;
         }
 
-        public bool CompareWith(SmplSong smplSong){
+        public bool IsEqualTo(SmplSong smplSong){
+            // needs optimization
             double artistScore = this.levenstein.GetSimilarity(this.artist, smplSong.artist);
             double titleScore = this.levenstein.GetSimilarity(this.title, smplSong.artist);
 
@@ -46,7 +47,8 @@ namespace SmplEditor
             return false;
         }
 
-        public bool CompareWith(ITunesLibraryParser.Track iTunesSong){
+        public bool IsEqualTo(ITunesLibraryParser.Track iTunesSong){
+            // needs optimization
             double artistScore = this.levenstein.GetSimilarity(this.artist, iTunesSong.Artist);
             double titleScore = this.levenstein.GetSimilarity(this.title, iTunesSong.Name);
             

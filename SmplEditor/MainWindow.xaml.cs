@@ -95,7 +95,6 @@ namespace SmplEditor
             return availableIndices;
         }
         
-
         private string GetExtensionFromSafeName(string safeName){
             int extStartIndex = safeName.LastIndexOf(".");
             string extension = safeName.Substring(extStartIndex);
@@ -118,7 +117,7 @@ namespace SmplEditor
             List<SmplSong> playlistSongs = importePlaylist.members;
 
             foreach (SmplSong targetSong in playlistSongs){
-                Song matched = library.Find(libSong => targetSong.CompareWith(libSong));
+                Song matched = library.Find(libSong => targetSong.IsEqualTo(libSong));
                 if(matched == default(Song)){ // not found
                     // convert the SmplSong to a Song and add to the list
                     matched = new Song(targetSong);
@@ -370,7 +369,6 @@ namespace SmplEditor
             RefreshDisplay();
         }
 
-        // Internal Methods
         private void DisplaySelectedPlaylist()
         {
             AllSongsListBox.UnselectAll();
