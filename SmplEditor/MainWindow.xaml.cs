@@ -327,6 +327,10 @@ namespace SmplEditor
             int selectedOption = SortOptionComboBox.SelectedIndex;
             switch (selectedOption){
                 case 0: // by Order, directory
+                // current structure of <Song> has a problem in this
+                // Turns out, each song has its own "order" field per playlist
+                // Currently, the "order" is considered as a <Song> object's property.
+                // It's actually a property of each playlist with mapping to the songs.
                     {
                         songLibrary.Sort((Song x, Song y) => x.CompareByOrder(y));
                         foreach (Playlist playlist in this.playlistLibrary)

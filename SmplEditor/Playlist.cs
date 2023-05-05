@@ -33,6 +33,7 @@ namespace SmplEditor
                 return this.listOfTracks;
             }
         }
+        private Dictionary<Song,int> trackOrdering;
         public Playlist(string name, List<Song> songList){
             isSmpl = true;
             isITunes = false;
@@ -48,6 +49,12 @@ namespace SmplEditor
             isITunes = false;
             smplProperties = smpl.CloneProperties();
             listOfTracks = songList;
+        }
+        public Playlist(ITunesLibraryParser.Playlist iTunesList, List<Song> songList){
+            isITunes = true;
+            isSmpl = false;
+            listOfTracks = songList;
+            ;
         }
         public Playlist(){
             ;
@@ -87,6 +94,7 @@ namespace SmplEditor
         {
             return this.Name;
         }
+        public void SortByOrder()
         public void SortByArtist()
         {
             this.listOfTracks.Sort((Song x, Song y) => x.Artist.CompareTo(y.Artist));
