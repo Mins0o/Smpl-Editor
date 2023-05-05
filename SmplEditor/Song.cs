@@ -21,6 +21,25 @@ namespace SmplEditor
                 return this.artist;
             }
         }
+        private SmplSong smplMusic = default(SmplSong);
+        public SmplSong SmplMusic {
+            set {
+                this.smplMusic = value;
+            }
+            get {
+                return this.smplMusic;
+            }
+        }
+        private ITunesLibraryParser.Track iTunesSong = default(ITunesLibraryParser.Track);
+        public ITunesLibraryParser.Track ITunesSong {
+            set {
+                this.iTunesSong = value;
+            }
+            get {
+                return this.iTunesSong;
+            }
+        }
+
         public Song(SmplSong smplMusic) {
             this.smplMusic = smplMusic;
             this.title = smplMusic.title;
@@ -60,30 +79,12 @@ namespace SmplEditor
         //		  Year int?
 
         private Levenstein levenstein = new Levenstein();
-        private SmplSong smplMusic = default(SmplSong);
-        public SmplSong SmplMusic {
-            set {
-                this.smplMusic = value;
-            }
-            get {
-                return this.smplMusic;
-            }
-        }
-        private ITunesLibraryParser.Track iTunesSong = default(ITunesLibraryParser.Track);
-        public ITunesLibraryParser.Track ITunesSong {
-            set {
-                this.iTunesSong = value;
-            }
-            get {
-                return this.iTunesSong;
-            }
-        }
 
         public bool IsEqualTo(SmplSong smplSong) {
             if (this.HasSmplSong()) {
                 return smplSong.IsEqualTo(this.SmplMusic);
             }
-            if (this.HasITunesSong()) {
+            else if (this.HasITunesSong()) {
                 return smplSong.IsEqualTo(this.ITunesSong);
             }
             System.Diagnostics.Debug.Print("Song.CompareWith: Not implemented for this type");
