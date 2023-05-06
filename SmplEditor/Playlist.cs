@@ -49,9 +49,7 @@ namespace SmplEditor
             isITunes = false;
             smplProperties = smpl.CloneProperties();
             listOfTracks = songList;
-            trackOrdering = songList
-                .Select((k, i) => new { k, v = smpl.members[i].order })
-                .ToDictionary(x => x.k, x => x.v);
+            trackOrdering = smpl.GetOrdering(songList);
         }
         public Playlist(ITunesLibraryParser.Playlist iTunesList, List<Song> songList){
             isITunes = true;

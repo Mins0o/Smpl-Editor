@@ -35,7 +35,20 @@ namespace SmplEditor
             return cloned;
         }
         public Dictionary<Song,int> GetOrdering(List<Song> listOfSongs){
-            var orderingMapping = new Dictionary<Song,int>();
+            Dictionary<Song, int> orderingMapping;
+            if (listOfSongs.Count == this.members.Count){
+                orderingMapping = listOfSongs
+                    .Select((k, i) => new { k = k, v = this.members[i].order })
+                    .ToDictionary(x => x.k, x => x.v);
+                System.Diagnostics.Debug.Print("Ordering Generated Succesfully");
+            }
+            else{
+                var debugText = this.name + " - GetOrdering: The number of songs didn't match. The listOfSong has " + listOfSongs.Count + "tracks.";
+                System.Diagnostics.Debug.Print(debugText);
+                orderingMapping = listOfSongs
+                .Select((k, i) => new { k = k, v = i })
+                .ToDictionary(x => x.k, x => x.v);
+            } 
             return orderingMapping;
         }
         public override string ToString()
