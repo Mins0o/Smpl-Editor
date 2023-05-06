@@ -57,7 +57,7 @@ namespace SmplEditor
         public bool HasITunesSong() {
             return this.iTunesSong != default(ITunesLibraryParser.Track);
         }
-        // An iTunes song have
+        // An iTunes track have
         //        Album string
         //        AlbumArtist string
         //        AlbumRating int?
@@ -82,6 +82,13 @@ namespace SmplEditor
         //		  TrackId int
         //		  TrackNumber int?
         //		  Year int?
+
+        // A Smpl track have
+        // artist
+        // info (path)
+        // order (per playlist, not an attribute of a track)
+        // title
+        // type (???)
 
         private Levenstein levenstein = new Levenstein();
 
@@ -133,10 +140,11 @@ namespace SmplEditor
                 return 0;
             }
             else if (thisHasITunes && compHasITunes){
-
+                return 0;
             }
             else{
                 System.Diagnostics.Debug.Print("Song.CompareByOrder: This case is not handled");
+                return 0;
             }
         }
         public int CompareByArtist(Song comparingTo){

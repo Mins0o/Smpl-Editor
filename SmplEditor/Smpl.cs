@@ -34,6 +34,10 @@ namespace SmplEditor
                                 this.version);
             return cloned;
         }
+        public Dictionary<Song,int> GetOrdering(List<Song> listOfSongs){
+            var orderingMapping = new Dictionary<Song,int>();
+            return orderingMapping;
+        }
         public override string ToString()
         {
             return this.name;

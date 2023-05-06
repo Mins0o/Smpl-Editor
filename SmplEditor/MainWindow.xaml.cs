@@ -332,10 +332,15 @@ namespace SmplEditor
                 // Currently, the "order" is considered as a <Song> object's property.
                 // It's actually a property of each playlist with mapping to the songs.
                     {
+                        // A song library does not have duplicates nor its own ordering
+                        // (since ordering is an attribute of a playlist)
+                        // There needs to be an alternative way to sort.
+                        // The best I can think of now is by artist-title.
+                        // Another Idea is Dir-title. Or jsut full path.
                         songLibrary.Sort((Song x, Song y) => x.CompareByOrder(y));
                         foreach (Playlist playlist in this.playlistLibrary)
                         {
-                            playlist.SortByDirectory();
+                            playlist.SortByOrder();
                         }
                         break;
                     }
