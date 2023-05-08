@@ -191,10 +191,26 @@ namespace SmplEditor
                 string safeName = safeNames[fileIdx];
                 string fileName = fileNames[fileIdx];
                 string extension = this.GetExtensionFromSafeName(safeName);
-                if (extension == ".xml"){
-                    // this file is iTunes file
+                if (extension == ".xml")
+                {
+                    // This file is iTunes file
+                    var itunes = new ITunesLibraryParser.ITunesLibrary(fileName);
+                    List<ITunesLibraryParser.Playlist> iPlaylists = itunes.Playlists.ToList();
+                    List<ITunesLibraryParser.Track> iTracks = itunes.Tracks.ToList();
+                    // Unlike smpl files, multiple playlists can come in at once.
+                    foreach (var iPlaylist in iPlaylists)
+                    {
+                        // Handle just like the smpl
+                        // Skip if empty list
+                        // convert playlist - if there are new songs, add to the song library.
+                        //                    if a song already exist in the library, use the reference.
+                        //                    while doing that, if the existing one doesn't have itunes info, add it.
+                        // add the playlist to the playlist library.
+                        ;
+                    }
                 }
-                else if(extension == ".smpl"){
+                else if(extension == ".smpl")
+                {
                     string jsonString = File.ReadAllText(fileNames[fileIdx]);
                     Smpl importingPlaylist = JsonSerializer.Deserialize<Smpl>(jsonString);
 
@@ -214,7 +230,7 @@ namespace SmplEditor
                 {
                     System.Diagnostics.Trace.WriteLine("This file format not supported");
                 }
-                int break_here = 1;
+                int breakHere = 1;
             }
             return;
         }
