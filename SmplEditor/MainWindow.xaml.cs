@@ -112,7 +112,7 @@ namespace SmplEditor
         /// If any song was not found in the existing library, convert it to a &lt;Song&gt;.<br/>
         /// Return the importedPlaylist after converting it to a &lt;Playlist&gt; and connecting each track to the library.
         /// </summary>
-        private List<Song> convertPlaylistAndRegisterTracks(Smpl importePlaylist, List<Song> library, List<Song> newSongs){
+        private List<Song> linkOrRegisterTracksToLibrary(Smpl importePlaylist, List<Song> library, List<Song> newSongs){
             List<Song> remappedPlaylist = new List<Song>();
             List<SmplSong> playlistSongs = importePlaylist.members;
 
@@ -198,6 +198,8 @@ namespace SmplEditor
                     List<ITunesLibraryParser.Playlist> iPlaylists = itunes.Playlists.ToList();
                     List<ITunesLibraryParser.Track> iTracks = itunes.Tracks.ToList();
                     // Unlike smpl files, multiple playlists can come in at once.
+                    // And all duplicateless track library comes separate to the playlists.
+                    // Does iTunes library share the reference with the tracks in the playlist?
                     foreach (var iPlaylist in iPlaylists)
                     {
                         // Handle just like the smpl
@@ -221,9 +223,11 @@ namespace SmplEditor
                     // Remap the playlist to the library songs
                     // Add new songs to the library
                     List<Song> newSongs = new List<Song>();
-                    List<Song> remappedPlaylist = this.convertPlaylistAndRegisterTracks(importingPlaylist, this.songLibrary, newSongs);
+                    List<Song> existingSameTypeSongs = new List<Song>();
+                    List<Song> existingDiffTypeSongs = new List<Song>();
+                    List<Song> linkedPlaylist = this.linkOrRegisterTracksToLibrary(importingPlaylist, this.songLibrary, newSongs);
 
-                    Playlist playlist = new Playlist(importingPlaylist, remappedPlaylist);
+                    Playlist playlist = new Playlist(importingPlaylist, linkedPlaylist);
                     this.playlistLibrary.Add(playlist);
                 }
                 else // Other than iTunes or SMPL
