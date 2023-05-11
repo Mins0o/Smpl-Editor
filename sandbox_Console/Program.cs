@@ -1,4 +1,6 @@
-﻿namespace sandbox_Console
+﻿using System.Runtime.CompilerServices;
+
+namespace sandbox_Console
 {
     class LocalGlobalTester
     {
@@ -181,34 +183,56 @@
 
     internal class Program
     {
-        static void Main(string[] args)
+
+        static void ITunesEqualsTester(ITunesLibraryParser.ITunesLibrary iTunesLibrary)
         {
-            LocalGlobalTester localGlobal = new LocalGlobalTester();
-            LevensteinTester levenstein = new LevensteinTester();
-            InheritanceTester inheritance01 = new InheritanceTester();
-
-            Console.WriteLine("Hello, World!");
-
-            var iTunesLibrary = new
-                ITunesLibraryParser.ITunesLibrary("../../../../SmplEditor/Playlists/iTunes/Library.xml");
             var tracks = iTunesLibrary.Tracks;
             var playlists = iTunesLibrary.Playlists;
             var tracksList = tracks.ToList();
             var songFromTracks = tracksList[0];
             var songFromPlaylist = playlists.ToList()[0].Tracks.ToList()[0];
             var songFromPlaylist_ = playlists.ToList()[8].Tracks.ToList()[244];
+            var otherSongFromPlaylist = playlists.ToList()[0].Tracks.ToList()[1];
             Console.WriteLine(songFromTracks);
             Console.WriteLine(songFromPlaylist);
             Console.WriteLine(songFromPlaylist_);
+
+
             Console.WriteLine("songFromTracks == songFromPlaylist: {0}", songFromTracks == songFromPlaylist);
             Console.WriteLine("songFromTracks.Equals(songFromPlaylist): {0}", songFromTracks.Equals(songFromPlaylist));
             Console.WriteLine("songFromPlaylist == songFromPlaylist_: {0}", songFromPlaylist == songFromPlaylist_);
             Console.WriteLine("songFromPlaylist.Equals(songFromPlaylist_): {0}", songFromPlaylist.Equals(songFromPlaylist_));
+            //songFromTracks == songFromPlaylist: False
+            //songFromTracks.Equals(songFromPlaylist): True
+            //songFromPlaylist == songFromPlaylist_: True
+            //songFromPlaylist.Equals(songFromPlaylist_): True
+
+
             Console.WriteLine(tracksList.Find(listsong => (listsong == songFromTracks)) != default(ITunesLibraryParser.Track));
             Console.WriteLine(tracksList.Find(listsong => (listsong == songFromPlaylist)) != default(ITunesLibraryParser.Track));
             Console.WriteLine(tracksList.Find(listsong => listsong.Equals(songFromTracks)) != default(ITunesLibraryParser.Track));
             Console.WriteLine(tracksList.Find(listsong => listsong.Equals(songFromPlaylist)) != default(ITunesLibraryParser.Track));
+            //True
+            //False
+            //True
+            //True
 
+            var trackKeyedMapper = new Dictionary<ITunesLibraryParser.Track, int>();
+            trackKeyedMapper.Add(songFromTracks, 1);
+            trackKeyedMapper.Add(otherSongFromPlaylist, 2);
+            int breakHere = 1;
+            // Exception occurred in the line below.
+            //    "An item with the same key has already been added."
+            // Which means in dictionary, keys are matched by .Equals() - by value.
+            trackKeyedMapper.Add(songFromPlaylist, 3);
+
+            breakHere = 2;
+
+            Console.WriteLine(trackKeyedMapper[songFromTracks]);
+        }
+
+        static void StringEqualsTester()
+        {
             string A = "Hello";
             string B = "Hello_";
             Console.WriteLine("A.RefEqual(B): {0}", A == B);
@@ -222,14 +246,29 @@
             B = A;
             Console.WriteLine("A.RefEqual(B): {0}", A == B);
             Console.WriteLine("A.Equals(B): {0}", A.Equals(B));
+        }
+
+        static void Main(string[] args)
+        {
+            LocalGlobalTester localGlobal = new LocalGlobalTester();
+            LevensteinTester levenstein = new LevensteinTester();
+            InheritanceTester inheritance01 = new InheritanceTester();
+
+            Console.WriteLine("Hello, World!");
+
+            var iTunesLibrary = new
+                ITunesLibraryParser.ITunesLibrary("../../../../SmplEditor/Playlists/iTunes/Library.xml");
+
+            ITunesEqualsTester(iTunesLibrary);
+            //StringEqualsTester();
 
             string currd = System.IO.Directory.GetCurrentDirectory();
 
             Console.WriteLine(currd);
 
-            localGlobal.LocalGlobalTest();
-            levenstein.LevensteinTest();
-            inheritance01.Test();
+            //localGlobal.LocalGlobalTest();
+            //levenstein.LevensteinTest();
+            //inheritance01.Test();
             int breakhere = 1;
         }
     }
