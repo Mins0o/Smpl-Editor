@@ -112,7 +112,7 @@ namespace SmplEditor
         /// If any song was not found in the existing library, convert it to a &lt;Song&gt;.<br/>
         /// Return the importedPlaylist after converting it to a &lt;Playlist&gt; and connecting each track to the library.
         /// </summary>
-        private List<Song> linkOrRegisterTracksToLibrary(Smpl importePlaylist, List<Song> library, List<Song> newSongs){
+        private List<Song> linkTracksToLibrary(Smpl importePlaylist, List<Song> library, List<Song> newSongs){
             List<Song> remappedPlaylist = new List<Song>();
             List<SmplSong> playlistSongs = importePlaylist.members;
 
@@ -132,6 +132,25 @@ namespace SmplEditor
                 remappedPlaylist.Add(matched);
             }
             return remappedPlaylist;
+        }
+
+        private Dictionary<ITunesLibraryParser.Track, Song> linkTracksToLibrary(List<ITunesLibraryParser.Track> importedTracks, List<Song> library, List<Song> newSongs){
+            var linkedTracks = new Dictionary<ITunesLibraryParser.Track, Song>();
+            foreach(var targetSong in importedTracks){
+                Song matched = library.Find(libSong => libSong.IsEqualTo(targetSong));
+                if(matched == default(Song)){
+                    matched = new Song(targetSong);
+                    newSongs.Add(matched);
+                    library.Add(matched);
+                }
+                else{ // existing song found on library
+                    if(!matched.HasITunesSong()){ // if the song doesn't have SMPLSong, add the new information
+                        matched.ITunesSong = targetSong;
+                    }
+                }
+                linkedTracks.Add(targetSong, matched);
+            }
+            return linkedTracks;
         }
 
         private void ImportPlaylist()
@@ -200,6 +219,17 @@ namespace SmplEditor
                     // Unlike smpl files, multiple playlists can come in at once.
                     // And all duplicateless track library comes separate to the playlists.
                     // Does iTunes library share the reference with the tracks in the playlist?
+                    // No
+
+                    // Registereing and linking can be done in the scale of the whole library
+                    // While registering, create a map of iTunes.Track --> registered_Song
+                    // There is a bit concern since the tracks from iTracks and iPlaylists
+                    //    only equals in value but not in references.
+
+                    // After registering, just go through the playlists
+                    // per playlist, map the iTunes.Tracks --> Registered_Song
+                    List<Song> newSongs = new List<Song>();
+                    var trackToSongLookup = this.linkTracksToLibrary(iTracks, this.songLibrary, newSongs);
                     foreach (var iPlaylist in iPlaylists)
                     {
                         // Handle just like the smpl
@@ -208,7 +238,6 @@ namespace SmplEditor
                         //                    if a song already exist in the library, use the reference.
                         //                    while doing that, if the existing one doesn't have itunes info, add it.
                         // add the playlist to the playlist library.
-                        ;
                     }
                 }
                 else if(extension == ".smpl")
@@ -225,7 +254,7 @@ namespace SmplEditor
                     List<Song> newSongs = new List<Song>();
                     List<Song> existingSameTypeSongs = new List<Song>();
                     List<Song> existingDiffTypeSongs = new List<Song>();
-                    List<Song> linkedPlaylist = this.linkOrRegisterTracksToLibrary(importingPlaylist, this.songLibrary, newSongs);
+                    List<Song> linkedPlaylist = this.linkTracksToLibrary(importingPlaylist, this.songLibrary, newSongs);
 
                     Playlist playlist = new Playlist(importingPlaylist, linkedPlaylist);
                     this.playlistLibrary.Add(playlist);
