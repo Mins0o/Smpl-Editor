@@ -232,12 +232,8 @@ namespace SmplEditor
                     var trackToSongLookup = this.linkTracksToLibrary(iTracks, this.songLibrary, newSongs);
                     foreach (var iPlaylist in iPlaylists)
                     {
-                        // Handle just like the smpl
-                        // Skip if empty list
-                        // convert playlist - if there are new songs, add to the song library.
-                        //                    if a song already exist in the library, use the reference.
-                        //                    while doing that, if the existing one doesn't have itunes info, add it.
-                        // add the playlist to the playlist library.
+                        Playlist playlist = new Playlist(iPlaylist, trackToSongLookup);
+                        this.playlistLibrary.Add(playlist);
                     }
                 }
                 else if(extension == ".smpl")

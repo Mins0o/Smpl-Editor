@@ -57,6 +57,17 @@ namespace SmplEditor
             listOfTracks = songList;
             ;
         }
+        public Playlist(ITunesLibraryParser.Playlist iTunesList, Dictionary<ITunesLibraryParser.Track, Song> trackMapper)
+        {
+            isITunes = true;
+            isSmpl = false;
+            var trackList = iTunesList.Tracks.ToList();
+            this.listOfTracks = new List<Song>();
+            foreach(var iTunesTrack in trackList){
+                Song mappedSong = trackMapper[iTunesTrack];
+                this.listOfTracks.Add(mappedSong);
+            }
+        }
         public Playlist(){
             ;
         }
