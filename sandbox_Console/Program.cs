@@ -189,10 +189,11 @@ namespace sandbox_Console
             var tracks = iTunesLibrary.Tracks;
             var playlists = iTunesLibrary.Playlists;
             var tracksList = tracks.ToList();
+            var playlistsList = playlists.ToList();
             var songFromTracks = tracksList[0];
-            var songFromPlaylist = playlists.ToList()[0].Tracks.ToList()[0];
-            var songFromPlaylist_ = playlists.ToList()[8].Tracks.ToList()[244];
-            var otherSongFromPlaylist = playlists.ToList()[0].Tracks.ToList()[1];
+            var songFromPlaylist = playlistsList[0].Tracks.ToList()[0];
+            var songFromPlaylist_ = playlistsList[8].Tracks.ToList()[244];
+            var otherSongFromPlaylist = playlistsList[0].Tracks.ToList()[1];
             Console.WriteLine(songFromTracks);
             Console.WriteLine(songFromPlaylist);
             Console.WriteLine(songFromPlaylist_);
@@ -229,6 +230,9 @@ namespace sandbox_Console
             breakHere = 2;
 
             Console.WriteLine(trackKeyedMapper[songFromTracks]);
+
+            var playlistSoundTracks = playlistsList[36];
+            // Turns out, the iTunesLibraryParser doesn't import all the attributes in the xml
         }
 
         static void StringEqualsTester()
