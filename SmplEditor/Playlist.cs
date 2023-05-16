@@ -16,7 +16,7 @@ namespace SmplEditor
                     return this.smplProperties.name;
                 }
                 else{
-                    return "iTunes not implemented yet";
+                    return this.iTunesProperties.Name;
                 }
             }
         }
@@ -26,7 +26,7 @@ namespace SmplEditor
                 return this.smplProperties;
             }
         }
-        private ITunesPlaylist iTunesProperties;
+        private ITunesLibraryParser.Playlist iTunesProperties;
         private List<Song> listOfTracks;
         public List<Song> ListOfTracks{
             get{
@@ -55,7 +55,7 @@ namespace SmplEditor
             isITunes = true;
             isSmpl = false;
             listOfTracks = songList;
-            ;
+            iTunesProperties = iTunesList;
         }
         public Playlist(ITunesLibraryParser.Playlist iTunesList, Dictionary<ITunesLibraryParser.Track, Song> trackMapper)
         {
@@ -67,6 +67,7 @@ namespace SmplEditor
                 Song mappedSong = trackMapper[iTunesTrack];
                 this.listOfTracks.Add(mappedSong);
             }
+            iTunesProperties = iTunesList;
         }
         public Playlist(){
             ;

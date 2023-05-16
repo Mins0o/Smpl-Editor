@@ -49,7 +49,7 @@ namespace SmplEditor
         public Song(ITunesLibraryParser.Track iTunesMusic){
             this.iTunesSong = iTunesMusic;
             this.title = iTunesMusic.Name;
-            this.artist = iTunesMusic.Artist;
+            this.artist = iTunesMusic.Artist==default(string)?"unknown":iTunesMusic.Artist;
         }
         public bool HasSmplSong() {
             return this.smplMusic != default(SmplSong);
