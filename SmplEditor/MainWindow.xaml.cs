@@ -75,6 +75,11 @@ namespace SmplEditor
         private void OnImportPlaylistClicked(object sender, RoutedEventArgs e)
         {
             ImportPlaylist();
+            // Somehow, without setting it to null at first,
+            // there will be an "inconsistency exception" when displaying the list
+            // System.InvalidOperationException: An ItemsControl is inconsistent with its items source.
+            PlaylistsBox.ItemsSource = null;
+            PlaylistsBox.ItemsSource = this.playlistLibrary;
         }
 
         /// <summary> This function takes in a list of newly selected files and 
@@ -276,7 +281,6 @@ namespace SmplEditor
                 MessageBox.Show("This playlist already has " + targetList.ListOfTracks.Count + " tracks. Maximum number of tracks per playlist is 1000");
                 return;
             }
-            // Every copy of song in different lists are different instances. The deep copying is handled inside the method.
             targetList.AddSongs(selectedSongs);
 
             // Go to the list that the song was just added

@@ -27,6 +27,11 @@ namespace SmplEditor
             }
         }
         private ITunesLibraryParser.Playlist iTunesProperties;
+        public ITunesLibraryParser.Playlist ITunesProperties{
+            get{
+                return this.iTunesProperties;
+            }
+        }
         private List<Song> listOfTracks;
         public List<Song> ListOfTracks{
             get{
