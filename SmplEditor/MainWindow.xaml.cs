@@ -232,7 +232,7 @@ namespace SmplEditor
                     //    only equals in value but not in references.
 
                     // After registering, just go through the playlists
-                    // per playlist, map the iTunes.Tracks --> Registered_Song
+                    // Per playlist, map the iTunes.Tracks --> Registered_Song
                     List<Song> newSongs = new List<Song>();
                     var trackToSongLookup = this.linkTracksToLibrary(iTracks, this.songLibrary, newSongs);
                     foreach (var iPlaylist in iPlaylists)
@@ -361,6 +361,10 @@ namespace SmplEditor
             folderBrowser.ShowDialog();
             foreach (Playlist playlist in this.playlistLibrary)
             {
+                if (playlist.IsSmpl)
+                {
+                    Smpl smplExport = new Smpl(playlist);
+                }
                 string jsonString = JsonSerializer.Serialize(playlist);
                 if (!Directory.Exists(folderBrowser.SelectedPath + "\\Exported_Smpl"))
                 {

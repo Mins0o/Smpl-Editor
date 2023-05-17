@@ -27,6 +27,17 @@ namespace SmplEditor
             this.sortBy = sortBy;
             this.version = version;
         }
+        public Smpl(Playlist playlist){
+            if(playlist.IsSmpl){
+                ;
+            }
+            else if (playlist.IsITunes){
+                ;
+            }
+            else{
+                System.Diagnostics.Debug.WriteLine("This type is not supported");
+            }
+        }
         public Smpl CloneProperties(){
             Smpl cloned = new Smpl(this.name, 
                                 this.recentlyPlayedDate,

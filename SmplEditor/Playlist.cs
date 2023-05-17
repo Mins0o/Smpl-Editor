@@ -9,7 +9,17 @@ namespace SmplEditor
     internal class Playlist
     {
         private bool isSmpl;
+        public bool IsSmpl{
+            get{
+                return this.isSmpl;
+            }
+        }
         private bool isITunes;
+        public bool IsITunes{
+            get{
+                return this.isITunes;
+            }
+        }
         public string Name{
             get{
                 if (this.isSmpl){
