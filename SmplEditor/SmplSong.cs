@@ -16,7 +16,6 @@ namespace SmplEditor
         public int order {get; set;}
         public string title {get; set;}
         public int type {get; set;}
-        public int extraStuff {get; set;}
 
         private const double ARTIST_TH = 0.9;
         private const double TITLE_TH = 0.8;

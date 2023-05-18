@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.IO;
 using System.Text.Json;
+using System.Text.Encodings.Web;
 using Microsoft.Win32;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -361,11 +362,15 @@ namespace SmplEditor
             folderBrowser.ShowDialog();
             foreach (Playlist playlist in this.playlistLibrary)
             {
+                string jsonString = "";
                 if (playlist.IsSmpl)
                 {
+                    var jsonSerializerOption = new JsonSerializerOptions{
+                        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                    };
                     Smpl smplExport = new Smpl(playlist);
+                    jsonString = JsonSerializer.Serialize(smplExport, jsonSerializerOption);
                 }
-                string jsonString = JsonSerializer.Serialize(playlist);
                 if (!Directory.Exists(folderBrowser.SelectedPath + "\\Exported_Smpl"))
                 {
                     Directory.CreateDirectory(folderBrowser.SelectedPath + "\\Exported_Smpl");

@@ -29,7 +29,24 @@ namespace SmplEditor
         }
         public Smpl(Playlist playlist){
             if(playlist.IsSmpl){
-                ;
+                Smpl smplOfPlaylist = playlist.SmplProperties;
+                this.name = smplOfPlaylist.name;
+                this.recentlyPlayedDate = smplOfPlaylist.recentlyPlayedDate;
+                this.sortBy = smplOfPlaylist.sortBy;
+                this.version = smplOfPlaylist.version;
+                this.members = new List<SmplSong>();
+
+                int orderCount = 0;
+                foreach(Song track in playlist.ListOfTracks){
+                    if(track.HasSmplSong()){
+                        SmplSong trackToAdd = track.SmplMusic;
+                        trackToAdd.order = orderCount++;
+                        members.Add(trackToAdd);
+                    }
+                    else{
+                        System.Diagnostics.Debug.WriteLine("{0} does not have a smpl representation", track);
+                    }
+                }
             }
             else if (playlist.IsITunes){
                 ;
