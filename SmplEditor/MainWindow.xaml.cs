@@ -27,6 +27,9 @@ namespace SmplEditor
         private List<Playlist> playlistLibrary = new List<Playlist>();
         private List<Song> songLibrary = new List<Song>();
 
+        private List<Song> unmatchedSmplTracks = new List<Song>();
+        private List<Song> unmatchediTunesTracks = new List<Song>();
+
         private List<string> importedFileNames = new List<string>();
         public MainWindow()
         {
@@ -106,19 +109,13 @@ namespace SmplEditor
             string extension = safeName.Substring(extStartIndex);
             return extension;
         }
-        
-        private string GetPlaylistNameFromSafeName(string safeName){
-            int extStartIndex = safeName.LastIndexOf(".");
-            string playlistName = safeName.Substring(0, extStartIndex);
-            return playlistName;
-        }
 
         /// <summary> 
         /// For each track in the imported list, search if the track already exists in the library.<br/>
         /// If any song was not found in the existing library, convert it to a &lt;Song&gt;.<br/>
         /// Return the importedPlaylist after converting it to a &lt;Playlist&gt; and connecting each track to the library.
         /// </summary>
-        private List<Song> linkTracksToLibrary(Smpl importePlaylist, List<Song> library, List<Song> newSongs){
+        private List<Song> linkTracksToLibrary(Smpl importePlaylist, List<Song> library, List<Song> newSongs, List<Song> existingiTunesSongs){
             List<Song> remappedPlaylist = new List<Song>();
             List<SmplSong> playlistSongs = importePlaylist.members;
 
@@ -133,6 +130,7 @@ namespace SmplEditor
                 else{ // existing song found on library
                     if(!matched.HasSmplSong()){ // if the song doesn't have SMPLSong, add the new information
                         matched.SmplMusic = targetSong;
+                        existingiTunesSongs.Add(matched);
                     }
                 }
                 remappedPlaylist.Add(matched);
@@ -140,7 +138,7 @@ namespace SmplEditor
             return remappedPlaylist;
         }
 
-        private Dictionary<ITunesLibraryParser.Track, Song> linkTracksToLibrary(List<ITunesLibraryParser.Track> importedTracks, List<Song> library, List<Song> newSongs){
+        private Dictionary<ITunesLibraryParser.Track, Song> linkTracksToLibrary(List<ITunesLibraryParser.Track> importedTracks, List<Song> library, List<Song> newSongs, List<Song> existingSmplSongs){
             var linkedTracks = new Dictionary<ITunesLibraryParser.Track, Song>();
             foreach(var targetSong in importedTracks){
                 Song matched = library.Find(libSong => libSong.IsEqualTo(targetSong));
@@ -152,6 +150,7 @@ namespace SmplEditor
                 else{ // existing song found on library
                     if(!matched.HasITunesSong()){ // if the song doesn't have SMPLSong, add the new information
                         matched.ITunesSong = targetSong;
+                        existingSmplSongs.Add(matched);
                     }
                 }
                 linkedTracks.Add(targetSong, matched);
@@ -235,11 +234,18 @@ namespace SmplEditor
                     // After registering, just go through the playlists
                     // Per playlist, map the iTunes.Tracks --> Registered_Song
                     List<Song> newSongs = new List<Song>();
-                    var trackToSongLookup = this.linkTracksToLibrary(iTracks, this.songLibrary, newSongs);
+                    List<Song> existingSmplSongs = new List<Song>();
+                    var trackToSongLookup = this.linkTracksToLibrary(iTracks, this.songLibrary, newSongs, existingSmplSongs);
+                    this.unmatchediTunesTracks.AddRange(newSongs);
+                    System.Diagnostics.Debug.WriteLine("{1} - New tracks: {0}", newSongs.Count, "iTunes");
                     foreach (var iPlaylist in iPlaylists)
                     {
                         Playlist playlist = new Playlist(iPlaylist, trackToSongLookup);
                         this.playlistLibrary.Add(playlist);
+                    }
+                    System.Diagnostics.Debug.WriteLine("Existing SmplSongs: {0}", existingSmplSongs.Count);
+                    foreach (Song track in existingSmplSongs){
+                        bool success = this.unmatchedSmplTracks.Remove(track);
                     }
                 }
                 else if(extension == ".smpl")
@@ -256,10 +262,16 @@ namespace SmplEditor
                     List<Song> newSongs = new List<Song>();
                     List<Song> existingSameTypeSongs = new List<Song>();
                     List<Song> existingDiffTypeSongs = new List<Song>();
-                    List<Song> linkedPlaylist = this.linkTracksToLibrary(importingPlaylist, this.songLibrary, newSongs);
+                    List<Song> linkedPlaylist = this.linkTracksToLibrary(importingPlaylist, this.songLibrary, newSongs, existingDiffTypeSongs);
+                    this.unmatchedSmplTracks.AddRange(newSongs);
+                    System.Diagnostics.Debug.WriteLine("{1} - New tracks: {0}", newSongs.Count, importingPlaylist.name);
 
                     Playlist playlist = new Playlist(importingPlaylist, linkedPlaylist);
                     this.playlistLibrary.Add(playlist);
+                    System.Diagnostics.Debug.WriteLine("Existing iTunesSongs: {0}", existingDiffTypeSongs.Count);
+                    foreach (Song track in existingDiffTypeSongs){
+                        bool success = this.unmatchediTunesTracks.Remove(track);
+                    }
                 }
                 else // Other than iTunes or SMPL
                 {
