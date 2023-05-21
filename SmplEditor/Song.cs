@@ -92,6 +92,9 @@ namespace SmplEditor
 
         private Levenstein levenstein = new Levenstein();
 
+        // Compare returns comparator output:int
+        // Equal returns boolean of whether two are equal or not. (T/F)
+
         public bool IsEqualTo(SmplSong smplSong) {
             if (this.HasSmplSong()) {
                 return smplSong.IsEqualTo(this.SmplMusic);

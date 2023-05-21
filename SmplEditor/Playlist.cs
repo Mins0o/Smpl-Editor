@@ -66,23 +66,20 @@ namespace SmplEditor
             listOfTracks = songList;
             trackOrdering = smpl.GetOrdering(songList);
         }
-        public Playlist(ITunesLibraryParser.Playlist iTunesList, List<Song> songList){
-            isITunes = true;
-            isSmpl = false;
-            listOfTracks = songList;
-            iTunesProperties = iTunesList;
-        }
         public Playlist(ITunesLibraryParser.Playlist iTunesList, Dictionary<ITunesLibraryParser.Track, Song> trackMapper)
         {
             isITunes = true;
             isSmpl = false;
             var trackList = iTunesList.Tracks.ToList();
             this.listOfTracks = new List<Song>();
+            this.trackOrdering = new Dictionary<Song, int>();
+            int order = 0;
             foreach(var iTunesTrack in trackList){
                 Song mappedSong = trackMapper[iTunesTrack];
                 this.listOfTracks.Add(mappedSong);
+                this.trackOrdering.Add(mappedSong, order++);
             }
-            iTunesProperties = iTunesList;
+            iTunesProperties = iTunesList; 
         }
         public Playlist(){
             ;

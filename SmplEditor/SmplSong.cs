@@ -25,6 +25,9 @@ namespace SmplEditor
             return info.Substring(0, info.LastIndexOf('/'));
         }
 
+        // Compare returns comparator output:int
+        // Equal returns boolean of whether two are equal or not. (T/F)
+
         public bool IsEqualTo(Song song){
             if (song.HasSmplSong()){
                 return this.IsEqualTo(song.SmplMusic);
@@ -58,10 +61,11 @@ namespace SmplEditor
         }
         
         public int CompareByOrder(SmplSong comparingTo){
-            if (this.UpperDirectory().CompareTo(comparingTo.UpperDirectory()) == 0) {
-                return this.order.CompareTo(comparingTo.order);
+            int directoryCompareResult = this.UpperDirectory().CompareTo(comparingTo.UpperDirectory());
+            if (directoryCompareResult == 0) {
+                return this.title.CompareTo(comparingTo.title);
             } else{
-                return this.UpperDirectory().CompareTo(comparingTo.UpperDirectory());
+                return directoryCompareResult;
             }
         }
         public int CompareByOrder(ITunesLibraryParser.Track comparingTo){

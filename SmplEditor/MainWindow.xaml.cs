@@ -79,7 +79,7 @@ namespace SmplEditor
         private void OnImportPlaylistClicked(object sender, RoutedEventArgs e)
         {
             ImportPlaylist();
-            // Somehow, without setting it to null at first,
+            // Somehow, without setting it to null first,
             // there will be an "inconsistency exception" when displaying the list
             // System.InvalidOperationException: An ItemsControl is inconsistent with its items source.
             PlaylistsBox.ItemsSource = null;
@@ -113,6 +113,7 @@ namespace SmplEditor
         /// <summary> 
         /// For each track in the imported list, search if the track already exists in the library.<br/>
         /// If any song was not found in the existing library, convert it to a &lt;Song&gt;.<br/>
+        /// If some tracks already exist but are in different type, return the list of such.
         /// Return the importedPlaylist after converting it to a &lt;Playlist&gt; and connecting each track to the library.
         /// </summary>
         private List<Song> linkTracksToLibrary(Smpl importePlaylist, List<Song> library, List<Song> newSongs, List<Song> existingiTunesSongs){
@@ -238,9 +239,9 @@ namespace SmplEditor
                     var trackToSongLookup = this.linkTracksToLibrary(iTracks, this.songLibrary, newSongs, existingSmplSongs);
                     this.unmatchediTunesTracks.AddRange(newSongs);
                     System.Diagnostics.Debug.WriteLine("{1} - New tracks: {0}", newSongs.Count, "iTunes");
-                    foreach (var iPlaylist in iPlaylists)
+                    foreach (var importingPlaylist in iPlaylists)
                     {
-                        Playlist playlist = new Playlist(iPlaylist, trackToSongLookup);
+                        Playlist playlist = new Playlist(importingPlaylist, trackToSongLookup);
                         this.playlistLibrary.Add(playlist);
                     }
                     System.Diagnostics.Debug.WriteLine("Existing SmplSongs: {0}", existingSmplSongs.Count);
@@ -397,13 +398,11 @@ namespace SmplEditor
             int selectedOption = SortOptionComboBox.SelectedIndex;
             switch (selectedOption){
                 case 0: // by Order, directory
-                // current structure of <Song> has a problem in this
-                // Turns out, each song has its own "order" field per playlist
-                // Currently, the "order" is considered as a <Song> object's property.
-                // It's actually a property of each playlist with mapping to the songs.
+                /// In SMPL, "order" is included in smplSong objects, 
+                /// inside List member of SMPL. However, it's an attribute per playlist not smplSong
                     {
                         // A song library does not have duplicates nor its own ordering
-                        // (since ordering is an attribute of a playlist)
+                        // (since ordering is an attribute of a playlist, and library is not a playlist)
                         // There needs to be an alternative way to sort.
                         // The best I can think of now is by artist-title.
                         // Another Idea is Dir-title. Or jsut full path.
