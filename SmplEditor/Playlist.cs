@@ -76,8 +76,16 @@ namespace SmplEditor
             int order = 0;
             foreach(var iTunesTrack in trackList){
                 Song mappedSong = trackMapper[iTunesTrack];
-                this.listOfTracks.Add(mappedSong);
-                this.trackOrdering.Add(mappedSong, order++);
+                try
+                {
+                    this.trackOrdering.Add(mappedSong, order);
+                    order++;
+                    this.listOfTracks.Add(mappedSong);
+                }
+                catch (System.ArgumentException ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("{0} {2} - {1}", order, ex.Message, mappedSong.Title);
+                }
             }
             iTunesProperties = iTunesList; 
         }

@@ -105,18 +105,24 @@ namespace SmplEditor
             System.Diagnostics.Debug.Print("Song.CompareWith: Not implemented for this type");
             return false;
         }
-        public bool IsEqualTo(ITunesLibraryParser.Track iTunesSong) {
+        public bool IsEqualTo(ITunesLibraryParser.Track iTunesTrack) {
             if (this.HasSmplSong()) {
-                return this.SmplMusic.IsEqualTo(iTunesSong);
+                return this.SmplMusic.IsEqualTo(iTunesTrack);
             }
             else if (this.HasITunesSong()) {
-                double artistScore = this.levenstein.GetSimilarity(this.ITunesSong.Artist, iTunesSong.Artist);
-                double titleScore = this.levenstein.GetSimilarity(this.ITunesSong.Name, iTunesSong.Name);
-                double albumScore = this.levenstein.GetSimilarity(this.ITunesSong.Album, iTunesSong.Album);
-
-                if (artistScore > 0.9 && titleScore > 0.8 && albumScore > 0.8) {
+                bool sameArtist = (this.artist == iTunesTrack.Artist);
+                bool sameTitle = (this.title == iTunesTrack.Name);
+                bool sameFile = (this.iTunesSong.Location == iTunesTrack.Location);
+                if (sameFile){
                     return true;
                 }
+                // double artistScore = this.levenstein.GetSimilarity(this.ITunesSong.Artist, iTunesSong.Artist);
+                // double titleScore = this.levenstein.GetSimilarity(this.ITunesSong.Name, iTunesSong.Name);
+                // double albumScore = this.levenstein.GetSimilarity(this.ITunesSong.Album, iTunesSong.Album);
+
+                // if (artistScore > 0.9 && titleScore > 0.8 && albumScore > 0.8) {
+                //     return true;
+                // }
             }
             return false;
         }

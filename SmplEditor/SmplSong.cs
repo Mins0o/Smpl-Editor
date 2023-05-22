@@ -39,24 +39,38 @@ namespace SmplEditor
         }
 
         public bool IsEqualTo(SmplSong smplSong){
-            // needs optimization
-            double artistScore = this.levenstein.GetSimilarity(this.artist, smplSong.artist);
-            double titleScore = this.levenstein.GetSimilarity(this.title, smplSong.artist);
-
-            if (artistScore > ARTIST_TH && titleScore > TITLE_TH){
+            bool sameArtist = (this.artist == smplSong.artist);
+            bool sameTitle = (this.title == smplSong.title);
+            bool sameFile = (this.info == smplSong.info);
+            if (sameArtist && sameTitle && sameFile){
                 return true;
             }
+            // // needs optimization
+            // double artistScore = this.levenstein.GetSimilarity(this.artist, smplSong.artist);
+            // double titleScore = this.levenstein.GetSimilarity(this.title, smplSong.artist);
+
+            // if (artistScore > ARTIST_TH && titleScore > TITLE_TH){
+            //     return true;
+            // }
             return false;
         }
 
         public bool IsEqualTo(ITunesLibraryParser.Track iTunesSong){
-            // needs optimization
-            double artistScore = this.levenstein.GetSimilarity(this.artist, iTunesSong.Artist);
-            double titleScore = this.levenstein.GetSimilarity(this.title, iTunesSong.Name);
-            
-            if (artistScore > ARTIST_TH && titleScore > TITLE_TH){
+            bool sameArtist = (this.artist == iTunesSong.Artist);
+            bool sameTitle = (this.title == iTunesSong.Name);
+            string smplFileName = System.IO.Path.GetFileName(this.info);
+            string iTunesFileName = System.IO.Path.GetFileName(iTunesSong.Location);
+            bool sameFile = (smplFileName == iTunesFileName);
+            if (sameArtist && sameTitle && sameFile){
                 return true;
             }
+            // // needs optimization
+            // double artistScore = this.levenstein.GetSimilarity(this.artist, iTunesSong.Artist);
+            // double titleScore = this.levenstein.GetSimilarity(this.title, iTunesSong.Name);
+            
+            // if (artistScore > ARTIST_TH && titleScore > TITLE_TH){
+            //     return true;
+            // }
             return false;
         }
         
