@@ -225,7 +225,7 @@ namespace sandbox_Console
             // Exception occurred in the line below.
             //    "An item with the same key has already been added."
             // Which means in dictionary, keys are matched by .Equals() - by value.
-            trackKeyedMapper.Add(songFromPlaylist, 3);
+            // trackKeyedMapper.Add(songFromPlaylist, 3);
 
             breakHere = 2;
 
@@ -252,6 +252,44 @@ namespace sandbox_Console
             Console.WriteLine("A.Equals(B): {0}", A.Equals(B));
         }
 
+        static void FilePathTester(){
+            string testPath1 = "C:\\Users\\steng\\Music\\iTunes\\iTunes Media\\Audiobooks\\Toni Morrison";
+            string testPath2 = "http://file-ex.ssenhosting.com/data1/nick/n3d40.mp3";
+            string parent1;
+            string parent2;
+            string leaf1;
+            string leaf2;
+            try{
+                parent1 = System.IO.Directory.GetParent(testPath1).Name;
+                Console.WriteLine(parent1);
+            }
+            catch{
+                Console.WriteLine("failed parent1");
+            }
+            try{
+                parent2 = System.IO.Directory.GetParent(testPath2).Name;
+                Console.WriteLine(parent2);
+            }
+            catch{
+                Console.WriteLine("failed parent2");
+            }
+            try{
+                leaf1 = System.IO.Path.GetFileName(testPath1);
+                Console.WriteLine(leaf1);
+            }
+            catch{
+                Console.WriteLine("failed leaf1");
+            }
+            try{
+                leaf2 = System.IO.Path.GetFileName(testPath2);
+                Console.WriteLine(leaf2);
+            }
+            catch{
+                Console.WriteLine("failed leaf1");
+            }
+            return;
+        }
+
         static void Main(string[] args)
         {
             LocalGlobalTester localGlobal = new LocalGlobalTester();
@@ -274,6 +312,8 @@ namespace sandbox_Console
             //levenstein.LevensteinTest();
             //inheritance01.Test();
             int breakhere = 1;
+
+            FilePathTester();
         }
     }
 }
