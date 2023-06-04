@@ -252,9 +252,15 @@ namespace sandbox_Console
             Console.WriteLine("A.Equals(B): {0}", A.Equals(B));
         }
 
+        static string GetSafeFilename(string filename)
+        {
+            return string.Join("_", filename.Split(":"));
+            //return string.Join("_", filename.Split(Path.GetInvalidFileNameChars()));
+        }
+
         static void FilePathTester(){
             string testPath1 = "C:\\Users\\steng\\Music\\iTunes\\iTunes Media\\Audiobooks\\Toni Morrison";
-            string testPath2 = "http://file-ex.ssenhosting.com/data1/nick/n3d40.mp3";
+            string testPath2 = "http://file-ex.ssenhosting.com/data1/nick/n3d39.mp3";
             string parent1;
             string parent2;
             string leaf1;
@@ -287,6 +293,7 @@ namespace sandbox_Console
             catch{
                 Console.WriteLine("failed leaf1");
             }
+            Console.WriteLine("safe filename: {0}",GetSafeFilename(testPath2));
             return;
         }
 
