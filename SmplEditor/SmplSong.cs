@@ -17,8 +17,9 @@ namespace SmplEditor
         public string title {get; set;}
         public int type {get; set;}
 
-        private const double ARTIST_TH = 0.9;
-        private const double TITLE_TH = 0.8;
+        private const double ARTIST_TH = 7/8.0;
+        private const double TITLE_TH = 13/16.0;
+        private const double FILENAME_TH = 7/8.0;
         private Levenstein levenstein = new Levenstein();
         public string UpperDirectory()
         {
@@ -38,40 +39,63 @@ namespace SmplEditor
             return false;
         }
 
+        private void getReasonableFileNames(SmplSong thisSong,
+                                            SmplSong otherSong,
+                                            ref string thisFileName,
+                                            ref string otherFileName){
+            thisFileName = System.IO.Path.GetFileName(thisSong.info);
+            if (thisFileName.Length < 11){ // If the filename itself is too short or not unique
+                thisFileName = System.IO.Directory.GetParent(thisSong.info).Name
+                                + System.IO.Path.GetFileNameWithoutExtension(thisSong.info);
+                otherFileName = System.IO.Directory.GetParent(otherSong.info).Name
+                                + System.IO.Path.GetFileNameWithoutExtension(otherSong.info);
+            }
+            else{
+                otherFileName = System.IO.Path.GetFileName(otherSong.info);
+            }
+            return;
+        }
+        private void getReasonableFileNames(SmplSong thisSong,
+                                            ITunesLibraryParser.Track otherSong,
+                                            ref string thisFileName,
+                                            ref string otherFileName){            
+            thisFileName = System.IO.Path.GetFileName(thisSong.info);
+            if (thisFileName.Length < 11){
+                thisFileName = System.IO.Directory.GetParent(thisSong.info).Name
+                                + System.IO.Path.GetFileName(thisSong.info);
+                otherFileName = System.IO.Directory.GetParent(
+            System.Net.WebUtility.UrlDecode(otherSong.Location).Replace(":","_")).Name
+                                + System.IO.Path.GetFileName(otherSong.Location);
+            }
+            else{
+                otherFileName = System.IO.Path.GetFileName(otherSong.Location);
+            }
+            return;
+        }
         public bool IsEqualTo(SmplSong smplSong){
             bool sameArtist = (this.artist == smplSong.artist);
             bool sameTitle = (this.title == smplSong.title);
-            bool sameFile = (this.info == smplSong.info);
+            string thisFileName = "";
+            string otherFileName = "";
+            getReasonableFileNames(this, smplSong, ref thisFileName, ref otherFileName);
+            bool sameFile = (thisFileName == otherFileName);
             if (sameArtist && sameTitle && sameFile){
                 return true;
             }
-            // // needs optimization
-            // double artistScore = this.levenstein.GetSimilarity(this.artist, smplSong.artist);
-            // double titleScore = this.levenstein.GetSimilarity(this.title, smplSong.artist);
-
-            // if (artistScore > ARTIST_TH && titleScore > TITLE_TH){
-            //     return true;
-            // }
             return false;
         }
 
         public bool IsEqualTo(ITunesLibraryParser.Track iTunesSong){
             bool sameArtist = (this.artist == iTunesSong.Artist);
             bool sameTitle = (this.title == iTunesSong.Name);
-            string smplFileName = System.IO.Path.GetFileName(this.info);
-            string iTunesFileName = System.IO.Path.GetFileName(iTunesSong.Location);
-            bool sameFile = (smplFileName == iTunesFileName);
+            string thisFileName = "";
+            string otherFileName = "";
+            getReasonableFileNames(this, iTunesSong, ref thisFileName, ref otherFileName);
+            bool sameFile = (thisFileName == otherFileName);
             if (sameArtist && sameTitle && sameFile){
                 return true;
             }
-            // // needs optimization
-            // double artistScore = this.levenstein.GetSimilarity(this.artist, iTunesSong.Artist);
-            // double titleScore = this.levenstein.GetSimilarity(this.title, iTunesSong.Name);
-            
-            // if (artistScore > ARTIST_TH && titleScore > TITLE_TH){
-            //     return true;
-            // }
-            return false;
+             return false;
         }
         
         public int CompareByOrder(SmplSong comparingTo){

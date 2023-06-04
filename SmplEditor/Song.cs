@@ -105,24 +105,60 @@ namespace SmplEditor
             System.Diagnostics.Debug.Print("Song.CompareWith: Not implemented for this type");
             return false;
         }
-        public bool IsEqualTo(ITunesLibraryParser.Track iTunesTrack) {
-            if (this.HasSmplSong()) {
-                return this.SmplMusic.IsEqualTo(iTunesTrack);
+        private string getFileName(ITunesLibraryParser.Track iTunesTrack){
+            string trackLocation;
+            string urlDecoded;
+            string safeName;
+            string fileName;
+
+            trackLocation = iTunesTrack.Location;
+            urlDecoded = System.Net.WebUtility.UrlDecode(trackLocation);
+            safeName = urlDecoded.Replace(":", "_");
+            fileName = System.IO.Path.GetFileName(safeName);
+            
+            return fileName;
+        }
+        private string getDirectoryFileName(ITunesLibraryParser.Track iTunesTrack){
+            string trackLocation;
+            string urlDecoded;
+            string safeName;
+            string dirName;
+            string fileName;
+
+            trackLocation = iTunesTrack.Location;
+            urlDecoded = System.Net.WebUtility.UrlDecode(trackLocation);
+            safeName = urlDecoded.Replace(":", "_");
+            dirName = System.IO.Directory.GetParent(safeName).Name;
+            fileName = System.IO.Path.GetFileName(safeName);
+            
+            return dirName+fileName;
+        }
+        private void getReasonableFileNames(ITunesLibraryParser.Track thisTrack,
+                                            ITunesLibraryParser.Track otherTrack,
+                                            ref string thisFileName,
+                                            ref string otherFileName){
+            thisFileName = this.getFileName(thisTrack);
+            otherFileName = this.getFileName(otherTrack);
+            if (thisFileName.Length < 11){ // If the filename itself is too short or not unique
+                thisFileName = getDirectoryFileName(thisTrack);
+                otherFileName = getDirectoryFileName(otherTrack);
             }
-            else if (this.HasITunesSong()) {
-                bool sameArtist = (this.artist == iTunesTrack.Artist);
-                bool sameTitle = (this.title == iTunesTrack.Name);
-                bool sameFile = (this.iTunesSong.Location == iTunesTrack.Location);
-                if (sameFile){
+            return;
+        }
+        public bool IsEqualTo(ITunesLibraryParser.Track iTunesTrack) {
+            if (this.HasITunesSong()) {
+                bool hasSameArtist = (this.iTunesSong.Artist == iTunesTrack.Artist);
+                bool hasSameTitle = (this.iTunesSong.Name == iTunesTrack.Name);
+                string thisFileName = "";
+                string otherFileName = "";
+                getReasonableFileNames(this.iTunesSong, iTunesTrack, ref thisFileName, ref otherFileName);
+                bool hasSameFileName = (thisFileName == otherFileName);
+                if (hasSameArtist && hasSameTitle && hasSameFileName){
                     return true;
                 }
-                // double artistScore = this.levenstein.GetSimilarity(this.ITunesSong.Artist, iTunesSong.Artist);
-                // double titleScore = this.levenstein.GetSimilarity(this.ITunesSong.Name, iTunesSong.Name);
-                // double albumScore = this.levenstein.GetSimilarity(this.ITunesSong.Album, iTunesSong.Album);
-
-                // if (artistScore > 0.9 && titleScore > 0.8 && albumScore > 0.8) {
-                //     return true;
-                // }
+            }
+            else if (this.HasSmplSong()) {
+                return this.SmplMusic.IsEqualTo(iTunesTrack);
             }
             return false;
         }
