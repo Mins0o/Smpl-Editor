@@ -105,43 +105,29 @@ namespace SmplEditor
             System.Diagnostics.Debug.Print("Song.CompareWith: Not implemented for this type");
             return false;
         }
-        private string getFileName(ITunesLibraryParser.Track iTunesTrack){
+        
+        private void getDirectoryFileName(ITunesLibraryParser.Track iTunesTrack, ref string fileName, ref string dirName){
             string trackLocation;
             string urlDecoded;
             string safeName;
-            string fileName;
-
-            trackLocation = iTunesTrack.Location;
-            urlDecoded = System.Net.WebUtility.UrlDecode(trackLocation);
-            safeName = urlDecoded.Replace(":", "_");
-            fileName = System.IO.Path.GetFileName(safeName);
-            
-            return fileName;
-        }
-        private string getDirectoryFileName(ITunesLibraryParser.Track iTunesTrack){
-            string trackLocation;
-            string urlDecoded;
-            string safeName;
-            string dirName;
-            string fileName;
 
             trackLocation = iTunesTrack.Location;
             urlDecoded = System.Net.WebUtility.UrlDecode(trackLocation);
             safeName = urlDecoded.Replace(":", "_");
             dirName = System.IO.Directory.GetParent(safeName).Name;
             fileName = System.IO.Path.GetFileName(safeName);
-            
-            return dirName+fileName;
         }
         private void getReasonableFileNames(ITunesLibraryParser.Track thisTrack,
                                             ITunesLibraryParser.Track otherTrack,
                                             ref string thisFileName,
                                             ref string otherFileName){
-            thisFileName = this.getFileName(thisTrack);
-            otherFileName = this.getFileName(otherTrack);
+            string thisDirName = "";
+            string otherDirName = "";
+            this.getDirectoryFileName(thisTrack, ref thisFileName, ref thisDirName);
+            this.getDirectoryFileName(otherTrack, ref otherFileName, ref otherDirName);
             if (thisFileName.Length < 11){ // If the filename itself is too short or not unique
-                thisFileName = getDirectoryFileName(thisTrack);
-                otherFileName = getDirectoryFileName(otherTrack);
+                thisFileName = thisDirName + thisFileName;
+                otherFileName = otherDirName + otherFileName;
             }
             return;
         }
@@ -160,6 +146,7 @@ namespace SmplEditor
             else if (this.HasSmplSong()) {
                 return this.SmplMusic.IsEqualTo(iTunesTrack);
             }
+            System.Diagnostics.Debug.Print("Song.CompareWith: Not implemented for this type");
             return false;
         }
         public int CompareByOrder(Song comparingTo)

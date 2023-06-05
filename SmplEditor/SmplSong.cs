@@ -39,36 +39,51 @@ namespace SmplEditor
             return false;
         }
 
+        private void getDirectoryFileName(ITunesLibraryParser.Track iTunesTrack, ref string fileName, ref string dirName){
+            string trackLocation;
+            string urlDecoded;
+            string safeName;
+
+            trackLocation = iTunesTrack.Location;
+            urlDecoded = System.Net.WebUtility.UrlDecode(trackLocation);
+            safeName = urlDecoded.Replace(":", "_");
+            dirName = System.IO.Directory.GetParent(safeName).Name;
+            fileName = System.IO.Path.GetFileName(safeName);
+        }
+        private void getDirectoryFileName(SmplSong smplTrack, ref string fileName, ref string dirName){
+            string trackInfo;
+            string urlDecoded;
+
+            trackInfo = smplTrack.info;
+            urlDecoded = System.Net.WebUtility.UrlDecode(trackInfo);
+            dirName = System.IO.Directory.GetParent(urlDecoded).Name;
+            fileName = System.IO.Path.GetFileName(urlDecoded);
+        }
         private void getReasonableFileNames(SmplSong thisSong,
                                             SmplSong otherSong,
                                             ref string thisFileName,
                                             ref string otherFileName){
-            thisFileName = System.IO.Path.GetFileName(thisSong.info);
+            string thisDirName = "";
+            string otherDirName = "";
+            this.getDirectoryFileName(thisSong, ref thisFileName, ref thisDirName);
+            this.getDirectoryFileName(otherSong, ref otherFileName, ref otherDirName);
             if (thisFileName.Length < 11){ // If the filename itself is too short or not unique
-                thisFileName = System.IO.Directory.GetParent(thisSong.info).Name
-                                + System.IO.Path.GetFileNameWithoutExtension(thisSong.info);
-                otherFileName = System.IO.Directory.GetParent(otherSong.info).Name
-                                + System.IO.Path.GetFileNameWithoutExtension(otherSong.info);
-            }
-            else{
-                otherFileName = System.IO.Path.GetFileName(otherSong.info);
+                thisFileName = thisDirName + thisFileName;
+                otherFileName = otherDirName+otherFileName;
             }
             return;
         }
         private void getReasonableFileNames(SmplSong thisSong,
                                             ITunesLibraryParser.Track otherSong,
                                             ref string thisFileName,
-                                            ref string otherFileName){            
-            thisFileName = System.IO.Path.GetFileName(thisSong.info);
-            if (thisFileName.Length < 11){
-                thisFileName = System.IO.Directory.GetParent(thisSong.info).Name
-                                + System.IO.Path.GetFileName(thisSong.info);
-                otherFileName = System.IO.Directory.GetParent(
-            System.Net.WebUtility.UrlDecode(otherSong.Location).Replace(":","_")).Name
-                                + System.IO.Path.GetFileName(otherSong.Location);
-            }
-            else{
-                otherFileName = System.IO.Path.GetFileName(otherSong.Location);
+                                            ref string otherFileName){
+            string thisDirName = "";
+            string otherDirName = "";
+            this.getDirectoryFileName(thisSong, ref thisFileName, ref thisDirName);
+            this.getDirectoryFileName(otherSong, ref otherFileName, ref otherDirName);
+            if (thisFileName.Length < 11){ // If the filename itself is too short or not unique
+                thisFileName = thisDirName + thisFileName;
+                otherFileName = otherDirName+otherFileName;
             }
             return;
         }
