@@ -39,6 +39,9 @@ namespace SmplEditor
                 return this.iTunesSong;
             }
         }
+        private const double ARTIST_TH = 7/8.0;
+        private const double TITLE_TH = 13/16.0;
+        private const double FILENAME_TH = 7/8.0;
 
         public Song(SmplSong smplMusic) {
             this.smplMusic = smplMusic;
@@ -102,7 +105,17 @@ namespace SmplEditor
             else if (this.HasITunesSong()) {
                 return smplSong.IsEqualTo(this.ITunesSong);
             }
-            System.Diagnostics.Debug.Print("Song.CompareWith: Not implemented for this type");
+            System.Diagnostics.Debug.Print("Song.IsEqualTo: Not implemented for this type");
+            return false;
+        }
+        public bool IsSoftEqualTo(SmplSong smplSong){
+            if (this.HasSmplSong()){
+                return smplSong.IsSoftEqualTo(this.SmplMusic);
+            }
+            else if (this.HasITunesSong()){
+                return smplSong.IsSoftEqualTo(this.ITunesSong);
+            }
+            System.Diagnostics.Debug.WriteLine("Song.IsSoftEqualTo: Not implemented for this type");
             return false;
         }
         
@@ -145,6 +158,24 @@ namespace SmplEditor
             }
             else if (this.HasSmplSong()) {
                 return this.SmplMusic.IsEqualTo(iTunesTrack);
+            }
+            System.Diagnostics.Debug.Print("Song.CompareWith: Not implemented for this type");
+            return false;
+        }
+        public bool IsSoftEqualTo(ITunesLibraryParser.Track iTunesTrack) {
+            if (this.HasITunesSong()) {
+                bool hasSimilarArtist = this.levenstein.GetSimilarity(this.iTunesSong.Artist, iTunesTrack.Artist) > ARTIST_TH;
+                bool hasSimilarTitle = this.levenstein.GetSimilarity(this.iTunesSong.Name, iTunesTrack.Name) > TITLE_TH;
+                string thisFileName = "";
+                string otherFileName = "";
+                getReasonableFileNames(this.iTunesSong, iTunesTrack, ref thisFileName, ref otherFileName);
+                bool hasSimilarFileName = this.levenstein.GetSimilarity(thisFileName, otherFileName) > FILENAME_TH;
+                if (hasSimilarArtist && hasSimilarTitle && hasSimilarFileName){
+                    return true;
+                }
+            }
+            else if (this.HasSmplSong()) {
+                return this.SmplMusic.IsSoftEqualTo(iTunesTrack);
             }
             System.Diagnostics.Debug.Print("Song.CompareWith: Not implemented for this type");
             return false;

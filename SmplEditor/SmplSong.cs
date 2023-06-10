@@ -112,7 +112,30 @@ namespace SmplEditor
             }
              return false;
         }
-        
+        public bool IsSoftEqualTo(SmplSong smplSong){
+            bool isSimilarArtist = this.levenstein.GetSimilarity(this.artist, smplSong.artist) > ARTIST_TH;
+            bool isSimilarTitle = this.levenstein.GetSimilarity(this.title, smplSong.title) > TITLE_TH;
+            string thisFileName = "";
+            string otherFileName = "";
+            getReasonableFileNames(this, smplSong, ref thisFileName, ref otherFileName);
+            bool isSimilarFile = this.levenstein.GetSimilarity(thisFileName, otherFileName) > FILENAME_TH;
+            if (isSimilarArtist && isSimilarTitle && isSimilarFile){
+                return true;
+            }
+            return false;
+        }
+        public bool IsSoftEqualTo(ITunesLibraryParser.Track iTunesSong){
+            bool isSimilarArtist = this.levenstein.GetSimilarity(this.artist, iTunesSong.Artist) > ARTIST_TH;
+            bool isSimilarTitle = this.levenstein.GetSimilarity(this.title, iTunesSong.Name) > TITLE_TH;
+            string thisFileName = "";
+            string otherFileName = "";
+            getReasonableFileNames(this, iTunesSong, ref thisFileName, ref otherFileName);
+            bool isSimilarFile = this.levenstein.GetSimilarity(thisFileName, otherFileName) > FILENAME_TH;
+            if (isSimilarArtist && isSimilarTitle && isSimilarFile){
+                return true;
+            }
+             return false;
+        }
         public int CompareByOrder(SmplSong comparingTo){
             int directoryCompareResult = this.UpperDirectory().CompareTo(comparingTo.UpperDirectory());
             if (directoryCompareResult == 0) {

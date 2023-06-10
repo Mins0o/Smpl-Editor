@@ -143,16 +143,16 @@ namespace SmplEditor
             var linkedTracks = new Dictionary<ITunesLibraryParser.Track, Song>();
             foreach(var targetSong in importedTracks){
                 Song matched = library.Find(libSong => libSong.IsEqualTo(targetSong));
-                if(matched == default(Song)){
-                    matched = new Song(targetSong);
-                    newSongs.Add(matched);
-                    library.Add(matched);
-                }
-                else{ // existing song found on library
-                    if(!matched.HasITunesSong()){ // if the song doesn't have SMPLSong, add the new information
+                if(matched != default(Song)){ // existing song found on library
+                    if(!matched.HasITunesSong()){ // if the song doesn't have iTunesTrack, add the new information
                         matched.ITunesSong = targetSong;
                         existingSmplSongs.Add(matched);
                     }
+                }
+                else{
+                    matched = library.Find(libSong => libSong.IsSoftEqualTo(targetSong));
+                    newSongs.Add(matched);
+                    library.Add(matched);
                 }
                 linkedTracks.Add(targetSong, matched);
             }
