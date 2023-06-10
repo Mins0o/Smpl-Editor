@@ -9,25 +9,46 @@ namespace SmplEditor
     internal class Playlist
     {
         private bool isSmpl;
+        public bool IsSmpl{
+            get{
+                return this.isSmpl;
+            }
+        }
         private bool isITunes;
+        public bool IsITunes{
+            get{
+                return this.isITunes;
+            }
+        }
         public string Name{
             get{
                 if (this.isSmpl){
                     return this.smplProperties.name;
                 }
                 else{
-                    return "iTunes not implemented yet";
+                    return this.iTunesProperties.Name;
                 }
             }
         }
         private Smpl smplProperties;
-        private ITunesPlaylist iTunesProperties;
+        public Smpl SmplProperties{
+            get{
+                return this.smplProperties;
+            }
+        }
+        private ITunesLibraryParser.Playlist iTunesProperties;
+        public ITunesLibraryParser.Playlist ITunesProperties{
+            get{
+                return this.iTunesProperties;
+            }
+        }
         private List<Song> listOfTracks;
         public List<Song> ListOfTracks{
             get{
                 return this.listOfTracks;
             }
         }
+        private Dictionary<Song,int> trackOrdering;
         public Playlist(string name, List<Song> songList){
             isSmpl = true;
             isITunes = false;
@@ -43,6 +64,30 @@ namespace SmplEditor
             isITunes = false;
             smplProperties = smpl.CloneProperties();
             listOfTracks = songList;
+            trackOrdering = smpl.GetOrdering(songList);
+        }
+        public Playlist(ITunesLibraryParser.Playlist iTunesList, Dictionary<ITunesLibraryParser.Track, Song> trackMapper)
+        {
+            isITunes = true;
+            isSmpl = false;
+            var trackList = iTunesList.Tracks.ToList();
+            this.listOfTracks = new List<Song>();
+            this.trackOrdering = new Dictionary<Song, int>();
+            int order = 0;
+            foreach(var iTunesTrack in trackList){
+                Song mappedSong = trackMapper[iTunesTrack];
+                try
+                {
+                    this.trackOrdering.Add(mappedSong, order);
+                    order++;
+                    this.listOfTracks.Add(mappedSong);
+                }
+                catch (System.ArgumentException ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("{0} {2} - {1}", order, ex.Message, mappedSong.Title);
+                }
+            }
+            iTunesProperties = iTunesList; 
         }
         public Playlist(){
             ;
@@ -81,6 +126,28 @@ namespace SmplEditor
         public override string ToString()
         {
             return this.Name;
+        }
+        public void SortByOrder(){
+            this.listOfTracks.Sort((Song x, Song y) => this.trackOrdering[x].CompareTo(this.trackOrdering[y]));
+        }
+        public void SortByArtist()
+        {
+            this.listOfTracks.Sort((Song x, Song y) => x.Artist.CompareTo(y.Artist));
+            return;
+        }
+        public void SortByTitle()
+        {
+            this.listOfTracks.Sort((Song x, Song y) => x.Title.CompareTo(y.Title));
+            return;
+        }
+        public void SortByDirectory(){
+            if (this.isSmpl){
+                this.listOfTracks.Sort((Song x, Song y) => x.SmplMusic.info.CompareTo(y.SmplMusic.info));
+                return;
+            }
+            else if (this.isITunes){
+                return;
+            }
         }
     }
 }

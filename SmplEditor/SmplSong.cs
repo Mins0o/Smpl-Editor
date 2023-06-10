@@ -16,51 +16,94 @@ namespace SmplEditor
         public int order {get; set;}
         public string title {get; set;}
         public int type {get; set;}
-        public int extraStuff {get; set;}
 
-        private const double ARTIST_TH = 0.9;
-        private const double TITLE_TH = 0.8;
+        private const double ARTIST_TH = 7/8.0;
+        private const double TITLE_TH = 13/16.0;
+        private const double FILENAME_TH = 7/8.0;
         private Levenstein levenstein = new Levenstein();
         public string UpperDirectory()
         {
             return info.Substring(0, info.LastIndexOf('/'));
         }
 
-        public bool CompareWith(Song song){
+        // Compare returns comparator output:int
+        // Equal returns boolean of whether two are equal or not. (T/F)
+
+        public bool IsEqualTo(Song song){
             if (song.HasSmplSong()){
-                return this.CompareWith(song.SmplMusic);
+                return this.IsEqualTo(song.SmplMusic);
             }
             else if(song.HasITunesSong()){
-                return this.CompareWith(song.ITunesSong);
+                return this.IsEqualTo(song.ITunesSong);
             }
             return false;
         }
 
-        public bool CompareWith(SmplSong smplSong){
-            double artistScore = this.levenstein.GetSimilarity(this.artist, smplSong.artist);
-            double titleScore = this.levenstein.GetSimilarity(this.title, smplSong.artist);
-
-            if (artistScore > ARTIST_TH && titleScore > TITLE_TH){
+        private void getReasonableFileNames(SmplSong thisSong,
+                                            SmplSong otherSong,
+                                            ref string thisFileName,
+                                            ref string otherFileName){
+            thisFileName = System.IO.Path.GetFileName(thisSong.info);
+            if (thisFileName.Length < 11){ // If the filename itself is too short or not unique
+                thisFileName = System.IO.Directory.GetParent(thisSong.info).Name
+                                + System.IO.Path.GetFileNameWithoutExtension(thisSong.info);
+                otherFileName = System.IO.Directory.GetParent(otherSong.info).Name
+                                + System.IO.Path.GetFileNameWithoutExtension(otherSong.info);
+            }
+            else{
+                otherFileName = System.IO.Path.GetFileName(otherSong.info);
+            }
+            return;
+        }
+        private void getReasonableFileNames(SmplSong thisSong,
+                                            ITunesLibraryParser.Track otherSong,
+                                            ref string thisFileName,
+                                            ref string otherFileName){            
+            thisFileName = System.IO.Path.GetFileName(thisSong.info);
+            if (thisFileName.Length < 11){
+                thisFileName = System.IO.Directory.GetParent(thisSong.info).Name
+                                + System.IO.Path.GetFileName(thisSong.info);
+                otherFileName = System.IO.Directory.GetParent(
+            System.Net.WebUtility.UrlDecode(otherSong.Location).Replace(":","_")).Name
+                                + System.IO.Path.GetFileName(otherSong.Location);
+            }
+            else{
+                otherFileName = System.IO.Path.GetFileName(otherSong.Location);
+            }
+            return;
+        }
+        public bool IsEqualTo(SmplSong smplSong){
+            bool sameArtist = (this.artist == smplSong.artist);
+            bool sameTitle = (this.title == smplSong.title);
+            string thisFileName = "";
+            string otherFileName = "";
+            getReasonableFileNames(this, smplSong, ref thisFileName, ref otherFileName);
+            bool sameFile = (thisFileName == otherFileName);
+            if (sameArtist && sameTitle && sameFile){
                 return true;
             }
             return false;
         }
 
-        public bool CompareWith(ITunesLibraryParser.Track iTunesSong){
-            double artistScore = this.levenstein.GetSimilarity(this.artist, iTunesSong.Artist);
-            double titleScore = this.levenstein.GetSimilarity(this.title, iTunesSong.Name);
-            
-            if (artistScore > ARTIST_TH && titleScore > TITLE_TH){
+        public bool IsEqualTo(ITunesLibraryParser.Track iTunesSong){
+            bool sameArtist = (this.artist == iTunesSong.Artist);
+            bool sameTitle = (this.title == iTunesSong.Name);
+            string thisFileName = "";
+            string otherFileName = "";
+            getReasonableFileNames(this, iTunesSong, ref thisFileName, ref otherFileName);
+            bool sameFile = (thisFileName == otherFileName);
+            if (sameArtist && sameTitle && sameFile){
                 return true;
             }
-            return false;
+             return false;
         }
         
         public int CompareByOrder(SmplSong comparingTo){
-            if (this.UpperDirectory().CompareTo(comparingTo.UpperDirectory()) == 0) {
-                return this.order.CompareTo(comparingTo.order);
+            int directoryCompareResult = this.UpperDirectory().CompareTo(comparingTo.UpperDirectory());
+            if (directoryCompareResult == 0) {
+                return this.title.CompareTo(comparingTo.title);
             } else{
-                return this.UpperDirectory().CompareTo(comparingTo.UpperDirectory());
+                return directoryCompareResult;
             }
         }
         public int CompareByOrder(ITunesLibraryParser.Track comparingTo){

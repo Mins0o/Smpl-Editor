@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.IO;
 using System.Text.Json;
+using System.Text.Encodings.Web;
 using Microsoft.Win32;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -26,16 +27,19 @@ namespace SmplEditor
         private List<Playlist> playlistLibrary = new List<Playlist>();
         private List<Song> songLibrary = new List<Song>();
 
+        private List<Song> unmatchedSmplTracks = new List<Song>();
+        private List<Song> unmatchediTunesTracks = new List<Song>();
+
         private List<string> importedFileNames = new List<string>();
         public MainWindow()
         {
             // initializing
-            while (playlistLibrary.Count == 0)
+            while (this.playlistLibrary.Count == 0)
             {
                 ImportPlaylist();
             }
 
-            if (playlistLibrary.Count == 0)
+            if (this.playlistLibrary.Count == 0)
             {
                 MessageBox.Show("No Music Playlist detected. Exitting the application.");
                 Application.Current.Shutdown();
@@ -46,19 +50,19 @@ namespace SmplEditor
             NewPlaylistNameBox.Text = FetchNewPlaylistName();
 
             // Link the listbox contents with playlists and songs
-            PlaylistsBox.ItemsSource = playlistLibrary;
+            PlaylistsBox.ItemsSource = this.playlistLibrary;
             DisplayAllSongs();
-            AddingListSelector.ItemsSource = playlistLibrary;
+            AddingListSelector.ItemsSource = this.playlistLibrary;
             AddingListSelector.SelectedIndex = 0;
         }
 
         // UI events
         private void OnPlaylistSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // If not de-selection //!! ?? why do I need this?
+            // If not de-selection
             if (PlaylistsBox.SelectedItem != null)
             {
-                DisplaySelectedPlaylist();
+                this.DisplaySelectedPlaylist();
             }
         }
 
@@ -67,14 +71,21 @@ namespace SmplEditor
             // If not deselection,
             if (AllSongsListBox.SelectedItem != null)
             {
-                DisplayAllSongs();
+                this.DisplayAllSongs();
             }
 
         }
+        
         private void OnImportPlaylistClicked(object sender, RoutedEventArgs e)
         {
             ImportPlaylist();
+            // Somehow, without setting it to null first,
+            // there will be an "inconsistency exception" when displaying the list
+            // System.InvalidOperationException: An ItemsControl is inconsistent with its items source.
+            PlaylistsBox.ItemsSource = null;
+            PlaylistsBox.ItemsSource = this.playlistLibrary;
         }
+
         /// <summary> This function takes in a list of newly selected files and 
         /// separates them into `already imported` ones and `to be imported` ones. </summary>
         private List<int> getNewFileIndices(string[] selectedFileNames, List<string> importedFiles){
@@ -93,31 +104,24 @@ namespace SmplEditor
             return availableIndices;
         }
         
-        private void AddToImportedFiles(string[] selectedFileNames, List<int> processedIndices){
-            foreach(int fileIndex in processedIndices){
-                this.importedFileNames.Add(selectedFileNames[fileIndex]);
-            }
-        }
-
         private string GetExtensionFromSafeName(string safeName){
             int extStartIndex = safeName.LastIndexOf(".");
             string extension = safeName.Substring(extStartIndex);
             return extension;
         }
-        
-        private string GetPlaylistNameFromSafeName(string safeName){
-            int extStartIndex = safeName.LastIndexOf(".");
-            string playlistName = safeName.Substring(0, extStartIndex);
-            return playlistName;
-        }
 
-        // private List<T> addNewSongsToLibrary<T,P>(P palylist, List<T> library)
-        private List<Song> matchExistingSongs(Smpl playlist, List<Song> library, List<Song> newSongs){
+        /// <summary> 
+        /// For each track in the imported list, search if the track already exists in the library.<br/>
+        /// If any song was not found in the existing library, convert it to a &lt;Song&gt;.<br/>
+        /// If some tracks already exist but are in different type, return the list of such.
+        /// Return the importedPlaylist after converting it to a &lt;Playlist&gt; and connecting each track to the library.
+        /// </summary>
+        private List<Song> linkTracksToLibrary(Smpl importePlaylist, List<Song> library, List<Song> newSongs, List<Song> existingiTunesSongs){
             List<Song> remappedPlaylist = new List<Song>();
-            List<SmplSong> playlistSongs = playlist.members;
+            List<SmplSong> playlistSongs = importePlaylist.members;
 
             foreach (SmplSong targetSong in playlistSongs){
-                Song matched = library.Find(libSong => targetSong.CompareWith(libSong));
+                Song matched = library.Find(libSong => targetSong.IsEqualTo(libSong));
                 if(matched == default(Song)){ // not found
                     // convert the SmplSong to a Song and add to the list
                     matched = new Song(targetSong);
@@ -127,24 +131,34 @@ namespace SmplEditor
                 else{ // existing song found on library
                     if(!matched.HasSmplSong()){ // if the song doesn't have SMPLSong, add the new information
                         matched.SmplMusic = targetSong;
+                        existingiTunesSongs.Add(matched);
                     }
                 }
                 remappedPlaylist.Add(matched);
             }
             return remappedPlaylist;
         }
-        private List<Song> addNewSongsToLibrary(ITunesPlaylist playlist, List<Song> library){
-            List<Song> newSongsList = new List<Song>();
-            return newSongsList;
+
+        private Dictionary<ITunesLibraryParser.Track, Song> linkTracksToLibrary(List<ITunesLibraryParser.Track> importedTracks, List<Song> library, List<Song> newSongs, List<Song> existingSmplSongs){
+            var linkedTracks = new Dictionary<ITunesLibraryParser.Track, Song>();
+            foreach(var targetSong in importedTracks){
+                Song matched = library.Find(libSong => libSong.IsEqualTo(targetSong));
+                if(matched == default(Song)){
+                    matched = new Song(targetSong);
+                    newSongs.Add(matched);
+                    library.Add(matched);
+                }
+                else{ // existing song found on library
+                    if(!matched.HasITunesSong()){ // if the song doesn't have SMPLSong, add the new information
+                        matched.ITunesSong = targetSong;
+                        existingSmplSongs.Add(matched);
+                    }
+                }
+                linkedTracks.Add(targetSong, matched);
+            }
+            return linkedTracks;
         }
-        private Playlist getPlaylist(Smpl playlist, List<Song> library){
-            Playlist newPlaylist = new Playlist();
-            return newPlaylist;
-        }
-        private Playlist getPlaylist(ITunesPlaylist playlist){
-            Playlist newPlaylist = new Playlist();
-            return newPlaylist;
-        }
+
         private void ImportPlaylist()
         {
             {/* Pseudo code (all comments)
@@ -202,10 +216,41 @@ namespace SmplEditor
                 string safeName = safeNames[fileIdx];
                 string fileName = fileNames[fileIdx];
                 string extension = this.GetExtensionFromSafeName(safeName);
-                if (extension == ".xml"){
-                    // this file is iTunes file
+                if (extension == ".xml")
+                {
+                    // This file is iTunes file
+                    var itunes = new ITunesLibraryParser.ITunesLibrary(fileName);
+                    List<ITunesLibraryParser.Playlist> iPlaylists = itunes.Playlists.ToList();
+                    List<ITunesLibraryParser.Track> iTracks = itunes.Tracks.ToList();
+                    // Unlike smpl files, multiple playlists can come in at once.
+                    // And all duplicateless track library comes separate to the playlists.
+                    // Does iTunes library share the reference with the tracks in the playlist?
+                    // No
+
+                    // Registereing and linking can be done in the scale of the whole library
+                    // While registering, create a map of iTunes.Track --> registered_Song
+                    // There is a bit concern since the tracks from iTracks and iPlaylists
+                    //    only equals in value but not in references.
+
+                    // After registering, just go through the playlists
+                    // Per playlist, map the iTunes.Tracks --> Registered_Song
+                    List<Song> newSongs = new List<Song>();
+                    List<Song> existingSmplSongs = new List<Song>();
+                    var trackToSongLookup = this.linkTracksToLibrary(iTracks, this.songLibrary, newSongs, existingSmplSongs);
+                    this.unmatchediTunesTracks.AddRange(newSongs);
+                    System.Diagnostics.Debug.WriteLine("{1} - New tracks: {0}", newSongs.Count, "iTunes");
+                    foreach (var importingPlaylist in iPlaylists)
+                    {
+                        Playlist playlist = new Playlist(importingPlaylist, trackToSongLookup);
+                        this.playlistLibrary.Add(playlist);
+                    }
+                    System.Diagnostics.Debug.WriteLine("Existing SmplSongs: {0}", existingSmplSongs.Count);
+                    foreach (Song track in existingSmplSongs){
+                        bool success = this.unmatchedSmplTracks.Remove(track);
+                    }
                 }
-                else if(extension == ".smpl"){
+                else if(extension == ".smpl")
+                {
                     string jsonString = File.ReadAllText(fileNames[fileIdx]);
                     Smpl importingPlaylist = JsonSerializer.Deserialize<Smpl>(jsonString);
 
@@ -216,16 +261,24 @@ namespace SmplEditor
                     // Remap the playlist to the library songs
                     // Add new songs to the library
                     List<Song> newSongs = new List<Song>();
-                    List<Song> remappedPlaylist = matchExistingSongs(importingPlaylist, this.songLibrary, newSongs);
+                    List<Song> existingSameTypeSongs = new List<Song>();
+                    List<Song> existingDiffTypeSongs = new List<Song>();
+                    List<Song> linkedPlaylist = this.linkTracksToLibrary(importingPlaylist, this.songLibrary, newSongs, existingDiffTypeSongs);
+                    this.unmatchedSmplTracks.AddRange(newSongs);
+                    System.Diagnostics.Debug.WriteLine("{1} - New tracks: {0}", newSongs.Count, importingPlaylist.name);
 
-                    Playlist playlist = new Playlist(importingPlaylist, remappedPlaylist);
-                    playlistLibrary.Add(playlist);
+                    Playlist playlist = new Playlist(importingPlaylist, linkedPlaylist);
+                    this.playlistLibrary.Add(playlist);
+                    System.Diagnostics.Debug.WriteLine("Existing iTunesSongs: {0}", existingDiffTypeSongs.Count);
+                    foreach (Song track in existingDiffTypeSongs){
+                        bool success = this.unmatchediTunesTracks.Remove(track);
+                    }
                 }
                 else // Other than iTunes or SMPL
                 {
                     System.Diagnostics.Trace.WriteLine("This file format not supported");
                 }
-                int break_here = 1;
+                int breakHere = 1;
             }
             return;
         }
@@ -242,7 +295,6 @@ namespace SmplEditor
                 MessageBox.Show("This playlist already has " + targetList.ListOfTracks.Count + " tracks. Maximum number of tracks per playlist is 1000");
                 return;
             }
-            // Every copy of song in different lists are different instances. The deep copying is handled inside the method.
             targetList.AddSongs(selectedSongs);
 
             // Go to the list that the song was just added
@@ -263,7 +315,7 @@ namespace SmplEditor
             // When deleting from individual playlist
             else if (PlaylistsBox.SelectedItem != null)
             {
-                Playlist playlist = playlistLibrary[this.PlaylistsBox.SelectedIndex];
+                Playlist playlist = this.playlistLibrary[this.PlaylistsBox.SelectedIndex];
 
                 // UI refresh is included
                 DeleteSongsFromPlaylist(playlist, selection);
@@ -280,14 +332,14 @@ namespace SmplEditor
             }
             // The new playlist is instantiated with deep copy of the songList, which means they don't share the same reference.
             // The order is also reset.
-            playlistLibrary.Add(new Playlist(name, songList));
+            this.playlistLibrary.Add(new Playlist(name, songList));
 
             // Refresh UI
             PlaylistsBox.ItemsSource = null;
-            PlaylistsBox.ItemsSource = playlistLibrary;
+            PlaylistsBox.ItemsSource = this.playlistLibrary;
             NewPlaylistNameBox.Text = FetchNewPlaylistName();
             // Focus the view on the new playlist
-            PlaylistsBox.SelectedIndex = playlistLibrary.Count - 1;
+            PlaylistsBox.SelectedIndex = this.playlistLibrary.Count - 1;
         }
 
         private void OnRemovePlaylistClicked(object sender, RoutedEventArgs e)
@@ -295,13 +347,13 @@ namespace SmplEditor
             if (PlaylistsBox.SelectedItem != null)
             {
                 int currentSelectionIndex = PlaylistsBox.SelectedIndex;
-                Playlist targetPlaylist = playlistLibrary[currentSelectionIndex];
+                Playlist targetPlaylist = this.playlistLibrary[currentSelectionIndex];
                 DeletePlaylist(targetPlaylist.Name);
 
                 // Refresh UI
                 PlaylistsBox.ItemsSource = null;
-                PlaylistsBox.ItemsSource = playlistLibrary;
-                if (playlistLibrary.Count > 0)
+                PlaylistsBox.ItemsSource = this.playlistLibrary;
+                if (this.playlistLibrary.Count > 0)
                 {
                     PlaylistsBox.SelectedIndex = currentSelectionIndex - 1;
                 }
@@ -321,9 +373,17 @@ namespace SmplEditor
                 ShowNewFolderButton=true
             };
             folderBrowser.ShowDialog();
-            foreach (Playlist playlist in playlistLibrary)
+            foreach (Playlist playlist in this.playlistLibrary)
             {
-                string jsonString = JsonSerializer.Serialize(playlist);
+                string jsonString = "";
+                if (playlist.IsSmpl)
+                {
+                    var jsonSerializerOption = new JsonSerializerOptions{
+                        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                    };
+                    Smpl smplExport = new Smpl(playlist);
+                    jsonString = JsonSerializer.Serialize(smplExport, jsonSerializerOption);
+                }
                 if (!Directory.Exists(folderBrowser.SelectedPath + "\\Exported_Smpl"))
                 {
                     Directory.CreateDirectory(folderBrowser.SelectedPath + "\\Exported_Smpl");
@@ -338,29 +398,36 @@ namespace SmplEditor
             int selectedOption = SortOptionComboBox.SelectedIndex;
             switch (selectedOption){
                 case 0: // by Order, directory
+                /// In SMPL, "order" is included in smplSong objects, 
+                /// inside List member of SMPL. However, it's an attribute per playlist not smplSong
                     {
+                        // A song library does not have duplicates nor its own ordering
+                        // (since ordering is an attribute of a playlist, and library is not a playlist)
+                        // There needs to be an alternative way to sort.
+                        // The best I can think of now is by artist-title.
+                        // Another Idea is Dir-title. Or jsut full path.
                         songLibrary.Sort((Song x, Song y) => x.CompareByOrder(y));
-                        foreach (Playlist playlist in playlistLibrary)
+                        foreach (Playlist playlist in this.playlistLibrary)
                         {
-                            ;
+                            playlist.SortByOrder();
                         }
                         break;
                     }
                 case 1: // by artists
                     {
                         songLibrary.Sort((Song x, Song y) => x.CompareByArtist(y));
-                        foreach (Playlist playlist in playlistLibrary)
+                        foreach (Playlist playlist in this.playlistLibrary)
                         {
-                            ;
+                            playlist.SortByArtist();
                         }
                         break;
                     }
                 case 2: // by title
                     {
                         songLibrary.Sort((Song x, Song y) => x.CompareByTitle(y));
-                        foreach (Playlist playlist in playlistLibrary)
+                        foreach (Playlist playlist in this.playlistLibrary)
                         {
-                            ;
+                            playlist.SortByTitle();
                         }
                         break;
                     }
@@ -368,9 +435,9 @@ namespace SmplEditor
                     {
                         System.Diagnostics.Trace.WriteLine("CompareByDir: Not implemented. Cloning ByTitle behavior.");
                         songLibrary.Sort((Song x, Song y) => x.CompareByDir(y));
-                        foreach (Playlist playlist in playlistLibrary)
+                        foreach (Playlist playlist in this.playlistLibrary)
                         {
-                            ;
+                            playlist.SortByDirectory();
                         }
                         break;
                     }
@@ -380,11 +447,10 @@ namespace SmplEditor
             RefreshDisplay();
         }
 
-        // Internal Methods
         private void DisplaySelectedPlaylist()
         {
             AllSongsListBox.UnselectAll();
-            Playlist playlist = playlistLibrary[PlaylistsBox.SelectedIndex]; //!!exception occurs when trying to delete from allsongs lists
+            Playlist playlist = this.playlistLibrary[PlaylistsBox.SelectedIndex]; //!!exception occurs when trying to delete from allsongs lists
             SongsListBox.ItemsSource = null;
             SongsListBox.ItemsSource = playlist.ListOfTracks;
             if (SongsListBox.Items.Count > 0)
@@ -454,7 +520,7 @@ namespace SmplEditor
             List<string> playlistNames = new List<string>();
             string newPlaylistName = "New Playlist 1";
             int count = 0;
-            foreach (Playlist playlist in playlistLibrary)
+            foreach (Playlist playlist in this.playlistLibrary)
             {
                 playlistNames.Add(playlist.Name);
             }
@@ -469,11 +535,11 @@ namespace SmplEditor
         public Boolean DeletePlaylist(string name)
         {
             Boolean deleted = false;
-            foreach (Playlist playlist in playlistLibrary)
+            foreach (Playlist playlist in this.playlistLibrary)
             {
                 if (playlist.Name == name)
                 {
-                    playlistLibrary.Remove(playlist);
+                    this.playlistLibrary.Remove(playlist);
                     deleted = true;
                     break;
                 }
