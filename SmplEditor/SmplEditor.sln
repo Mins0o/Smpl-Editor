@@ -5,7 +5,7 @@ VisualStudioVersion = 17.1.32414.318
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmplEditor", "SmplEditor.csproj", "{B19DAF76-FAD3-4A3C-A205-9E6C2E889141}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sandbox_Console", "..\sandbox_Console\sandbox_Console.csproj", "{9114A7AD-D04F-46C6-B9C6-3C81F4124BFF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sandbox_Console", "..\sandbox_Console\sandbox_Console.csproj", "{9114A7AD-D04F-46C6-B9C6-3C81F4124BFF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
