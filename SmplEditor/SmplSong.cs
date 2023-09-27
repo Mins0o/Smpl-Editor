@@ -112,29 +112,28 @@ namespace SmplEditor
             }
              return false;
         }
-        public bool IsSoftEqualTo(SmplSong smplSong){
-            bool isSimilarArtist = this.levenstein.GetSimilarity(this.artist, smplSong.artist) > ARTIST_TH;
-            bool isSimilarTitle = this.levenstein.GetSimilarity(this.title, smplSong.title) > TITLE_TH;
+        
+        private double getSimilarity(string artist, string title, string filename1, string filename2){
+            double artistSimilarity = this.levenstein.GetSimilarity(this.artist, artist);
+            double titleSimilarity = this.levenstein.GetSimilarity(this.title, title);
+            double filenameSimilarity = this.levenstein.GetSimilarity(filename1, filename2);
+            return artistSimilarity + titleSimilarity + filenameSimilarity;
+        }
+        public double GetSimilarity(SmplSong smplSong){
+            string artist = smplSong.artist;
+            string title = smplSong.title;
             string thisFileName = "";
             string otherFileName = "";
             getReasonableFileNames(this, smplSong, ref thisFileName, ref otherFileName);
-            bool isSimilarFile = this.levenstein.GetSimilarity(thisFileName, otherFileName) > FILENAME_TH;
-            if (isSimilarArtist && isSimilarTitle && isSimilarFile){
-                return true;
-            }
-            return false;
+            return getSimilarity(artist, title, thisFileName, otherFileName);
         }
-        public bool IsSoftEqualTo(ITunesLibraryParser.Track iTunesSong){
-            bool isSimilarArtist = this.levenstein.GetSimilarity(this.artist, iTunesSong.Artist) > ARTIST_TH;
-            bool isSimilarTitle = this.levenstein.GetSimilarity(this.title, iTunesSong.Name) > TITLE_TH;
+        public double GetSimilarity(ITunesLibraryParser.Track iTunesSong){
+            string artist = iTunesSong.Artist;
+            string title = iTunesSong.Name;
             string thisFileName = "";
             string otherFileName = "";
             getReasonableFileNames(this, iTunesSong, ref thisFileName, ref otherFileName);
-            bool isSimilarFile = this.levenstein.GetSimilarity(thisFileName, otherFileName) > FILENAME_TH;
-            if (isSimilarArtist && isSimilarTitle && isSimilarFile){
-                return true;
-            }
-             return false;
+            return getSimilarity(artist, title, thisFileName, otherFileName);
         }
         public int CompareByOrder(SmplSong comparingTo){
             int directoryCompareResult = this.UpperDirectory().CompareTo(comparingTo.UpperDirectory());

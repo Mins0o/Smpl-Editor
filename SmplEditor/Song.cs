@@ -108,17 +108,46 @@ namespace SmplEditor
             System.Diagnostics.Debug.Print("Song.IsEqualTo: Not implemented for this type");
             return false;
         }
-        public bool IsSoftEqualTo(SmplSong smplSong){
+        public double GetSimilarity(SmplSong smplSong){
             if (this.HasSmplSong()){
-                return smplSong.IsSoftEqualTo(this.SmplMusic);
+                return smplSong.GetSimilarity(this.SmplMusic);
             }
             else if (this.HasITunesSong()){
-                return smplSong.IsSoftEqualTo(this.ITunesSong);
+                return smplSong.GetSimilarity(this.ITunesSong);
             }
-            System.Diagnostics.Debug.WriteLine("Song.IsSoftEqualTo: Not implemented for this type");
-            return false;
+            System.Diagnostics.Debug.WriteLine("Song.GetSimilarity: Not implemented for this type");
+            return 0;
         }
-        
+
+        public double GetSimilarity(ITunesLibraryParser.Track iTunesTrack) {
+            if (this.HasSmplSong()){
+                return this.SmplMusic.GetSimilarity(iTunesTrack);
+            }
+            if (this.HasITunesSong()) {
+                double artistSimilarity = this.levenstein.GetSimilarity(this.iTunesSong.Artist, iTunesTrack.Artist);
+                double titleSimilarity = this.levenstein.GetSimilarity(this.iTunesSong.Name, iTunesTrack.Name);
+                string thisFileName = "";
+                string otherFileName = "";
+                getReasonableFileNames(this.iTunesSong, iTunesTrack, ref thisFileName, ref otherFileName);
+                double filenameSimilarity = this.levenstein.GetSimilarity(thisFileName, otherFileName);
+
+                return (filenameSimilarity + titleSimilarity + artistSimilarity);
+            }
+            System.Diagnostics.Debug.Print("Song.CompareWith: Not implemented for this type");
+            return 0;
+        }
+
+        public double GetSimilarity(Song targetSong){
+            if (targetSong.HasSmplSong()){
+                return this.GetSimilarity(targetSong.SmplMusic);
+            }
+            else if (targetSong.HasITunesSong()){
+                return this.GetSimilarity(targetSong.ITunesSong);
+            }
+            System.Diagnostics.Debug.WriteLine("Song.GetSimilarity: Not implemented for this type");
+            return 0;
+        }
+
         private void getDirectoryFileName(ITunesLibraryParser.Track iTunesTrack, ref string fileName, ref string dirName){
             string trackLocation;
             string urlDecoded;
@@ -158,24 +187,6 @@ namespace SmplEditor
             }
             else if (this.HasSmplSong()) {
                 return this.SmplMusic.IsEqualTo(iTunesTrack);
-            }
-            System.Diagnostics.Debug.Print("Song.CompareWith: Not implemented for this type");
-            return false;
-        }
-        public bool IsSoftEqualTo(ITunesLibraryParser.Track iTunesTrack) {
-            if (this.HasITunesSong()) {
-                bool hasSimilarArtist = this.levenstein.GetSimilarity(this.iTunesSong.Artist, iTunesTrack.Artist) > ARTIST_TH;
-                bool hasSimilarTitle = this.levenstein.GetSimilarity(this.iTunesSong.Name, iTunesTrack.Name) > TITLE_TH;
-                string thisFileName = "";
-                string otherFileName = "";
-                getReasonableFileNames(this.iTunesSong, iTunesTrack, ref thisFileName, ref otherFileName);
-                bool hasSimilarFileName = this.levenstein.GetSimilarity(thisFileName, otherFileName) > FILENAME_TH;
-                if (hasSimilarArtist && hasSimilarTitle && hasSimilarFileName){
-                    return true;
-                }
-            }
-            else if (this.HasSmplSong()) {
-                return this.SmplMusic.IsSoftEqualTo(iTunesTrack);
             }
             System.Diagnostics.Debug.Print("Song.CompareWith: Not implemented for this type");
             return false;

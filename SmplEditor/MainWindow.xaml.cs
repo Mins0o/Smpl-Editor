@@ -86,203 +86,6 @@ namespace SmplEditor
             PlaylistsBox.ItemsSource = this.playlistLibrary;
         }
 
-        /// <summary> This function takes in a list of newly selected files and 
-        /// separates them into `already imported` ones and `to be imported` ones. </summary>
-        private List<int> getNewFileIndices(string[] selectedFileNames, List<string> importedFiles){
-            // name? extension? check dups
-            List<int> availableIndices = new List<int>();
-            int listSize = selectedFileNames.Length;
-            for(int ii = 0; ii < listSize; ++ii){
-                string fileName = selectedFileNames[ii];
-                if(importedFiles.IndexOf(fileName) >= 0){
-                    continue;
-                }
-                else{
-                    availableIndices.Add(ii);
-                }
-            }
-            return availableIndices;
-        }
-        
-        private string GetExtensionFromSafeName(string safeName){
-            int extStartIndex = safeName.LastIndexOf(".");
-            string extension = safeName.Substring(extStartIndex);
-            return extension;
-        }
-
-        /// <summary> 
-        /// For each track in the imported list, search if the track already exists in the library.<br/>
-        /// If any song was not found in the existing library, convert it to a &lt;Song&gt;.<br/>
-        /// If some tracks already exist but are in different type, return the list of such.
-        /// Return the importedPlaylist after converting it to a &lt;Playlist&gt; and connecting each track to the library.
-        /// </summary>
-        private List<Song> linkTracksToLibrary(Smpl importePlaylist, List<Song> library, List<Song> newSongs, List<Song> existingiTunesSongs){
-            List<Song> remappedPlaylist = new List<Song>();
-            List<SmplSong> playlistSongs = importePlaylist.members;
-
-            foreach (SmplSong targetSong in playlistSongs){
-                Song matched = library.Find(libSong => targetSong.IsEqualTo(libSong));
-                if(matched == default(Song)){ // not found
-                    // convert the SmplSong to a Song and add to the list
-                    matched = new Song(targetSong);
-                    newSongs.Add(matched);
-                    library.Add(matched);
-                }
-                else{ // existing song found on library
-                    if(!matched.HasSmplSong()){ // if the song doesn't have SMPLSong, add the new information
-                        matched.SmplMusic = targetSong;
-                        existingiTunesSongs.Add(matched);
-                    }
-                }
-                remappedPlaylist.Add(matched);
-            }
-            return remappedPlaylist;
-        }
-
-        private Dictionary<ITunesLibraryParser.Track, Song> linkTracksToLibrary(List<ITunesLibraryParser.Track> importedTracks, List<Song> library, List<Song> newSongs, List<Song> existingSmplSongs){
-            var linkedTracks = new Dictionary<ITunesLibraryParser.Track, Song>();
-            foreach(var targetSong in importedTracks){
-                Song matched = library.Find(libSong => libSong.IsEqualTo(targetSong));
-                if(matched != default(Song)){ // existing song found on library
-                    if(!matched.HasITunesSong()){ // if the song doesn't have iTunesTrack, add the new information
-                        matched.ITunesSong = targetSong;
-                        existingSmplSongs.Add(matched);
-                    }
-                }
-                else{
-                    matched = library.Find(libSong => libSong.IsSoftEqualTo(targetSong));
-                    newSongs.Add(matched);
-                    library.Add(matched);
-                }
-                linkedTracks.Add(targetSong, matched);
-            }
-            return linkedTracks;
-        }
-
-        private void ImportPlaylist()
-        {
-            {/* Pseudo code (all comments)
-             * 1. Select files
-             * 2. Check if file has been imported already
-             *    If imported before, skip that file
-             * 3. If file should be imported, parse the file
-             *    During this procedure both iTunes library and .smpl will create playlist(s) and songs.
-             *      Their formats differ by file type (iTunes/smpl).
-             * 4. If a playlist with same name and file type exists, skip
-             * 5. If the playlist is new, add the playlist into the playlist library.
-             *     Playlist from smpl and iTunes are different.
-             *     --- How should a playlist from iTunes work??
-             *       -- can be edited
-             *       -- can be created anew
-             *       -- can be removed (easy)
-             *       -- can be exported into .xml
-             *       -- can be converted to smpl (same for smpl --> iTunes)
-             *          -- only if all the songs in the playlist has its mapping back and forth.
-             *     --- For the requirements, should a new class be generated? 
-             *          or the existing automatic data structure support these features?
-             *          If it does not support this features, for every iTunes playlist, create a custom playlist object.
-             *     --- What about folders in iTunes?
-             *       -- For now, folders will be ignored. Only the leaf playlist will be exportable.
-             *     Do this for all the playlists, accumulate all the songs that are not duplicates.
-             *     if song is duplicate among import, don't add to the cumulative list.
-             * 6. For all the songs in the new cumulative list, check if they already exist in the song library.
-             *     song for different file type should be comparable with:
-             *       1) Title and Artist
-             *       2) Filename (not full path, but file name)
-             *     If same song exist,
-             *       If different file format, add the new format entry to the libraries existing song
-             *        -- this is the mapping. mark the song as mapped.
-             *       If same file format, discard (or maybe collectively notify the user about it)
-             * 7. If not, 
-             *    For smpl songs, just store the automatically generated objects references.
-             *    For iTuens songs, create a new song object and put its reference 
-            */
-            }
-
-            // Get the file paths to load.
-            OpenFileDialog openFiles = new OpenFileDialog
-            {
-                Multiselect = true
-            };
-            openFiles.ShowDialog();
-            // Without full path, just names with extensions
-            string[] safeNames = openFiles.SafeFileNames;
-            // Full path
-            string[] fileNames = openFiles.FileNames;
-
-            List<int> newFileIndices = getNewFileIndices(fileNames, this.importedFileNames);
-            foreach (int fileIdx in newFileIndices)
-            {
-                string safeName = safeNames[fileIdx];
-                string fileName = fileNames[fileIdx];
-                string extension = this.GetExtensionFromSafeName(safeName);
-                if (extension == ".xml")
-                {
-                    // This file is iTunes file
-                    var itunes = new ITunesLibraryParser.ITunesLibrary(fileName);
-                    List<ITunesLibraryParser.Playlist> iPlaylists = itunes.Playlists.ToList();
-                    List<ITunesLibraryParser.Track> iTracks = itunes.Tracks.ToList();
-                    // Unlike smpl files, multiple playlists can come in at once.
-                    // And all duplicateless track library comes separate to the playlists.
-                    // Does iTunes library share the reference with the tracks in the playlist?
-                    // No
-
-                    // Registereing and linking can be done in the scale of the whole library
-                    // While registering, create a map of iTunes.Track --> registered_Song
-                    // There is a bit concern since the tracks from iTracks and iPlaylists
-                    //    only equals in value but not in references.
-
-                    // After registering, just go through the playlists
-                    // Per playlist, map the iTunes.Tracks --> Registered_Song
-                    List<Song> newSongs = new List<Song>();
-                    List<Song> existingSmplSongs = new List<Song>();
-                    var trackToSongLookup = this.linkTracksToLibrary(iTracks, this.songLibrary, newSongs, existingSmplSongs);
-                    this.unmatchediTunesTracks.AddRange(newSongs);
-                    System.Diagnostics.Debug.WriteLine("{1} - New tracks: {0}", newSongs.Count, "iTunes");
-                    foreach (var importingPlaylist in iPlaylists)
-                    {
-                        Playlist playlist = new Playlist(importingPlaylist, trackToSongLookup);
-                        this.playlistLibrary.Add(playlist);
-                    }
-                    System.Diagnostics.Debug.WriteLine("Existing SmplSongs: {0}", existingSmplSongs.Count);
-                    foreach (Song track in existingSmplSongs){
-                        bool success = this.unmatchedSmplTracks.Remove(track);
-                    }
-                }
-                else if(extension == ".smpl")
-                {
-                    string jsonString = File.ReadAllText(fileNames[fileIdx]);
-                    Smpl importingPlaylist = JsonSerializer.Deserialize<Smpl>(jsonString);
-
-                    // If the playlist has no songs, skip the playlist
-                    if (importingPlaylist.members.Count == 0) continue; 
-
-                    // Separate new songs with the existing ones
-                    // Remap the playlist to the library songs
-                    // Add new songs to the library
-                    List<Song> newSongs = new List<Song>();
-                    List<Song> existingSameTypeSongs = new List<Song>();
-                    List<Song> existingDiffTypeSongs = new List<Song>();
-                    List<Song> linkedPlaylist = this.linkTracksToLibrary(importingPlaylist, this.songLibrary, newSongs, existingDiffTypeSongs);
-                    this.unmatchedSmplTracks.AddRange(newSongs);
-                    System.Diagnostics.Debug.WriteLine("{1} - New tracks: {0}", newSongs.Count, importingPlaylist.name);
-
-                    Playlist playlist = new Playlist(importingPlaylist, linkedPlaylist);
-                    this.playlistLibrary.Add(playlist);
-                    System.Diagnostics.Debug.WriteLine("Existing iTunesSongs: {0}", existingDiffTypeSongs.Count);
-                    foreach (Song track in existingDiffTypeSongs){
-                        bool success = this.unmatchediTunesTracks.Remove(track);
-                    }
-                }
-                else // Other than iTunes or SMPL
-                {
-                    System.Diagnostics.Trace.WriteLine("This file format not supported");
-                }
-                int breakHere = 1;
-            }
-            return;
-        }
-
         private void OnAddSongsClicked(object sender, RoutedEventArgs e)
         {
             Playlist targetList = this.playlistLibrary[AddingListSelector.SelectedIndex];
@@ -445,6 +248,239 @@ namespace SmplEditor
                     return;
             }
             RefreshDisplay();
+        }
+
+
+        /// <summary> This function takes in a list of newly selected files and 
+        /// separates them into `already imported` ones and `to be imported` ones. </summary>
+        private List<int> getNewFileIndices(string[] selectedFileNames, List<string> existingFiles){
+            // name? extension? check dups
+            List<int> availableIndices = new List<int>();
+            int listSize = selectedFileNames.Length;
+            for(int ii = 0; ii < listSize; ++ii){
+                string fileName = selectedFileNames[ii];
+                if(existingFiles.IndexOf(fileName) >= 0){
+                    continue; // a selected file already exist
+                }
+                else{
+                    availableIndices.Add(ii);
+                }
+            }
+            return availableIndices;
+        }
+        
+        private string GetExtensionFromSafeName(string safeName){
+            int extStartIndex = safeName.LastIndexOf(".");
+            string extension = safeName.Substring(extStartIndex);
+            return extension;
+        }
+
+        /// <summary> 
+        /// For each track in the imported list, search if the track already exists in the library.<br/>
+        /// If any song was not found in the existing library, convert it to a &lt;Song&gt;.<br/>
+        /// If some tracks already exist but are in different type, return the list of such.
+        /// Return the importedPlaylist after converting it to a &lt;Playlist&gt; and connecting each track to the library.
+        /// </summary>
+        private List<Song> linkTracksToLibrary(Smpl importePlaylist, List<Song> library, List<Song> newSongs, List<Song> existingSongs){
+            List<Song> linkedSongs = new List<Song>();
+            List<SmplSong> playlistSongs = importePlaylist.members;
+
+            foreach (SmplSong targetSong in playlistSongs){
+                Song matched = library.Find(libSong => targetSong.IsEqualTo(libSong));
+                if(matched == default(Song)){ // not found
+                    Song wrappedSong = new Song(targetSong);
+                    matched = findBestAlternative(library, wrappedSong);
+                }
+
+                if (matched == default(Song)){
+                    matched = new Song(targetSong);
+                    newSongs.Add(matched);
+                }
+                else{ // existing song found on library
+                    existingSongs.Add(matched);
+                }
+
+                if(!matched.HasSmplSong()){ // if the song doesn't have SMPLSong, add the new information
+                    matched.SmplMusic = targetSong;
+                }
+
+                linkedSongs.Add(matched);
+            }
+            
+            library.AddRange(newSongs);
+            return linkedSongs;
+        }
+
+        private Dictionary<ITunesLibraryParser.Track, Song> linkTracksToLibrary(List<ITunesLibraryParser.Track> importedTracks, List<Song> library, List<Song> newSongs, List<Song> existingSongs){
+            var linkedTracks = new Dictionary<ITunesLibraryParser.Track, Song>();
+            foreach(var targetSong in importedTracks){
+                Song matched = library.Find(libSong => libSong.IsEqualTo(targetSong));
+                if(matched == default(Song)){
+                    // If no exact match, find the best alternative
+                    Song wrappedSong = new Song(targetSong);
+                    matched = findBestAlternative(library, wrappedSong);
+                }
+
+                if (matched == default(Song)){
+                    // If there still was no match, the song is new.
+                    matched = new Song(targetSong);
+                    newSongs.Add(matched);
+                }
+                else {
+                    existingSongs.Add(matched);
+                }
+
+                // At this point, the matched is guaranteed to be non-default
+
+                if(!matched.HasITunesSong()){ // if the song doesn't have iTunesTrack, add the new information
+                    matched.ITunesSong = targetSong;
+                }
+
+                linkedTracks.Add(targetSong, matched);
+            }
+            library.AddRange(newSongs);
+            return linkedTracks;
+        }
+
+        private Song findBestAlternative(List<Song> songList, Song targetSong){
+            Song bestMatch = default(Song);
+            const double MATCH_TH = 2;
+            double bestScore = -1;
+            foreach(Song comparingSong in songList){
+                double score = comparingSong.GetSimilarity(targetSong);
+                
+                if (score > bestScore){
+                    bestMatch = comparingSong;
+                    bestScore = score;
+                }
+            }
+            if (bestScore > MATCH_TH){
+                return bestMatch;
+            }
+            return default(Song);
+        }
+        private void ImportPlaylist()
+        {
+            {/* Pseudo code (all comments)
+             * 1. Select files
+             * 2. Check if file has been imported already
+             *    If imported before, skip that file
+             * 3. If file should be imported, parse the file
+             *    During this procedure both iTunes library and .smpl will create playlist(s) and songs.
+             *      Their formats differ by file type (iTunes/smpl).
+             * 4. If a playlist with same name and file type exists, skip
+             * 5. If the playlist is new, add the playlist into the playlist library.
+             *     Playlist from smpl and iTunes are different.
+             *     --- How should a playlist from iTunes work??
+             *       -- can be edited
+             *       -- can be created anew
+             *       -- can be removed (easy)
+             *       -- can be exported into .xml
+             *       -- can be converted to smpl (same for smpl --> iTunes)
+             *          -- only if all the songs in the playlist has its mapping back and forth.
+             *     --- For the requirements, should a new class be generated? 
+             *          or the existing automatic data structure support these features?
+             *          If it does not support this features, for every iTunes playlist, create a custom playlist object.
+             *     --- What about folders in iTunes?
+             *       -- For now, folders will be ignored. Only the leaf playlist will be exportable.
+             *     Do this for all the playlists, accumulate all the songs that are not duplicates.
+             *     if song is duplicate among import, don't add to the cumulative list.
+             * 6. For all the songs in the new cumulative list, check if they already exist in the song library.
+             *     song for different file type should be comparable with:
+             *       1) Title and Artist
+             *       2) Filename (not full path, but file name)
+             *     If same song exist,
+             *       If different file format, add the new format entry to the libraries existing song
+             *        -- this is the mapping. mark the song as mapped.
+             *       If same file format, discard (or maybe collectively notify the user about it)
+             * 7. If not, 
+             *    For smpl songs, just store the automatically generated objects references.
+             *    For iTuens songs, create a new song object and put its reference 
+            */
+            }
+
+            // Get the file paths to load.
+            OpenFileDialog openFiles = new OpenFileDialog
+            {
+                Multiselect = true
+            };
+            openFiles.ShowDialog();
+            // Without full path, just names with extensions
+            string[] safeNames = openFiles.SafeFileNames;
+            // Full path
+            string[] fileNames = openFiles.FileNames;
+
+            List<int> newFileIndices = getNewFileIndices(fileNames, this.importedFileNames);
+            foreach (int fileIdx in newFileIndices)
+            {
+                string safeName = safeNames[fileIdx];
+                string fileName = fileNames[fileIdx];
+                string extension = this.GetExtensionFromSafeName(safeName);
+                if (extension == ".xml")
+                {
+                    // This file is iTunes file
+                    var itunes = new ITunesLibraryParser.ITunesLibrary(fileName);
+                    List<ITunesLibraryParser.Playlist> iPlaylists = itunes.Playlists.ToList();
+                    List<ITunesLibraryParser.Track> iTracks = itunes.Tracks.ToList();
+                    List<Song> newSongs = new List<Song>();
+                    List<Song> existingSongs = new List<Song>();
+
+                    // Unlike smpl files, multiple playlists can come in at once.
+                    // And all duplicateless track library comes separate to the playlists.
+                    // Does iTunes library share the reference with the tracks in the playlist?
+                    // No
+
+                    // Registereing and linking can be done in the scale of the whole library
+                    // While registering, create a map of iTunes.Track --> registered_Song
+                    // There is a bit concern since the tracks from iTracks and iPlaylists
+                    //    only equals in value but not in references.
+
+                    // After registering, just go through the playlists
+                    // Per playlist, map the iTunes.Tracks --> Registered_Song
+                    var trackToSongLookup = this.linkTracksToLibrary(iTracks, this.songLibrary, newSongs, existingSongs);
+                    this.unmatchediTunesTracks.AddRange(newSongs);
+                    System.Diagnostics.Debug.WriteLine("{1} - New tracks: {0}", newSongs.Count, "iTunes");
+                    foreach (var importingPlaylist in iPlaylists)
+                    {
+                        Playlist playlist = new Playlist(importingPlaylist, trackToSongLookup);
+                        this.playlistLibrary.Add(playlist);
+                    }
+                    System.Diagnostics.Debug.WriteLine("Existing SmplSongs: {0}", existingSongs.Count);
+                    foreach (Song track in existingSongs){
+                        bool success = this.unmatchedSmplTracks.Remove(track);
+                    }
+                }
+                else if(extension == ".smpl")
+                {
+                    string jsonString = File.ReadAllText(fileNames[fileIdx]);
+                    Smpl importingPlaylist = JsonSerializer.Deserialize<Smpl>(jsonString);
+
+                    // If the playlist has no songs, skip the playlist
+                    if (importingPlaylist.members.Count == 0) continue; 
+
+                    // Separate new songs with the existing ones
+                    // Remap the playlist to the library songs
+                    // Add new songs to the library
+                    List<Song> newSongs = new List<Song>();
+                    List<Song> existingSongs = new List<Song>();
+                    List<Song> linkedPlaylist = this.linkTracksToLibrary(importingPlaylist, this.songLibrary, newSongs, existingSongs);
+                    this.unmatchedSmplTracks.AddRange(newSongs);
+                    System.Diagnostics.Debug.WriteLine("{1} - New tracks: {0}", newSongs.Count, importingPlaylist.name);
+
+                    Playlist playlist = new Playlist(importingPlaylist, linkedPlaylist);
+                    this.playlistLibrary.Add(playlist);
+                    System.Diagnostics.Debug.WriteLine("Existing iTunesSongs: {0}", existingSongs.Count);
+                    foreach (Song track in existingSongs){
+                        bool success = this.unmatchediTunesTracks.Remove(track);
+                    }
+                }
+                else // Other than iTunes or SMPL
+                {
+                    System.Diagnostics.Trace.WriteLine("This file format not supported");
+                }
+                int breakHere = 1;
+            }
+            return;
         }
 
         private void DisplaySelectedPlaylist()
