@@ -103,7 +103,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ITunesPlaylist.cs" />
     <Compile Include="Playlist.cs" />
     <Compile Include="Smpl.cs" />
     <Compile Include="SmplSong.cs" />

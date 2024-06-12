@@ -27,8 +27,33 @@ namespace SmplEditor
             this.sortBy = sortBy;
             this.version = version;
         }
-        public Smpl(string name, List<SmplSong> songList){
-            ;
+        public Smpl(Playlist playlist){
+            if(playlist.IsSmpl){
+                Smpl smplOfPlaylist = playlist.SmplProperties;
+                this.name = smplOfPlaylist.name;
+                this.recentlyPlayedDate = smplOfPlaylist.recentlyPlayedDate;
+                this.sortBy = smplOfPlaylist.sortBy;
+                this.version = smplOfPlaylist.version;
+                this.members = new List<SmplSong>();
+
+                int orderCount = 0;
+                foreach(Song track in playlist.ListOfTracks){
+                    if(track.HasSmplSong()){
+                        SmplSong trackToAdd = track.SmplMusic;
+                        trackToAdd.order = orderCount++;
+                        members.Add(trackToAdd);
+                    }
+                    else{
+                        System.Diagnostics.Debug.WriteLine("{0} does not have a smpl representation", track);
+                    }
+                }
+            }
+            else if (playlist.IsITunes){
+                ;
+            }
+            else{
+                System.Diagnostics.Debug.WriteLine("This type is not supported");
+            }
         }
         public Smpl CloneProperties(){
             Smpl cloned = new Smpl(this.name, 
@@ -37,28 +62,22 @@ namespace SmplEditor
                                 this.version);
             return cloned;
         }
-        public void SortByArtist()
-        {
-            this.members.Sort((SmplSong x, SmplSong y) => x.artist.CompareTo(y.artist));
-        }
-        public void SortByTitle()
-        {
-            this.members.Sort((SmplSong x, SmplSong y) => x.title.CompareTo(y.title));
-        }
-        public void SortByDirectory()
-        {
-            this.members.Sort((SmplSong x, SmplSong y) => x.info.CompareTo(y.info));
-        }
-        public void SortByOrder()
-        {
-            this.members.Sort((SmplSong x, SmplSong y) => x.order.CompareTo(y.order));
-        }
-
-        public void AddSongs(SmplSong[] selectedSongs){
-            ;
-        }
-        public void RemoveSongs(SmplSong[] songsToDelete){
-            ;
+        public Dictionary<Song,int> GetOrdering(List<Song> listOfSongs){
+            Dictionary<Song, int> orderingMapping;
+            if (listOfSongs.Count == this.members.Count){
+                orderingMapping = listOfSongs
+                    .Select((k, i) => new { k = k, v = this.members[i].order })
+                    .ToDictionary(x => x.k, x => x.v);
+                System.Diagnostics.Debug.Print("Ordering Generated Succesfully");
+            }
+            else{
+                var debugText = this.name + " - GetOrdering: The number of songs didn't match. The listOfSong has " + listOfSongs.Count + "tracks.";
+                System.Diagnostics.Debug.Print(debugText);
+                orderingMapping = listOfSongs
+                .Select((k, i) => new { k = k, v = i })
+                .ToDictionary(x => x.k, x => x.v);
+            } 
+            return orderingMapping;
         }
         public override string ToString()
         {
